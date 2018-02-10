@@ -1,18 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"github.com/fredi12345/kuefa-karben/config"
+	"github.com/fredi12345/kuefa-karben/storage/mydb"
 	"log"
 )
 
 func main() {
-	db, user, pass, err := config.Read("config.xml")
+	dbName, user, password, err := config.Read("config.xml")
 	if err != nil {
 		log.Fatalf("could not read config: %v", err)
 	}
 
-	fmt.Println(db)
-	fmt.Println(user)
-	fmt.Println(pass)
+	db, err := mydb.New(dbName, user, password)
+	if err != nil {
+		log.Fatalf("could not create database: %v", err)
+	}
+
+	db.CreateUser("test", "12345")
 }
