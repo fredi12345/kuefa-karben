@@ -12,9 +12,10 @@ func main() {
 		log.Fatalf("could not read config: %v", err)
 	}
 
-	_, err = mydb.New(dbName, user, password)
+	db, err := mydb.New(dbName, user, password)
 	if err != nil {
 		log.Fatalf("could not create database: %v", err)
 	}
 
+	db.CreateUser("test", "12345")
 }
