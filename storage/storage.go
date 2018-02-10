@@ -29,3 +29,14 @@ type Participant struct {
 	Name string
 	Menu int
 }
+
+type Comment struct {
+	Content string
+	Name    string
+}
+
+type User struct {
+	Name     string
+	Salt     string
+	Password string
+}
