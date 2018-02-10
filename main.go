@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/fredi12345/kuefa-karben/config"
+	"log"
+)
 
 func main() {
-	fmt.Println("Hello world")
+	db, user, pass, err := config.Read("config.xml")
+	if err != nil {
+		log.Fatalf("could not read config: %v", err)
+	}
+
+	fmt.Println(db)
+	fmt.Println(user)
+	fmt.Println(pass)
 }

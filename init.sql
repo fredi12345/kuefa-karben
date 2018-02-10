@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS images (
 
 CREATE TABLE IF NOT EXISTS user (
   id       INT NOT NULL AUTO_INCREMENT,
-  name     VARCHAR(256),
+  name     VARCHAR(256) UNIQUE,
   salt     VARCHAR(256),
   password VARCHAR(256),
   PRIMARY KEY (id)
