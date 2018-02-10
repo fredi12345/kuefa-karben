@@ -33,6 +33,22 @@ type connection struct {
 	rnd *random.Rnd
 }
 
+func (c *connection) GetEvent(id int) (storage.Event, error) {
+	panic("implement me")
+}
+
+func (c *connection) GetComment(evenId int) ([]storage.Comment, error) {
+	panic("implement me")
+}
+
+func (c *connection) GetImages(evenId int) ([]image.Image, error) {
+	panic("implement me")
+}
+
+func (c *connection) GetParticipants(eventId int) ([]storage.Participant, error) {
+	panic("implement me")
+}
+
 func New(dbName, user, password string) (storage.Service, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s?parseTime=true", user, password, dbName))
 	if err != nil {
