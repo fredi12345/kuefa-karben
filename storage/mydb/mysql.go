@@ -22,8 +22,18 @@ type connection struct {
 	db *sql.DB
 }
 
-func New() storage.Service {
-	return &connection{}
+func New(dbName, user, password string) (storage.Service, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s?parseTime=true", user, password, dbName))
+	if err != nil {
+		return nil, fmt.Errorf("cannot open connection: %v", err)
+	}
+
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("cannot ping database: %v", err)
+	}
+
+	return &connection{db: db}, nil
 }
 
 func (c *connection) CreateEvent(event storage.Event) error {
