@@ -15,14 +15,14 @@ import (
 
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
-	dbCreateEvent       = `INSERT INTO event (theme, event_date, created, starter, main_dish, dessert, infotext, image) VALUES (?,?, created = NOW(),?,?,?,?,?)`
-	dbCreateParticipant = `INSERT INTO participant (name, created, menu, event_id) VALUES (?,created = Now(), ?, event_id = (SELECT id FROM Event ORDER BY  id LIMIT 1)) `
-	dbCreateComment     = `INSERT INTO comment (content, name, created, event_id) VALUES (?,?, created=Now(),event_id = (SELECT id FROM Event ORDER BY  id LIMIT 1))`
-	dbCreateImage       = `INSERT INTO images (event_id, picture) VALUES (event_id=(SELECT id FROM Event ORDER BY  id LIMIT 1), ?)`
+	dbCreateEvent       = `INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image) VALUES (?,?, NOW(),?,?,?,?,?)`
+	dbCreateParticipant = `INSERT INTO participant (name, participant_created, menu, event_id) VALUES (?, Now(), ?, (SELECT id FROM Event ORDER BY  id LIMIT 1)) `
+	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), (SELECT id FROM Event ORDER BY  id LIMIT 1))`
+	dbCreateImage       = `INSERT INTO images (event_id, picture) VALUES ((SELECT id FROM Event ORDER BY  id LIMIT 1), ?)`
 
-	dbGetEvent        = `SELECT theme, event_date, created, starter, main_dish, dessert, infotext FROM event WHERE id=?;`
-	dbGetComments     = `SELECT name, content,  created FROM comment WHERE event_id=? ORDER BY created;`
-	dbGetParticipants = `SELECT name, menu, created, event_id FROM participant WHERE event_id=? ORDER BY created;`
+	dbGetEvent        = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
+	dbGetComments     = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
+	dbGetParticipants = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	//dbGetImages         = `SELECT * FROM images WHERE event_id=? ORDER BY id`
 )
 
@@ -137,7 +137,6 @@ func (c *connection) CreateEvent(event storage.Event) error {
 	return err
 }
 
-//TODO: timeCreated und eventID abspeichern (wird scheinbar oben schon versucht, aber funktioniert nicht)
 func (c *connection) CreateParticipant(participant storage.Participant) error {
 	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {

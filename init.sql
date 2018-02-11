@@ -1,34 +1,41 @@
+#TODO Remove Drop Table after testing
+DROP TABLE IF EXISTS kuefa_karben.participant;
+DROP TABLE IF EXISTS kuefa_karben.comment;
+DROP TABLE IF EXISTS kuefa_karben.images;
+DROP TABLE IF EXISTS kuefa_karben.user;
+DROP TABLE IF EXISTS kuefa_karben.event;
+
 CREATE TABLE IF NOT EXISTS event (
-  id         INT NOT NULL AUTO_INCREMENT,
+  event_id         INT NOT NULL AUTO_INCREMENT,
   theme      VARCHAR(256),
   event_date DATE,
-  created    DATE,
+  created_date    DATE,
   starter    VARCHAR(512),
   main_dish  VARCHAR(512),
   dessert    VARCHAR(512),
   infotext   VARCHAR(2048),
   image      BLOB,
-  PRIMARY KEY (id)
+  PRIMARY KEY (event_id)
 );
 
 CREATE TABLE IF NOT EXISTS participant (
   id       INT NOT NULL AUTO_INCREMENT,
   name     VARCHAR(255),
-  created  DATE,
+  participant_created  DATE,
   menu     INT,
   event_id INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES event (id)
+  FOREIGN KEY (event_id) REFERENCES event (event_id)
 );
 
 CREATE TABLE IF NOT EXISTS comment (
   id       INT NOT NULL AUTO_INCREMENT,
   content  VARCHAR(1024),
   name     VARCHAR(256),
-  created  DATE,
+  comment_created  DATE,
   event_id INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES event (id)
+  FOREIGN KEY (event_id) REFERENCES event (event_id)
 );
 
 CREATE TABLE IF NOT EXISTS images (
@@ -36,7 +43,7 @@ CREATE TABLE IF NOT EXISTS images (
   event_id INT,
   picture  BLOB,
   PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES event (id)
+  FOREIGN KEY (event_id) REFERENCES event (event_id)
 );
 
 CREATE TABLE IF NOT EXISTS user (
@@ -45,4 +52,11 @@ CREATE TABLE IF NOT EXISTS user (
   salt     VARCHAR(256),
   password VARCHAR(256),
   PRIMARY KEY (id)
-)
+);
+
+# TODO Remove after Testing is done:
+INSERT INTO user ( name, salt, password) VALUES ('test','1Y6LMQth5V','0d16233affc52371347cbb20123ff8157158e8589bcfeabff2e44d30891fc32a');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image) VALUES ('testtheme',Now(), NOW(),'teststarter','testmaindish','testdessert','testinfotext',NULL );
+INSERT INTO participant (name, participant_created, menu, event_id) VALUES ('testname', Now(), 1, (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1));
+INSERT INTO comment (content, name, comment_created, event_id) VALUES ('testcontent', 'testname', Now(), (SELECT event_id FROM Event ORDER BY event_id LIMIT 1));
+INSERT INTO images (event_id, picture) VALUES ((SELECT event_id FROM Event ORDER BY  event_id LIMIT 1), NULL );
