@@ -4,7 +4,7 @@
 
 html {
     font-family: sans-serif;
-    background-size: 100%;
+    background-size: cover;
     background-image: url(background.jpg);
 }
 
@@ -17,10 +17,7 @@ header {
 header img {
     display: inline-block;
     clear: both;
-    /* position: absolute; */
     left: 0;
-    /* top:0; */
-    /* float: right; */
     height: 200px;
 }
 
@@ -32,9 +29,7 @@ header h1 {
 
 body {
     max-width: 1000px;
-    margin: 0;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto;
 }
 
 section {

@@ -20,7 +20,10 @@ const (
 	dbCreateComment     = `INSERT INTO comment (content, name, created, event_id) VALUES (?,?, created=Now(),event_id = (SELECT id FROM Event ORDER BY  id LIMIT 1))`
 	dbCreateImage       = `INSERT INTO images (event_id, picture) VALUES (event_id=(SELECT id FROM Event ORDER BY  id LIMIT 1), ?)`
 
-	dbGetEvent = `SELECT theme, event_date, starter, main_dish, dessert, infotext FROM event WHERE id=?`
+	dbGetEvent          = `SELECT theme, event_date, created, starter, main_dish, dessert, infotext FROM event WHERE id=?;`
+	dbGetComments       = `SELECT name, content,  created FROM comment WHERE event_id=? ORDER BY created;`
+	dbGetParticipants   = `SELECT name, menu, created, event_id FROM participant WHERE event_id=? ORDER BY created;`
+	//dbGetImages         = `SELECT * FROM images WHERE event_id=? ORDER BY id`
 )
 
 var (
@@ -36,24 +39,77 @@ type connection struct {
 }
 
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
-	var ev storage.Event
-	err := c.db.QueryRow(dbGetEvent, id).Scan(&ev.Theme, &ev.Date, &ev.Starter, &ev.MainDish, &ev.Dessert, &ev.InfoText)
+	event := storage.Event{}
+	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText)
 	if err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, err
+		}
+		return nil, fmt.Errorf("error scanning row: %v", err)
 	}
-	return &ev, nil
+
+	return &event, nil
 }
 
-func (c *connection) GetComment(evenId int) ([]storage.Comment, error) {
-	panic("implement me")
+func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
+	var comments []*storage.Comment
+	rows, err := c.db.Query(dbGetComments, eventId)
+	if err != nil {
+		return nil, fmt.Errorf("cannot execute query: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem storage.Comment
+		err := rows.Scan(&resultItem.Name, &resultItem.Content, &resultItem.Created)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+		comments = append(comments, &resultItem)
+	}
+
+	return comments, nil
 }
 
-func (c *connection) GetImages(evenId int) ([]image.Image, error) {
-	panic("implement me")
-}
+// TODO
+//func (c *connection) GetImages(eventId int) ([]*image.Image, error) {
+//	var images []*image.Image
+//	rows, err := c.db.Query(dbGetImages, eventId)
+//	if err != nil {
+//		return nil, fmt.Errorf("cannot execute query: %v", err)
+//	}
+//	defer rows.Close()
+//
+//	for rows.Next() {
+//		var resultItem image.Image
+//		err := rows.Scan(&resultItem)
+//		if err != nil {
+//			return nil, fmt.Errorf("error scanning row: %v", err)
+//		}
+//		images = append(images, &resultItem)
+//	}
+//
+//	return images, nil
+//}
 
-func (c *connection) GetParticipants(eventId int) ([]storage.Participant, error) {
-	panic("implement me")
+func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error) {
+	var participants []*storage.Participant
+	rows, err := c.db.Query(dbGetParticipants, eventId)
+	if err != nil {
+		return nil, fmt.Errorf("cannot execute query: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem storage.Participant
+		err := rows.Scan(&resultItem.Name, &resultItem.Menu, &resultItem.Created, &resultItem.EventId)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+		participants = append(participants, &resultItem)
+	}
+
+	return participants, nil
 }
 
 func New(dbName, user, password string) (storage.Service, error) {
@@ -71,7 +127,7 @@ func New(dbName, user, password string) (storage.Service, error) {
 }
 
 func (c *connection) CreateEvent(event storage.Event) error {
-	_, err := c.db.Exec(dbCreateEvent, event.Theme, event.Date, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.Img)
+	_, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.Img)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return ErrInputToLong
