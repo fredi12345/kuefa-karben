@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/fredi12345/kuefa-karben/config"
 	"github.com/fredi12345/kuefa-karben/storage/mydb"
+	"github.com/fredi12345/kuefa-karben/web"
 	"log"
 	"net/http"
-	"github.com/fredi12345/kuefa-karben/web"
 )
 
 func main() {
@@ -23,11 +24,12 @@ func main() {
 
 	fs := http.FileServer(http.Dir("resources/static"))
 	http.Handle("/", fs)
-	http.HandleFunc("/index.html", server.Index)
+	http.HandleFunc("/main", server.Index)
+	http.HandleFunc("/participate", server.Participate)
+	fmt.Println("http://localhost:8080/main")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
-
 
 	// db.CreateUser("test", "12345")
 }

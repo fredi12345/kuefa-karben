@@ -27,6 +27,7 @@ type Comment struct {
 	EventId int
 }
 type Event struct {
+	Id        int
 	Theme     string
 	EventDate time.Time
 	Created   time.Time

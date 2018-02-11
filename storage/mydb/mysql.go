@@ -20,9 +20,9 @@ const (
 	dbCreateComment     = `INSERT INTO comment (content, name, created, event_id) VALUES (?,?, created=Now(),event_id = (SELECT id FROM Event ORDER BY  id LIMIT 1))`
 	dbCreateImage       = `INSERT INTO images (event_id, picture) VALUES (event_id=(SELECT id FROM Event ORDER BY  id LIMIT 1), ?)`
 
-	dbGetEvent          = `SELECT theme, event_date, created, starter, main_dish, dessert, infotext FROM event WHERE id=?;`
-	dbGetComments       = `SELECT name, content,  created FROM comment WHERE event_id=? ORDER BY created;`
-	dbGetParticipants   = `SELECT name, menu, created, event_id FROM participant WHERE event_id=? ORDER BY created;`
+	dbGetEvent        = `SELECT theme, event_date, created, starter, main_dish, dessert, infotext FROM event WHERE id=?;`
+	dbGetComments     = `SELECT name, content,  created FROM comment WHERE event_id=? ORDER BY created;`
+	dbGetParticipants = `SELECT name, menu, created, event_id FROM participant WHERE event_id=? ORDER BY created;`
 	//dbGetImages         = `SELECT * FROM images WHERE event_id=? ORDER BY id`
 )
 
@@ -40,6 +40,7 @@ type connection struct {
 
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
 	event := storage.Event{}
+	event.Id = id
 	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText)
 	if err != nil {
 		if err == sql.ErrNoRows {
