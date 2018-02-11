@@ -46,9 +46,8 @@ func (c *connection) GetEvent(id int) (*storage.Event, error) {
 		if err == sql.ErrNoRows {
 			return nil, err
 		}
-		return nil, fmt.Errorf("error scanning row: %v", err)
+		return nil, fmt.Errorf("mysql.go|GetEvent: error scanning row: %v", err)
 	}
-
 	return &event, nil
 }
 
@@ -105,7 +104,7 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 		var resultItem storage.Participant
 		err := rows.Scan(&resultItem.Name, &resultItem.Menu, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning row: %v", err)
+			return nil, fmt.Errorf("mysql.go|GetParticipants: error scanning row: %v", err)
 		}
 		participants = append(participants, &resultItem)
 	}
@@ -138,6 +137,7 @@ func (c *connection) CreateEvent(event storage.Event) error {
 	return err
 }
 
+//TODO: timeCreated und eventID abspeichern (wird scheinbar oben schon versucht, aber funktioniert nicht)
 func (c *connection) CreateParticipant(participant storage.Participant) error {
 	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {

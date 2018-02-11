@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"path"
 	"strconv"
+	"time"
 )
 
 type server struct {
@@ -31,13 +32,27 @@ func (s *server) Index(w http.ResponseWriter, _ *http.Request) {
 		log.Fatal(err)
 	}
 
+	part, err := s.db.GetParticipants(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ev.Participants = part
+
 	t.Execute(w, ev)
 }
 
+//TODO: timeCreated und eventID speichern, siehe dazu mysql.go
 func (s *server) Participate(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Request incoming")
 	r.ParseForm()
+
+	//TODO: Die Parameter kann man bestimmt einfacher zu int casten
 	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	menu, err := strconv.Atoi(r.Form.Get("menu"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -45,10 +60,14 @@ func (s *server) Participate(w http.ResponseWriter, r *http.Request) {
 
 	part := storage.Participant{
 		Name:    name,
-		EventId: eventId}
+		EventId: eventId,
+		Menu:    menu,
+		Created: time.Now()}
 
 	err = s.db.CreateParticipant(part)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	http.Redirect(w, r, "/main", http.StatusSeeOther)
 }
