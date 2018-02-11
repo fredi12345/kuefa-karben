@@ -21,6 +21,7 @@ const (
 	dbGetEvent          = `SELECT * FROM event WHERE id=?;`
 	dbGetComments       = `SELECT * FROM comment WHERE event_id=? ORDER BY created;`
 	dbGetParticipants   = `SELECT * FROM participant WHERE event_id=? ORDER BY created;`
+	dbGetImages         = `SELECT * FROM images WHERE event_id=? ORDER BY id`
 )
 
 var (
@@ -70,7 +71,7 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 
 func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 	images := []*storage.Image{}
-	rows, err := c.db.Query(dbGetComments, eventId)
+	rows, err := c.db.Query(dbGetImages, eventId)
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query: %v", err)
 	}
