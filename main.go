@@ -14,14 +14,16 @@ func main() {
 		log.Fatalf("could not read config: %v", err)
 	}
 
-	_, err = mydb.New(dbName, user, password)
+	db, err := mydb.New(dbName, user, password)
 	if err != nil {
 		log.Fatalf("could not create database: %v", err)
 	}
 
+	server := web.NewServer(db)
+
 	fs := http.FileServer(http.Dir("resources/static"))
-	http.Handle("/static/", fs)
-	http.HandleFunc("/", web.Index)
+	http.Handle("/", fs)
+	http.HandleFunc("/index.html", server.Index)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}

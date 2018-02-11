@@ -12,10 +12,10 @@ type Service interface {
 	CreateImage(img image.Image, event int) error
 	CreateUser(name, password string) error
 
-	GetEvent(id int) (Event, error)
-	GetComment(event_id int) ([]Comment, error)
-	GetImages(event_id int) ([]image.Image, error)
-	GetParticipants(event_id int) ([]Participant, error)
+	GetEvent(id int) (*Event, error)
+	GetComment(eventId int) ([]Comment, error)
+	GetImages(eventId int) ([]image.Image, error)
+	GetParticipants(eventId int) ([]Participant, error)
 
 	CheckCredentials(name, password string) (bool, error)
 }

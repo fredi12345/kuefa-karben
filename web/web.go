@@ -4,14 +4,28 @@ import (
 	"net/http"
 	"path"
 	"log"
-	"io/ioutil"
+	"github.com/fredi12345/kuefa-karben/storage"
+	"html/template"
 )
 
-func Index(w http.ResponseWriter, _ *http.Request) {
-	data, err := ioutil.ReadFile(path.Join("resources", "index.html"))
+type server struct {
+	db storage.Service
+}
+
+func NewServer(db storage.Service) *server  {
+	return &server{db: db}
+}
+
+func (s *server) Index(w http.ResponseWriter, _ *http.Request) {
+	t, err := template.ParseFiles(path.Join("resources", "index.html"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	w.Write(data)
+	ev, err := s.db.GetEvent(1)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	t.Execute(w, ev)
 }

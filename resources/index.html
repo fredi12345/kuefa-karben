@@ -12,17 +12,17 @@
 		<h1>Küche für alle!</h1>
 	</header>
 	<section id="main">
-		<h2 id="motto">Asiatisch aufgetischt!</h2>
-		<h2 id="date">Sonntag, 25. Februar 17:30 - 22:00</h2>
+		<h2 id="motto">{{ .Theme }}!</h2>
+		<h2 id="date">{{ .Date }}</h2>
 		<br>
-		<p> Lecker Essen asiatisch reis <br> morgen dann käsekuchen für alle!!</p>
+		<p>{{ .InfoText }}</p>
 		<br>
 		<h3>Vorspeise</h3>
-		<p>Wackelpudding ala Salzmann</p>
+		<p>{{ .Starter }}</p>
 		<h3>Hauptgang</h3>
-		<p>Salzstangen ala Zuckermann</p>
+		<p>{{ .MainDish }}</p>
 		<h3>Nachspeise für die Hungrigen</h3>
-		<p>Zuckerwatte von Frau Holle</p>
+		<p>{{ .Dessert }}</p>
 	</section>
 	<section id="eventCarousel">
 		<div class="event">

@@ -19,6 +19,8 @@ const (
 	dbCreateParticipant = `INSERT INTO participant (name, created, menu, event_id) VALUES (?,created = Now(), ?, event_id = (SELECT id FROM Event ORDER BY  id LIMIT 1)) `
 	dbCreateComment     = `INSERT INTO comment (content, name, created, event_id) VALUES (?,?, created=Now(),event_id = (SELECT id FROM Event ORDER BY  id LIMIT 1))`
 	dbCreateImage       = `INSERT INTO images (event_id, picture) VALUES (event_id=(SELECT id FROM Event ORDER BY  id LIMIT 1), ?)`
+
+	dbGetEvent = `SELECT theme, event_date, starter, main_dish, dessert, infotext FROM event WHERE id=?`
 )
 
 var (
@@ -33,8 +35,13 @@ type connection struct {
 	rnd *random.Rnd
 }
 
-func (c *connection) GetEvent(id int) (storage.Event, error) {
-	panic("implement me")
+func (c *connection) GetEvent(id int) (*storage.Event, error) {
+	var ev storage.Event
+	err := c.db.QueryRow(dbGetEvent, id).Scan(&ev.Theme, &ev.Date, &ev.Starter, &ev.MainDish, &ev.Dessert, &ev.InfoText)
+	if err != nil {
+		return nil, err
+	}
+	return &ev, nil
 }
 
 func (c *connection) GetComment(evenId int) ([]storage.Comment, error) {
