@@ -11,6 +11,12 @@
     <img src="public/logo.png"/>
     <h1>Küche für alle!</h1>
 </header>
+<section id="protected">
+    <form enctype="multipart/form-data" id="upload" name="upload" action="/upload" method="post">
+        <input name="image" type="file" accept="image/*" required>
+        <input type="submit" value="Hochladen">
+    </form>
+</section>
 <section id="main">
     <h2 id="motto">{{ .Theme }}!</h2>
     <h2 id="date">{{ .EventDate.Format "02.01.2006 -  15:04"}}</h2>
