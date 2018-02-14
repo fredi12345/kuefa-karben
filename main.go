@@ -22,11 +22,11 @@ func main() {
 
 	server := web.NewServer(db)
 
-	fs := http.FileServer(http.Dir("resources/static"))
-	http.Handle("/", fs)
-	http.HandleFunc("/main", server.Index)
+	fs := http.FileServer(http.Dir("resources/public"))
+	http.Handle("/public/", http.StripPrefix("/public/", fs))
+	http.HandleFunc("/", server.Index)
 	http.HandleFunc("/participate", server.Participate)
-	fmt.Println("http://localhost:8080/main")
+	fmt.Println("http://localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}

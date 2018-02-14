@@ -20,7 +20,7 @@ func NewServer(db storage.Service) *server {
 }
 
 func (s *server) Index(w http.ResponseWriter, _ *http.Request) {
-	t, err := template.ParseFiles(path.Join("resources", "index.html"))
+	t, err := template.ParseFiles(path.Join("resources", "template", "index.html"))
 	if err != nil {
 		log.Fatal(err)
 	}
