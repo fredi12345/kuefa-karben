@@ -2,13 +2,17 @@ package web
 
 import (
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/storage"
 	"html/template"
 	"log"
 	"net/http"
 	"path"
 	"strconv"
 	"time"
+
+	"io"
+	"os"
+
+	"github.com/fredi12345/kuefa-karben/storage"
 )
 
 type Server struct {
@@ -65,6 +69,33 @@ func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 		Created: time.Now()}
 
 	err = s.db.CreateParticipant(part)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(5 << 20) // 5 MB
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	dest := path.Join("resources", "public", "images", handler.Filename)
+
+	f, err := os.Create(dest)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = io.Copy(f, file)
 	if err != nil {
 		log.Fatal(err)
 	}

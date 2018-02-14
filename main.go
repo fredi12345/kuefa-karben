@@ -37,5 +37,6 @@ func createHandler(server *web.Server) http.Handler {
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
 	r.HandleFunc("/participate", server.Participate).Methods(http.MethodPost)
+	r.HandleFunc("/upload", server.Upload).Methods(http.MethodPost)
 	return r
 }

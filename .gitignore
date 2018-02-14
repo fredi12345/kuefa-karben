@@ -2,3 +2,4 @@
 out
 config.xml
 *.iml
+resources/public/images
