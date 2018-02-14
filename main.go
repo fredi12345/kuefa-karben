@@ -7,6 +7,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/web"
 	"log"
 	"net/http"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -21,15 +22,19 @@ func main() {
 	}
 
 	server := web.NewServer(db)
-
-	fs := http.FileServer(http.Dir("resources/public"))
-	http.Handle("/public/", http.StripPrefix("/public/", fs))
-	http.HandleFunc("/", server.Index)
-	http.HandleFunc("/participate", server.Participate)
+	handler := createHandler(server)
 	fmt.Println("http://localhost:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+
+	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatal(err)
 	}
+}
 
-	// db.CreateUser("test", "12345")
+func createHandler(server *web.Server) http.Handler {
+	r := mux.NewRouter()
+	fs := http.FileServer(http.Dir("resources/public"))
+	r.Handle("/public/", http.StripPrefix("/public/", fs))
+	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
+	r.HandleFunc("/participate", server.Participate).Methods(http.MethodPost)
+	return r
 }

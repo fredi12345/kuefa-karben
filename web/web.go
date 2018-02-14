@@ -11,15 +11,15 @@ import (
 	"time"
 )
 
-type server struct {
+type Server struct {
 	db storage.Service
 }
 
-func NewServer(db storage.Service) *server {
-	return &server{db: db}
+func NewServer(db storage.Service) *Server {
+	return &Server{db: db}
 }
 
-func (s *server) Index(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 	t, err := template.ParseFiles(path.Join("resources", "template", "index.html"))
 	if err != nil {
 		log.Fatal(err)
@@ -43,7 +43,7 @@ func (s *server) Index(w http.ResponseWriter, _ *http.Request) {
 }
 
 //TODO: timeCreated und eventID speichern, siehe dazu mysql.go
-func (s *server) Participate(w http.ResponseWriter, r *http.Request) {
+func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Request incoming")
 	r.ParseForm()
 
@@ -69,5 +69,5 @@ func (s *server) Participate(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	http.Redirect(w, r, "/main", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
