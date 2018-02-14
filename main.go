@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/fredi12345/kuefa-karben/config"
 	"github.com/fredi12345/kuefa-karben/storage/mydb"
 	"github.com/fredi12345/kuefa-karben/web"
-	"log"
-	"net/http"
 	"github.com/gorilla/mux"
 )
 
@@ -33,7 +34,7 @@ func main() {
 func createHandler(server *web.Server) http.Handler {
 	r := mux.NewRouter()
 	fs := http.FileServer(http.Dir("resources/public"))
-	r.Handle("/public/", http.StripPrefix("/public/", fs))
+	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
 	r.HandleFunc("/participate", server.Participate).Methods(http.MethodPost)
 	return r
