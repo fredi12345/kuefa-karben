@@ -90,6 +90,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 
 	dest := path.Join("resources", "public", "images", handler.Filename)
 
+	//TODO check that file names are unique
 	f, err := os.Create(dest)
 	if err != nil {
 		log.Fatal(err)
@@ -99,6 +100,8 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	s.db.CreateImage("/public/images/"+handler.Filename, 1)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

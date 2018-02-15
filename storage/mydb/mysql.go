@@ -5,20 +5,20 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"io"
+	"time"
+
 	"github.com/SchiffFlieger/go-random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/go-sql-driver/mysql"
-	"image"
-	"io"
-	"time"
 )
 
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
-	dbCreateEvent       = `INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image) VALUES (?,?, NOW(),?,?,?,?,?)`
+	dbCreateEvent       = `INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url) VALUES (?,?, NOW(),?,?,?,?,?)`
 	dbCreateParticipant = `INSERT INTO participant (name, participant_created, menu, event_id) VALUES (?, Now(), ?, (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1)) `
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1))`
-	dbCreateImage       = `INSERT INTO images (event_id, picture) VALUES ((SELECT event_id FROM Event ORDER BY  event_id LIMIT 1), ?)`
+	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
 	dbGetEvent        = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
 	dbGetComments     = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
@@ -159,8 +159,8 @@ func (c *connection) CreateComment(comment storage.Comment) error {
 	return err
 }
 
-func (c *connection) CreateImage(img image.Image, event int) error {
-	_, err := c.db.Exec(dbCreateImage, img)
+func (c *connection) CreateImage(url string, event int) error {
+	_, err := c.db.Exec(dbCreateImage, event, url)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return ErrInputToLong

@@ -9,7 +9,7 @@ type Service interface {
 	CreateEvent(event Event) error
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
-	CreateImage(img image.Image, event int) error
+	CreateImage(url string, event int) error
 	CreateUser(name, password string) error
 
 	GetEvent(id int) (*Event, error)
