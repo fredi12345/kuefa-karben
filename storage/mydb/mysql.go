@@ -23,7 +23,7 @@ const (
 	dbGetEvent        = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
 	dbGetComments     = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
-	//dbGetImages         = `SELECT * FROM images WHERE event_id=? ORDER BY id`
+	dbGetImages       = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
 )
 
 var (
@@ -71,26 +71,25 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 	return comments, nil
 }
 
-// TODO
-//func (c *connection) GetImages(eventId int) ([]*image.Image, error) {
-//	var images []*image.Image
-//	rows, err := c.db.Query(dbGetImages, eventId)
-//	if err != nil {
-//		return nil, fmt.Errorf("cannot execute query: %v", err)
-//	}
-//	defer rows.Close()
-//
-//	for rows.Next() {
-//		var resultItem image.Image
-//		err := rows.Scan(&resultItem)
-//		if err != nil {
-//			return nil, fmt.Errorf("error scanning row: %v", err)
-//		}
-//		images = append(images, &resultItem)
-//	}
-//
-//	return images, nil
-//}
+func (c *connection) GetImages(eventId int) ([]string, error) {
+	var urls []string
+	rows, err := c.db.Query(dbGetImages, eventId)
+	if err != nil {
+		return nil, fmt.Errorf("cannot execute query: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem string
+		err := rows.Scan(&resultItem)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+		urls = append(urls, resultItem)
+	}
+
+	return urls, nil
+}
 
 func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error) {
 	var participants []*storage.Participant

@@ -53,6 +53,13 @@
     <ul>
     </ul>
 </section>
+<section id="images">
+    {{ range .ImageUrls }}
+        <div>
+            <img src="{{.}}" />
+        </div>
+    {{end}}
+</section>
 <section id="eventCarousel">
     <div class="event">
         <div class="description">

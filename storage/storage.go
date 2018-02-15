@@ -14,7 +14,7 @@ type Service interface {
 
 	GetEvent(id int) (*Event, error)
 	GetComments(eventID int) ([]*Comment, error)
-	//GetImages(eventId int) ([]*image.Image, error)
+	GetImages(eventId int) ([]string, error)
 	GetParticipants(eventId int) ([]*Participant, error)
 
 	CheckCredentials(name, password string) (bool, error)
@@ -37,6 +37,7 @@ type Event struct {
 	InfoText     string
 	Img          image.Image
 	Participants []*Participant
+	ImageUrls    []string
 }
 
 type Participant struct {

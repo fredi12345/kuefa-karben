@@ -41,6 +41,12 @@ func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 		log.Fatal(err)
 	}
 
+	urls, err := s.db.GetImages(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	ev.ImageUrls = urls
+
 	ev.Participants = part
 
 	t.Execute(w, ev)
