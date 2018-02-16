@@ -12,22 +12,26 @@ import (
 	"io"
 	"os"
 
-	"homespace/random"
-
+	"github.com/SchiffFlieger/go-random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 )
 
 type Server struct {
-	db storage.Service
-	cs sessions.Store
+	db  storage.Service
+	cs  sessions.Store
+	rnd *random.Rnd
 }
 
 const cookieName = "session-cookie"
 
 func NewServer(db storage.Service) *Server {
-	return &Server{db: db, cs: sessions.NewCookieStore(securecookie.GenerateRandomKey(64))}
+	return &Server{
+		db:  db,
+		cs:  sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
+		rnd: random.New(time.Now().UnixNano()),
+	}
 }
 
 func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
@@ -138,7 +142,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessName := random.Rnd.RandomString(32)
+	sessName := s.rnd.String(32)
 	sess, err := s.cs.New(r, sessName)
 	if err != nil {
 		log.Fatal(err)
