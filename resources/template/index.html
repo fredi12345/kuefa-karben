@@ -11,6 +11,13 @@
     <img src="public/logo.png"/>
     <h1>Küche für alle!</h1>
 </header>
+<section id="login">
+    <form id="login" name="login" action="/login" method="post">
+        <label>Name:<input name="user" type="text" required></label>
+        <label>Passwort:<input name="passwd" type="password" required></label>
+        <input type="submit" value="Login">
+    </form>
+</section>
 <section id="protected">
     <form enctype="multipart/form-data" id="upload" name="upload" action="/upload" method="post">
         <input name="image" type="file" accept="image/*" required>

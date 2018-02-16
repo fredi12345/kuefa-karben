@@ -12,15 +12,22 @@ import (
 	"io"
 	"os"
 
+	"homespace/random"
+
 	"github.com/fredi12345/kuefa-karben/storage"
+	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
 )
 
 type Server struct {
 	db storage.Service
+	cs sessions.Store
 }
 
+const cookieName = "session-cookie"
+
 func NewServer(db storage.Service) *Server {
-	return &Server{db: db}
+	return &Server{db: db, cs: sessions.NewCookieStore(securecookie.GenerateRandomKey(64))}
 }
 
 func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
@@ -108,6 +115,54 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.db.CreateImage("/public/images/"+handler.Filename, 1)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	user := r.Form.Get("user")
+	pass := r.Form.Get("passwd")
+
+	ok, err := s.db.CheckCredentials(user, pass)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	sessName := random.Rnd.RandomString(32)
+	sess, err := s.cs.New(r, sessName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = sess.Save(r, w)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	secureCookie := securecookie.New(securecookie.GenerateRandomKey(32), nil)
+	encoded, err := secureCookie.Encode(cookieName, sessName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	cookie := &http.Cookie{
+		Name:     cookieName,
+		Value:    encoded,
+		Path:     "/",
+		Secure:   true,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, cookie)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
