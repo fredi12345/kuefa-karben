@@ -24,6 +24,7 @@ const (
 	dbGetComments     = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages       = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
+	dbGetCredentials  = `SELECT salt, password FROM user WHERE name=?`
 )
 
 var (
@@ -184,8 +185,18 @@ func (c *connection) CreateUser(name, password string) error {
 	return err
 }
 
-func (c *connection) CheckCredentials(name, password string) (bool, error) {
-	panic("implement me")
+func (c *connection) CheckCredentials(name, attemptedPassword string) (bool, error) {
+	var salt, hashedPassword string
+	err := c.db.QueryRow(dbGetCredentials, name).Scan(&salt, &hashedPassword)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, fmt.Errorf("error scanning row: %v", err)
+	}
+
+	hashedAttempt := hash(attemptedPassword, salt)
+	return hashedAttempt == hashedPassword, nil
 }
 
 func hash(password string, salt string) string {
