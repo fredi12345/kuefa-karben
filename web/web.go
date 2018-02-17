@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"path"
 	"strconv"
@@ -41,26 +40,32 @@ func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	part, err := s.db.GetParticipants(id)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	urls, err := s.db.GetImages(id)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	ev.ImageUrls = urls
 
 	ev.Participants = part
 
 	templates, err = template.ParseGlob(path.Join("resources", "template", "*.html"))
+	if err != nil {
+		panic(err)
+	}
 
 	t := templates.Lookup("index.html")
-	t.Execute(w, ev)
+	err = t.Execute(w, ev)
+	if err != nil {
+		panic(err)
+	}
 }
 
 //TODO: timeCreated und eventID speichern, siehe dazu mysql.go
@@ -71,11 +76,11 @@ func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 	//TODO: Die Parameter kann man bestimmt einfacher zu int casten
 	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	menu, err := strconv.Atoi(r.Form.Get("menu"))
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	name := r.Form.Get("name")
 
@@ -87,7 +92,7 @@ func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 
 	err = s.db.CreateParticipant(part)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -96,12 +101,12 @@ func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	file, handler, err := r.FormFile("image")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 	defer file.Close()
 
@@ -110,12 +115,12 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	//TODO check that file names are unique
 	f, err := os.Create(dest)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	_, err = io.Copy(f, file)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	s.db.CreateImage("/public/images/"+handler.Filename, 1)
@@ -126,7 +131,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	user := r.Form.Get("user")
@@ -134,7 +139,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 
 	ok, err := s.db.CheckCredentials(user, pass)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	if !ok {
@@ -145,18 +150,18 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	sessName := s.rnd.String(32)
 	sess, err := s.cs.New(r, sessName)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	err = sess.Save(r, w)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	secureCookie := securecookie.New(securecookie.GenerateRandomKey(32), nil)
 	encoded, err := secureCookie.Encode(cookieName, sessName)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
 	cookie := &http.Cookie{
