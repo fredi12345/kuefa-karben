@@ -1,20 +1,29 @@
 <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Küche für Alle!</title>
+    <link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
 {{template "head" .}}
 
 <section id="main">
-    {{template "eventMenu" .}}
+{{template "eventMenu" .}}
 </section>
 <section id="protected">
 
 </section>
 <section id="participation">
-    {{template "participation" .}}
+{{template "participation" .}}
 </section>
 <section id="images">
-    {{template "imageList" .}}
+{{template "imageList" .}}
 </section>
 <section id="eventList">
-    {{template "eventList" .}}
+{{template "eventList" .}}
 </section>
 
 {{template "footer" .}}
+</body>
+</html>
