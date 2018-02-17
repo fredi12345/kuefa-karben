@@ -11,6 +11,8 @@ import (
 	"io"
 	"os"
 
+	"io/ioutil"
+
 	"github.com/SchiffFlieger/go-random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
@@ -18,9 +20,10 @@ import (
 )
 
 type Server struct {
-	db  storage.Service
-	cs  sessions.Store
-	rnd *random.Rnd
+	db      storage.Service
+	cs      sessions.Store
+	imgPath string
+	rnd     *random.Rnd
 }
 
 const (
@@ -30,11 +33,17 @@ const (
 
 var templates *template.Template
 
-func NewServer(db storage.Service) *Server {
+func NewServer(db storage.Service, imagePath string) *Server {
+	err := os.MkdirAll(imagePath, os.ModePerm)
+	if err != nil {
+		panic(err)
+	}
+
 	return &Server{
-		db:  db,
-		cs:  sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
-		rnd: random.New(time.Now().UnixNano()),
+		db:      db,
+		cs:      sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
+		imgPath: imagePath,
+		rnd:     random.New(time.Now().UnixNano()),
 	}
 }
 
@@ -126,10 +135,14 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	dest := path.Join("resources", "public", "images", handler.Filename)
+	infos, err := ioutil.ReadDir(s.imgPath)
+	if err != nil {
+		panic(err)
+	}
 
-	//TODO check that file names are unique
-	f, err := os.Create(dest)
+	filename := strconv.Itoa(len(infos)) + handler.Filename
+
+	f, err := os.Create(path.Join(s.imgPath, filename))
 	if err != nil {
 		panic(err)
 	}
@@ -139,7 +152,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	s.db.CreateImage("/public/images/"+handler.Filename, 1)
+	s.db.CreateImage("/public/images/"+filename, 1)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

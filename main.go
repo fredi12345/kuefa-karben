@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"path"
+
 	"github.com/fredi12345/kuefa-karben/config"
 	"github.com/fredi12345/kuefa-karben/storage/mydb"
 	"github.com/fredi12345/kuefa-karben/web"
@@ -22,7 +24,7 @@ func main() {
 		log.Fatalf("could not create database: %v", err)
 	}
 
-	server := web.NewServer(db)
+	server := web.NewServer(db, path.Join("resources", "public", "images"))
 	handler := createHandler(server)
 	fmt.Println("http://localhost:8080")
 
