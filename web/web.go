@@ -60,10 +60,16 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 
 	sess, err := s.cs.Get(r, cookieName)
 	if err != nil {
-		panic(err)
+		fmt.Fprintln(os.Stderr, err)
 	}
+
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		ev.Authenticated = auth
+	}
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err)
 	}
 
 	templates, err = template.ParseGlob(path.Join("resources", "template", "*.html"))
