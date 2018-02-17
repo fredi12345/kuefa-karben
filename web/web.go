@@ -16,8 +16,6 @@ import (
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"io/ioutil"
-	"strings"
 )
 
 type Server struct {
@@ -59,19 +57,7 @@ func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 
 	ev.Participants = part
 
-	var allFiles []string
-	files, err := ioutil.ReadDir("./resources/template")
-	if err != nil {
-		fmt.Println(err)
-	}
-	for _, file := range files {
-		filename := file.Name()
-		if strings.HasSuffix(filename, ".html") {
-			allFiles = append(allFiles, "./resources/template/"+filename)
-		}
-	}
-
-	templates, err = template.ParseFiles(allFiles...)
+	templates, err = template.ParseGlob(path.Join("resources", "template", "*.html"))
 
 	t := templates.Lookup("index.html")
 	t.Execute(w, ev)
