@@ -47,7 +47,7 @@ section {
     margin-bottom: 10px;
 }
 
-#eventCarousel {
+#eventList {
     white-space: nowrap;
     height: 250px;
     overflow: hidden;
@@ -68,6 +68,16 @@ section {
     width: 100%;
     background: cadetblue;
     position: absolute;
+}
+
+.stars {
+    font-size: x-large;
+    margin: 25px;
+    display: block;
+}
+
+#images img {
+    width: 400px;
 }
 
 footer {

@@ -16,6 +16,8 @@ import (
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
+	"io/ioutil"
+	"strings"
 )
 
 type Server struct {
@@ -26,6 +28,8 @@ type Server struct {
 
 const cookieName = "session-cookie"
 
+var templates *template.Template
+
 func NewServer(db storage.Service) *Server {
 	return &Server{
 		db:  db,
@@ -35,11 +39,6 @@ func NewServer(db storage.Service) *Server {
 }
 
 func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
-	t, err := template.ParseFiles(path.Join("resources", "template", "index.html"))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	id := 1
 
 	ev, err := s.db.GetEvent(id)
@@ -60,6 +59,21 @@ func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 
 	ev.Participants = part
 
+	var allFiles []string
+	files, err := ioutil.ReadDir("./resources/template")
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, file := range files {
+		filename := file.Name()
+		if strings.HasSuffix(filename, ".html") {
+			allFiles = append(allFiles, "./resources/template/"+filename)
+		}
+	}
+
+	templates, err = template.ParseFiles(allFiles...)
+
+	t := templates.Lookup("index.html")
 	t.Execute(w, ev)
 }
 

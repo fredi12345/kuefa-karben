@@ -1,0 +1,16 @@
+{{define "eventMenu"}}
+<h2 id="motto">{{ .Theme }}!</h2>
+<h2 id="date">{{ .EventDate.Format "02.01.2006 - 15:04"}}</h2>
+<br>
+<h3>Vorspeise</h3>
+<p>{{ .Starter }}</p>
+<span class="stars">☆☆☆</span>
+<h3>Hauptgang</h3>
+<p>{{ .MainDish }}</p>
+<span class="stars">☆☆☆</span>
+<h3>Nachspeise für die Hungrigen</h3>
+<p>{{ .Dessert }}</p>
+<span class="stars">☆☆☆</span>
+<br>
+<p>{{ .InfoText }}</p>
+{{end}}

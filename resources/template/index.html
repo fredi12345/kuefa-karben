@@ -1,98 +1,20 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8"/>
-    <title>Küche für Alle!</title>
-    <link rel="stylesheet" href="public/style.css">
+{{template "head" .}}
 
-</head>
-<body>
-<header>
-    <img src="public/logo.png"/>
-    <h1>Küche für alle!</h1>
-</header>
-<section id="login">
-    <form id="login" name="login" action="/login" method="post">
-        <label>Name:<input name="user" type="text" required></label>
-        <label>Passwort:<input name="passwd" type="password" required></label>
-        <input type="submit" value="Login">
-    </form>
+<section id="main">
+    {{template "eventMenu" .}}
 </section>
 <section id="protected">
-    <form enctype="multipart/form-data" id="upload" name="upload" action="/upload" method="post">
-        <input name="image" type="file" accept="image/*" required>
-        <input type="submit" value="Hochladen">
-    </form>
-</section>
-<section id="main">
-    <h2 id="motto">{{ .Theme }}!</h2>
-    <h2 id="date">{{ .EventDate.Format "02.01.2006 -  15:04"}}</h2>
-    <br>
-    <h3>Vorspeise</h3>
-    <p>{{ .Starter }}</p>
-    <h3>Hauptgang</h3>
-    <p>{{ .MainDish }}</p>
-    <h3>Nachspeise für die Hungrigen</h3>
-    <p>{{ .Dessert }}</p>
-    <br>
-    <p>{{ .InfoText }}</p>
+
 </section>
 <section id="participation">
-    <h4>Anmeldung</h4>
-    <form id="participate" name="participate" action="/participate" method="post">
-        <input name="name" type="text" placeholder="Name" required>
-        <label><input type="radio" name="menu" value="0" checked>Normal</label>
-        <label><input type="radio" name="menu" value="1">Vegetarisch</label>
-        <label><input type="radio" name="menu" value="2">Vegan</label>
-        <input name="eventId" value="{{.Id}}" hidden>
-        <br>
-        <label><input type="checkbox" required>Ich bin damit einverstanden, dass meine Name hier öffentlich
-            erscheint</label>
-        <br>
-        <input type="submit" value="Teilnehmen">
-    </form>
-    <h4>Teilnehmer</h4>
-    <ul>
-    {{ range .Participants}}
-        <li>{{.Name}}</li>
-    {{end}}
-    </ul>
-    <ul>
-    </ul>
+    {{template "participation" .}}
 </section>
 <section id="images">
-    {{ range .ImageUrls }}
-        <div>
-            <img src="{{.}}" />
-        </div>
-    {{end}}
+    {{template "imageList" .}}
 </section>
-<section id="eventCarousel">
-    <div class="event">
-        <div class="description">
-            <h3>Afrikanisch aufgespießt</h3>
-            <h4>14.01.2018</h4>
-        </div>
-    </div>
-    <div class="event">
-        <div class="description">
-            <h3>Amerikanisch reingestopft</h3>
-            <h4>14.01.2018</h4>
-        </div>
-    </div>
-    <div class="event">
-        <div class="description">
-            <h3>Russisch betrunken</h3>
-            <h4>14.01.2018</h4>
-        </div>
-    </div>
+<section id="eventList">
+    {{template "eventList" .}}
 </section>
-<footer>
-    <a href="/login">Admin-Login</a>
-    <a href="/impressum">Impressum</a>
-    <h4>Kontakt</h4>
-    <p>Karbevenue 4</p>
-    <p>12345 Karben
-</footer>
-</body>
-</html>
+
+{{template "footer" .}}
