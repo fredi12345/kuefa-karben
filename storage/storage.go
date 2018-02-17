@@ -27,17 +27,20 @@ type Comment struct {
 	EventId int
 }
 type Event struct {
-	Id           int
-	Theme        string
-	EventDate    time.Time
-	Created      time.Time
-	Starter      string
-	MainDish     string
-	Dessert      string
-	InfoText     string
-	Img          image.Image
-	Participants []*Participant
-	ImageUrls    []string
+	Id        int
+	Theme     string
+	EventDate time.Time
+	Created   time.Time
+	Starter   string
+	MainDish  string
+	Dessert   string
+	InfoText  string
+	Img       image.Image
+
+	//TODO move to separate struct
+	Participants  []*Participant
+	ImageUrls     []string
+	Authenticated bool
 }
 
 type Participant struct {

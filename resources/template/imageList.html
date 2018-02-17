@@ -1,8 +1,10 @@
 {{define "imageList"}}
+{{ if .Authenticated }}
 <form enctype="multipart/form-data" id="upload" name="upload" action="/upload" method="post">
     <input name="image" type="file" accept="image/*" required>
     <input type="submit" value="Hochladen">
 </form>
+{{ end }}
 {{ range .ImageUrls }}
 <div>
     <img src="{{.}}"/>

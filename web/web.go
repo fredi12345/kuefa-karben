@@ -23,7 +23,10 @@ type Server struct {
 	rnd *random.Rnd
 }
 
-const cookieName = "session-cookie"
+const (
+	cookieName = "session-cookie"
+	cookieAuth = "authenticated"
+)
 
 var templates *template.Template
 
@@ -35,7 +38,7 @@ func NewServer(db storage.Service) *Server {
 	}
 }
 
-func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	id := 1
 
 	ev, err := s.db.GetEvent(id)
@@ -47,6 +50,7 @@ func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+	ev.Participants = part
 
 	urls, err := s.db.GetImages(id)
 	if err != nil {
@@ -54,7 +58,13 @@ func (s *Server) Index(w http.ResponseWriter, _ *http.Request) {
 	}
 	ev.ImageUrls = urls
 
-	ev.Participants = part
+	sess, err := s.cs.Get(r, cookieName)
+	if err != nil {
+		panic(err)
+	}
+	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
+		ev.Authenticated = auth
+	}
 
 	templates, err = template.ParseGlob(path.Join("resources", "template", "*.html"))
 	if err != nil {
@@ -147,31 +157,17 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessName := s.rnd.String(32)
-	sess, err := s.cs.New(r, sessName)
+	sess, err := s.cs.Get(r, cookieName)
 	if err != nil {
 		panic(err)
 	}
+
+	sess.Values[cookieAuth] = true
 
 	err = sess.Save(r, w)
 	if err != nil {
 		panic(err)
 	}
-
-	secureCookie := securecookie.New(securecookie.GenerateRandomKey(32), nil)
-	encoded, err := secureCookie.Encode(cookieName, sessName)
-	if err != nil {
-		panic(err)
-	}
-
-	cookie := &http.Cookie{
-		Name:     cookieName,
-		Value:    encoded,
-		Path:     "/",
-		Secure:   true,
-		HttpOnly: true,
-	}
-	http.SetCookie(w, cookie)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
