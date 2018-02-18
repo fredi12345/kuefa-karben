@@ -13,6 +13,8 @@ import (
 
 	"io/ioutil"
 
+	"net/url"
+
 	"github.com/SchiffFlieger/go-random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
@@ -48,7 +50,11 @@ func NewServer(db storage.Service, imagePath string) *Server {
 }
 
 func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
-	id := 1
+	id, err := s.getEventIdByUrl(r.URL)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(id)
 
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
@@ -91,6 +97,17 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
+	keys, ok := url.Query()["id"]
+	if !ok || len(keys) < 1 {
+		fmt.Println("no event id passed, getting latest event from db")
+		return s.db.GetLatestEventId()
+	}
+
+	fmt.Println("found an event id, parsing to integer")
+	return strconv.Atoi(keys[0])
 }
 
 //TODO: timeCreated und eventID speichern, siehe dazu mysql.go

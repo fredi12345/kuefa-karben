@@ -20,11 +20,12 @@ const (
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1))`
 	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
-	dbGetEvent        = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
-	dbGetComments     = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
-	dbGetParticipants = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
-	dbGetImages       = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
-	dbGetCredentials  = `SELECT salt, password FROM user WHERE name=?`
+	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
+	dbGetComments      = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
+	dbGetParticipants  = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
+	dbGetImages        = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
+	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
+	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
 )
 
 var (
@@ -37,6 +38,12 @@ var (
 type connection struct {
 	db  *sql.DB
 	rnd *random.Rnd
+}
+
+func (c *connection) GetLatestEventId() (int, error) {
+	var id int
+	err := c.db.QueryRow(dbGetLatestEventId).Scan(&id)
+	return id, err
 }
 
 func (c *connection) GetEvent(id int) (*storage.Event, error) {

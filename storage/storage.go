@@ -12,6 +12,7 @@ type Service interface {
 	CreateUser(name, password string) error
 
 	GetEvent(id int) (*Event, error)
+	GetLatestEventId() (int, error)
 	GetComments(eventID int) ([]*Comment, error)
 	GetImages(eventId int) ([]string, error)
 	GetParticipants(eventId int) ([]*Participant, error)
