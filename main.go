@@ -38,6 +38,7 @@ func createHandler(server *web.Server) http.Handler {
 	fs := http.FileServer(http.Dir("resources/public"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
+	r.HandleFunc("/impressum", server.Impressum).Methods(http.MethodGet)
 	r.HandleFunc("/participate", server.Participate).Methods(http.MethodPost)
 	r.HandleFunc("/upload", server.Upload).Methods(http.MethodPost)
 	r.HandleFunc("/login", server.Login).Methods(http.MethodPost)

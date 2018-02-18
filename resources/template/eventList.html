@@ -1,20 +1,12 @@
 {{define "eventList"}}
-<div class="event">
+{{range .EventList}}
+<a class="event" href="/?id={{.Id}}">
+    <img src="{{.ImageUrl}}">
     <div class="description">
-        <h3>Afrikanisch aufgespießt</h3>
-        <h4>14.01.2018</h4>
+
+        <h3>{{.Theme}}</h3>
+        <h4>{{.EventDate.Format "02.01.2006"}}</h4>
     </div>
-</div>
-<div class="event">
-    <div class="description">
-        <h3>Amerikanisch reingestopft</h3>
-        <h4>14.01.2018</h4>
-    </div>
-</div>
-<div class="event">
-    <div class="description">
-        <h3>Russisch betrunken</h3>
-        <h4>14.01.2018</h4>
-    </div>
-</div>
+</a>
+{{end}}
 {{end}}

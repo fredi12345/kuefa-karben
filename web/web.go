@@ -33,6 +33,7 @@ type templStruct struct {
 	Event         *storage.Event
 	Participants  []*storage.Participant
 	ImageUrls     []string
+	EventList     []*storage.Event
 	Authenticated bool
 }
 
@@ -84,6 +85,27 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 }
+
+func (s *Server) Impressum(w http.ResponseWriter, r *http.Request) {
+	sess, err := s.cs.Get(r, cookieName)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+	templ, err := s.createTemplateStruct(1, sess)
+	if err != nil {
+		panic(err)
+	}
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err)
+	}
+	t := s.tmpl.Lookup("impressum.html")
+	err = t.Execute(w, templ)
+	if err != nil {
+		panic(err)
+	}
+}
 func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStruct, error) {
 	var templ templStruct
 
@@ -104,6 +126,12 @@ func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStr
 		return nil, err
 	}
 	templ.ImageUrls = urls
+
+	events, err := s.db.GetEventList()
+	if err != nil {
+		return nil, err
+	}
+	templ.EventList = events
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth

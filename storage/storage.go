@@ -16,6 +16,7 @@ type Service interface {
 	GetComments(eventID int) ([]*Comment, error)
 	GetImages(eventId int) ([]string, error)
 	GetParticipants(eventId int) ([]*Participant, error)
+	GetEventList() ([]*Event, error)
 
 	CheckCredentials(name, password string) (bool, error)
 }

@@ -60,7 +60,7 @@ section {
     background-size: cover;
     height: 200px;
     width: 300px;
-    display: inline-block;
+    display: inline-flex;
 }
 
 .description {
@@ -78,6 +78,11 @@ section {
 
 #images img {
     width: 400px;
+}
+
+.event img {
+    width: 300px;
+    max-height: 200px;
 }
 
 footer {

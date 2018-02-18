@@ -26,6 +26,7 @@ const (
 	dbGetImages        = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
+	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date`
 )
 
 var (
@@ -38,6 +39,26 @@ var (
 type connection struct {
 	db  *sql.DB
 	rnd *random.Rnd
+}
+
+func (c *connection) GetEventList() ([]*storage.Event, error) {
+	var events []*storage.Event
+	rows, err := c.db.Query(dbGetEventList)
+	if err != nil {
+		return nil, fmt.Errorf("cannot execute query: %v", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem storage.Event
+		err := rows.Scan(&resultItem.Id, &resultItem.Theme, &resultItem.EventDate, &resultItem.ImageUrl)
+		if err != nil {
+			return nil, fmt.Errorf("error scanning row: %v", err)
+		}
+		events = append(events, &resultItem)
+	}
+
+	return events, err
 }
 
 func (c *connection) GetLatestEventId() (int, error) {
