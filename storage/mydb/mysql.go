@@ -16,7 +16,7 @@ import (
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
 	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_url, created_date) VALUES (?,?,?,?,?,?,?, NOW())`
-	dbCreateParticipant = `INSERT INTO participant (name, participant_created, menu, event_id) VALUES (?, Now(), ?, (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1)) `
+	dbCreateParticipant = `INSERT INTO participant (name, menu, event_id, participant_created) VALUES (?, ?, ?, Now()) `
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1))`
 	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
@@ -145,7 +145,7 @@ func (c *connection) CreateEvent(event storage.Event) error {
 }
 
 func (c *connection) CreateParticipant(participant storage.Participant) error {
-	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu)
+	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu, participant.EventId)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return ErrInputToLong
