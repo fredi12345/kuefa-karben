@@ -129,29 +129,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	file, handler, err := r.FormFile("image")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	infos, err := ioutil.ReadDir(s.imgPath)
-	if err != nil {
-		panic(err)
-	}
-
-	filename := strconv.Itoa(len(infos)) + handler.Filename
-
-	f, err := os.Create(path.Join(s.imgPath, filename))
-	if err != nil {
-		panic(err)
-	}
-
-	_, err = io.Copy(f, file)
-	if err != nil {
-		panic(err)
-	}
-
+	filename := s.writeFileToDisk(r)
 	s.db.CreateImage("/public/images/"+filename, 1)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -189,4 +167,61 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(5 << 20) // 5 MB
+	if err != nil {
+		panic(err)
+	}
+
+	var event storage.Event
+	event.Theme = r.Form.Get("theme")
+	event.Starter = r.Form.Get("starter")
+	event.MainDish = r.Form.Get("main-dish")
+	event.Dessert = r.Form.Get("dessert")
+	event.InfoText = r.Form.Get("info")
+
+	d, err := time.Parse("2006-01-02", r.Form.Get("date"))
+	if err != nil {
+		panic(err)
+	}
+	event.EventDate = d
+
+	filename := s.writeFileToDisk(r)
+	event.ImageUrl = "/public/images/" + filename
+
+	err = s.db.CreateEvent(event)
+	if err != nil {
+		panic(err)
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (s *Server) writeFileToDisk(r *http.Request) string {
+	file, handler, err := r.FormFile("image")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	infos, err := ioutil.ReadDir(s.imgPath)
+	if err != nil {
+		panic(err)
+	}
+
+	filename := strconv.Itoa(len(infos)) + handler.Filename
+
+	f, err := os.Create(path.Join(s.imgPath, filename))
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = io.Copy(f, file)
+	if err != nil {
+		panic(err)
+	}
+
+	return filename
 }

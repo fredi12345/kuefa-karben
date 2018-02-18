@@ -41,5 +41,6 @@ func createHandler(server *web.Server) http.Handler {
 	r.HandleFunc("/participate", server.Participate).Methods(http.MethodPost)
 	r.HandleFunc("/upload", server.Upload).Methods(http.MethodPost)
 	r.HandleFunc("/login", server.Login).Methods(http.MethodPost)
+	r.HandleFunc("/create", server.Create).Methods(http.MethodPost)
 	return r
 }

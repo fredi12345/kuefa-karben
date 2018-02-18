@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"image"
 	"time"
 )
 
@@ -35,7 +34,7 @@ type Event struct {
 	MainDish  string
 	Dessert   string
 	InfoText  string
-	Img       image.Image
+	ImageUrl  string
 
 	//TODO move to separate struct
 	Participants  []*Participant
