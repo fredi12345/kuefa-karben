@@ -1,5 +1,8 @@
 {{define "imageList"}}
 {{ if .Authenticated }}
+<h4>
+    Fotos hochladen
+</h4>
 <form enctype="multipart/form-data" id="upload" name="upload" action="/upload" method="post">
     <input name="image" type="file" accept="image/*" required>
     <input type="submit" value="Hochladen">

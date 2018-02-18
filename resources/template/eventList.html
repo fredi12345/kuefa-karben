@@ -1,7 +1,6 @@
 {{define "eventList"}}
 {{range .EventList}}
-<a class="event" href="/?id={{.Id}}">
-    <img src="{{.ImageUrl}}">
+<a class="event" href="/?id={{.Id}}" style="background-image: url('{{.ImageUrl}}')">
     <div class="description">
 
         <h3>{{.Theme}}</h3>

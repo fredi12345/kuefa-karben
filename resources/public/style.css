@@ -4,6 +4,7 @@
 
 html {
     font-family: sans-serif;
+    color: black;
     background-size: cover;
     background-image: url(background.jpg);
 }
@@ -12,6 +13,10 @@ header {
     position: relative;
     height: 200px;
     background: aliceblue;
+    display: block;
+    border-radius: 0 0 10px 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
 header img {
@@ -35,6 +40,9 @@ body {
 section {
     margin-top: 20px;
     padding: 20px;
+    background: white;
+    border-radius: 2px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
 #main {
@@ -47,33 +55,82 @@ section {
     margin-bottom: 10px;
 }
 
+section > h4 {
+    margin-bottom: 10px;
+    left: 0;
+    right: 0;
+    position: relative;
+}
+
 #eventList {
     white-space: nowrap;
-    height: 250px;
     overflow: hidden;
 }
 
 .event {
     position: relative;
     margin: 0 10px 0 10px;
-    background-image: url(background.jpg);
+    background-color: orange;
     background-size: cover;
+    background-position: center;
     height: 200px;
     width: 300px;
     display: inline-flex;
+    overflow: hidden;
 }
 
 .description {
-    bottom: 0;
-    width: 100%;
+    right: 0;
+    box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.19), 0 -6px 6px rgba(0, 0, 0, 0.23);
+    bottom: -27px;
+    left: 0;
+    text-decoration: none;
     background: cadetblue;
     position: absolute;
+    padding: 10px;
+    transition: 0.3s all;
+
+}
+
+.description h3 {
+    text-decoration: none;
+    margin-bottom: 7px;
+}
+
+.event:hover .description {
+    bottom: 0;
+    transition: 0.3s all;
+}
+
+a:visited {
+    color: #222;
 }
 
 .stars {
     font-size: x-large;
     margin: 25px;
     display: block;
+}
+
+#createEventForm {
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2;
+
+    column-width: 10px;
+}
+
+#createEvent input[type=text] {
+    width: calc(100% - 20px);
+}
+
+input {
+    padding: 3px;
+    margin: 3px;
+}
+
+input[name=info] {
+
 }
 
 #images img {
@@ -86,7 +143,9 @@ section {
 }
 
 footer {
+    border-radius: 10px 10px 0 0;
     background: grey;
     padding: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     margin-top: 20px;
 }
