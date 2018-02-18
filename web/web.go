@@ -28,6 +28,13 @@ type Server struct {
 	rnd     *random.Rnd
 }
 
+type templStruct struct {
+	Event         *storage.Event
+	Participants  []*storage.Participant
+	ImageUrls     []string
+	Authenticated bool
+}
+
 const (
 	cookieName = "session-cookie"
 	cookieAuth = "authenticated"
@@ -56,22 +63,25 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(id)
 
+	var templ templStruct
+
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
 		panic(err)
 	}
+	templ.Event = ev
 
 	part, err := s.db.GetParticipants(id)
 	if err != nil {
 		panic(err)
 	}
-	ev.Participants = part
+	templ.Participants = part
 
 	urls, err := s.db.GetImages(id)
 	if err != nil {
 		panic(err)
 	}
-	ev.ImageUrls = urls
+	templ.ImageUrls = urls
 
 	sess, err := s.cs.Get(r, cookieName)
 	if err != nil {
@@ -79,7 +89,7 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
-		ev.Authenticated = auth
+		templ.Authenticated = auth
 	}
 
 	err = sess.Save(r, w)
@@ -93,7 +103,7 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := templates.Lookup("index.html")
-	err = t.Execute(w, ev)
+	err = t.Execute(w, templ)
 	if err != nil {
 		panic(err)
 	}

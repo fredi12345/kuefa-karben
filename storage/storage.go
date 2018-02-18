@@ -36,11 +36,6 @@ type Event struct {
 	Dessert   string
 	InfoText  string
 	ImageUrl  string
-
-	//TODO move to separate struct
-	Participants  []*Participant
-	ImageUrls     []string
-	Authenticated bool
 }
 
 type Participant struct {
