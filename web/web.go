@@ -24,6 +24,7 @@ import (
 type Server struct {
 	db      storage.Service
 	cs      sessions.Store
+	tmpl    *template.Template
 	imgPath string
 	rnd     *random.Rnd
 }
@@ -40,8 +41,6 @@ const (
 	cookieAuth = "authenticated"
 )
 
-var templates *template.Template
-
 func NewServer(db storage.Service, imagePath string) *Server {
 	err := os.MkdirAll(imagePath, os.ModePerm)
 	if err != nil {
@@ -51,6 +50,7 @@ func NewServer(db storage.Service, imagePath string) *Server {
 	return &Server{
 		db:      db,
 		cs:      sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
+		tmpl:    template.Must(template.ParseGlob(path.Join("resources", "template", "*.html"))),
 		imgPath: imagePath,
 		rnd:     random.New(time.Now().UnixNano()),
 	}
@@ -63,33 +63,14 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(id)
 
-	var templ templStruct
-
-	ev, err := s.db.GetEvent(id)
-	if err != nil {
-		panic(err)
-	}
-	templ.Event = ev
-
-	part, err := s.db.GetParticipants(id)
-	if err != nil {
-		panic(err)
-	}
-	templ.Participants = part
-
-	urls, err := s.db.GetImages(id)
-	if err != nil {
-		panic(err)
-	}
-	templ.ImageUrls = urls
-
 	sess, err := s.cs.Get(r, cookieName)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
-		templ.Authenticated = auth
+	templ, err := s.createTemplateStruct(id, sess)
+	if err != nil {
+		panic(err)
 	}
 
 	err = sess.Save(r, w)
@@ -97,26 +78,46 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	templates, err = template.ParseGlob(path.Join("resources", "template", "*.html"))
-	if err != nil {
-		panic(err)
-	}
-
-	t := templates.Lookup("index.html")
+	t := s.tmpl.Lookup("index.html")
 	err = t.Execute(w, templ)
 	if err != nil {
 		panic(err)
 	}
 }
+func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStruct, error) {
+	var templ templStruct
+
+	ev, err := s.db.GetEvent(id)
+	if err != nil {
+		return nil, err
+	}
+	templ.Event = ev
+
+	part, err := s.db.GetParticipants(id)
+	if err != nil {
+		return nil, err
+	}
+	templ.Participants = part
+
+	urls, err := s.db.GetImages(id)
+	if err != nil {
+		return nil, err
+	}
+	templ.ImageUrls = urls
+
+	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
+		templ.Authenticated = auth
+	}
+
+	return &templ, nil
+}
 
 func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
 	keys, ok := url.Query()["id"]
 	if !ok || len(keys) < 1 {
-		fmt.Println("no event id passed, getting latest event from db")
 		return s.db.GetLatestEventId()
 	}
 
-	fmt.Println("found an event id, parsing to integer")
 	return strconv.Atoi(keys[0])
 }
 
