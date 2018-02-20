@@ -185,8 +185,13 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	if err != nil {
+		panic(err)
+	}
+
 	filename := s.writeFileToDisk(r)
-	s.db.CreateImage("/public/images/"+filename, 1)
+	s.db.CreateImage("/public/images/"+filename, eventId)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
