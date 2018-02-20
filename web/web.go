@@ -176,7 +176,7 @@ func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
 }
 
 func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
@@ -193,7 +193,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	filename := s.writeFileToDisk(r)
 	s.db.CreateImage("/public/images/"+filename, eventId)
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
