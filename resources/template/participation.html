@@ -1,4 +1,5 @@
 {{define "participation"}}
+{{ if .ParticipationAllowed}}
 <h4>Anmeldung</h4>
 <form id="participate" name="participate" action="/participate" method="post">
     <input name="name" type="text" placeholder="Name" required>
@@ -12,10 +13,11 @@
     <br>
     <input type="submit" value="Teilnehmen">
 </form>
+{{ end }}
 <h4>Teilnehmer</h4>
 <ul>
-    {{ range .Participants}}
+{{ range .Participants}}
     <li>{{.Name}}</li>
-    {{end}}
+{{end}}
 </ul>
 {{end}}

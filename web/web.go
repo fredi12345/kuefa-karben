@@ -30,11 +30,12 @@ type Server struct {
 }
 
 type templStruct struct {
-	Event         *storage.Event
-	Participants  []*storage.Participant
-	ImageUrls     []string
-	EventList     []*storage.Event
-	Authenticated bool
+	Event                *storage.Event
+	Participants         []*storage.Participant
+	ImageUrls            []string
+	EventList            []*storage.Event
+	Authenticated        bool
+	ParticipationAllowed bool
 }
 
 const (
@@ -132,6 +133,8 @@ func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStr
 		return nil, err
 	}
 	templ.EventList = events
+
+	templ.ParticipationAllowed = time.Now().Before(ev.EventDate)
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth
