@@ -7,24 +7,26 @@
     <link rel="stylesheet" href="../public/style.css">
 </head>
 <body>
-    {{template "head" .}}
+{{template "head" .}}
 
-    <section id="main">
-        {{template "eventMenu" .}}
-    </section>
-    <section id="participation">
-        {{template "participation" .}}
-    </section>
-    <section id="images">
-        {{template "imageList" .}}
-    </section>
-    <section id="eventList">
-        {{template "eventList" .}}
-    </section>
-    <section id="createEvent">
-        {{template "createEvent" .}}
-    </section>
+<section id="main">
+{{template "eventMenu" .}}
+</section>
+<section id="participation">
+{{template "participation" .}}
+</section>
+<section id="images">
+{{template "imageList" .}}
+</section>
+<section id="eventList">
+{{template "eventList" .}}
+</section>
+{{ if .Authenticated }}
+<section id="createEvent">
+{{template "createEvent" .}}
+</section>
+{{ end }}
 
-    {{template "footer" .}}
+{{template "footer" .}}
 </body>
 </html>
