@@ -1,7 +1,11 @@
 {{define "imageList"}}
+{{ if .HasImages }}
+<section id="images">
 {{ range .ImageUrls }}
-<div>
-    <img src="{{.}}"/>
-</div>
+    <div>
+        <img src="{{.}}"/>
+    </div>
+{{end}}
+</section>
 {{end}}
 {{end}}

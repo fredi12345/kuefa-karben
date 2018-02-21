@@ -38,6 +38,12 @@ type templStruct struct {
 	ParticipationAllowed bool
 }
 
+func (t *templStruct) HasImages() bool {
+	fmt.Println(len(t.ImageUrls))
+	return len(t.ImageUrls) > 0
+
+}
+
 const (
 	cookieName = "session-cookie"
 	cookieAuth = "authenticated"
