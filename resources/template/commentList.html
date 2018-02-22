@@ -1,0 +1,13 @@
+{{define "commentList"}}
+{{ if .HasComments }}
+<section id="comments">
+{{ range .Comments }}
+    <div>
+        <h4>{{.Name}}</h4>
+        <h6>{{.Created.Format "02.01.2006 - 15:04"}}</h6>
+        <p>{{.Content}}</p>
+    </div>
+{{end}}
+</section>
+{{end}}
+{{end}}

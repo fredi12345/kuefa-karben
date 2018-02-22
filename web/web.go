@@ -34,15 +34,18 @@ type templStruct struct {
 	Participants         []*storage.Participant
 	ImageUrls            []string
 	EventList            []*storage.Event
+	Comments             []*storage.Comment
 	Authenticated        bool
 	ParticipationAllowed bool
 	CommentsAllowed      bool
 }
 
 func (t *templStruct) HasImages() bool {
-	fmt.Println(len(t.ImageUrls))
 	return len(t.ImageUrls) > 0
+}
 
+func (t *templStruct) HasComments() bool {
+	return len(t.Comments) > 0
 }
 
 const (
@@ -159,6 +162,12 @@ func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStr
 		return nil, err
 	}
 	templ.ImageUrls = urls
+
+	comments, err := s.db.GetComments(id)
+	if err != nil {
+		return nil, err
+	}
+	templ.Comments = comments
 
 	events, err := s.db.GetEventList()
 	if err != nil {
