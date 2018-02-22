@@ -1,0 +1,14 @@
+{{ define "createComment" }}
+{{ if .CommentsAllowed }}
+<section id="createComent">
+    <h4>Kommentar hinzufügen</h4>
+    <form id="createCommentForm" name="createComment" action="/comment" method="post">
+        <input name="name" type="text" placeholder="Name" required><br>
+        <textarea name="comment" placeholder="Dein Kommentar..." cols="100" rows="5" maxlength="1024"
+                  required></textarea><br>
+        <input name="eventId" value="{{.Event.Id}}" hidden>
+        <input type="submit" value="Speichern">
+    </form>
+</section>
+{{end}}
+{{ end }}

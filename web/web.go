@@ -36,6 +36,7 @@ type templStruct struct {
 	EventList            []*storage.Event
 	Authenticated        bool
 	ParticipationAllowed bool
+	CommentsAllowed      bool
 }
 
 func (t *templStruct) HasImages() bool {
@@ -113,6 +114,31 @@ func (s *Server) Impressum(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 }
+
+func (s *Server) Comment(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		panic(err)
+	}
+
+	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	if err != nil {
+		panic(err)
+	}
+
+	var c storage.Comment
+	c.Name = r.Form.Get("name")
+	c.Content = r.Form.Get("comment")
+	c.EventId = eventId
+
+	err = s.db.CreateComment(c)
+	if err != nil {
+		panic(err)
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+}
+
 func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStruct, error) {
 	var templ templStruct
 
@@ -141,6 +167,7 @@ func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStr
 	templ.EventList = events
 
 	templ.ParticipationAllowed = time.Now().Before(ev.EventDate)
+	templ.CommentsAllowed = time.Now().After(ev.EventDate)
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth
