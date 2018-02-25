@@ -18,10 +18,13 @@ type Service interface {
 	GetParticipants(eventId int) ([]*Participant, error)
 	GetEventList() ([]*Event, error)
 
+	DeleteComment(id int) error
+
 	CheckCredentials(name, password string) (bool, error)
 }
 
 type Comment struct {
+	Id      int
 	Content string
 	Name    string
 	Created time.Time

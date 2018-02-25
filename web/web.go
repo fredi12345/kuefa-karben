@@ -142,6 +142,30 @@ func (s *Server) Comment(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
 }
 
+func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		panic(err)
+	}
+
+	commentId, err := strconv.Atoi(r.Form.Get("commentId"))
+	if err != nil {
+		panic(err)
+	}
+
+	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	if err != nil {
+		panic(err)
+	}
+
+	err = s.db.DeleteComment(commentId)
+	if err != nil {
+		panic(err)
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+}
+
 func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStruct, error) {
 	var templ templStruct
 

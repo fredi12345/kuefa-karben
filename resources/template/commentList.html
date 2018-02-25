@@ -4,6 +4,13 @@
 {{ range .Comments }}
     <div>
         <h4>{{.Name}}</h4>
+    {{ if $.Authenticated }}
+        <form action="/delete/comment" method="post">
+            <input name="commentId" value="{{.Id}}" hidden>
+            <input name="eventId" value="{{$.Event.Id}}" hidden>
+            <input type="submit" value="X">
+        </form>
+    {{end}}
         <h6>{{.Created.Format "02.01.2006 - 15:04"}}</h6>
         <p>{{.Content}}</p>
     </div>

@@ -21,12 +21,14 @@ const (
 	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
 	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
-	dbGetComments      = `SELECT name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
+	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
 	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date`
+
+	dbDeleteComment = `DELETE FROM comment WHERE id=?`
 )
 
 var (
@@ -39,6 +41,11 @@ var (
 type connection struct {
 	db  *sql.DB
 	rnd *random.Rnd
+}
+
+func (c *connection) DeleteComment(id int) error {
+	_, err := c.db.Exec(dbDeleteComment, id)
+	return err
 }
 
 func (c *connection) GetEventList() ([]*storage.Event, error) {
@@ -90,7 +97,7 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 
 	for rows.Next() {
 		var resultItem storage.Comment
-		err := rows.Scan(&resultItem.Name, &resultItem.Content, &resultItem.Created)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Content, &resultItem.Created)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
