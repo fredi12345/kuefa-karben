@@ -9,6 +9,7 @@
     <form id="login" name="login" action="/login" method="post">
         <input name="user" type="text" placeholder="Benutzername" required>
         <input name="passwd" type="password" placeholder="Passwort" required>
+        <input name="eventId" value="{{.Event.Id}}" hidden>
         <input type="submit" value="Login">
     </form>
     {{else}}

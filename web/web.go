@@ -274,6 +274,11 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	user := r.Form.Get("user")
 	pass := r.Form.Get("passwd")
 
+	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	if err != nil {
+		panic(err)
+	}
+
 	ok, err := s.db.CheckCredentials(user, pass)
 	if err != nil {
 		panic(err)
@@ -296,7 +301,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
 }
 
 func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
