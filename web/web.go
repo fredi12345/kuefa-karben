@@ -32,7 +32,7 @@ type Server struct {
 type templStruct struct {
 	Event                *storage.Event
 	Participants         []*storage.Participant
-	ImageUrls            []string
+	ImageUrls            []*storage.Image
 	EventList            []*storage.Event
 	Comments             []*storage.Comment
 	Authenticated        bool
@@ -159,6 +159,35 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = s.db.DeleteComment(commentId)
+	if err != nil {
+		panic(err)
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+}
+
+func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		panic(err)
+	}
+
+	imageId, err := strconv.Atoi(r.Form.Get("imageId"))
+	if err != nil {
+		panic(err)
+	}
+
+	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	if err != nil {
+		panic(err)
+	}
+
+	filename, err := s.db.DeleteImage(imageId)
+	if err != nil {
+		panic(err)
+	}
+
+	err = os.Remove(path.Join(s.imgPath, filename))
 	if err != nil {
 		panic(err)
 	}

@@ -8,6 +8,8 @@ import (
 	"io"
 	"time"
 
+	"strings"
+
 	"github.com/SchiffFlieger/go-random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/go-sql-driver/mysql"
@@ -23,12 +25,14 @@ const (
 	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
-	dbGetImages        = `SELECT image_url FROM images WHERE event_id=? ORDER BY id`
+	dbGetImages        = `SELECT images.id, image_url FROM images WHERE event_id=? ORDER BY id`
+	dbGetSingleImage   = `SELECT image_url FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
 	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date`
 
 	dbDeleteComment = `DELETE FROM comment WHERE id=?`
+	dbDeleteImage   = `DELETE FROM images WHERE id=?`
 )
 
 var (
@@ -41,6 +45,17 @@ var (
 type connection struct {
 	db  *sql.DB
 	rnd *random.Rnd
+}
+
+func (c *connection) DeleteImage(id int) (string, error) {
+	var url string
+	err := c.db.QueryRow(dbGetSingleImage, id).Scan(&url)
+
+	tmp := strings.Split(url, "/")
+	filename := tmp[len(tmp)-1]
+
+	_, err = c.db.Exec(dbDeleteImage, id)
+	return filename, err
 }
 
 func (c *connection) DeleteComment(id int) error {
@@ -107,8 +122,8 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 	return comments, nil
 }
 
-func (c *connection) GetImages(eventId int) ([]string, error) {
-	var urls []string
+func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
+	var images []*storage.Image
 	rows, err := c.db.Query(dbGetImages, eventId)
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query: %v", err)
@@ -116,15 +131,15 @@ func (c *connection) GetImages(eventId int) ([]string, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var resultItem string
-		err := rows.Scan(&resultItem)
+		var resultItem storage.Image
+		err := rows.Scan(&resultItem.Id, &resultItem.URL)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
-		urls = append(urls, resultItem)
+		images = append(images, &resultItem)
 	}
 
-	return urls, nil
+	return images, nil
 }
 
 func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error) {

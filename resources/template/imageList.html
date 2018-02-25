@@ -3,7 +3,14 @@
 <section id="images">
 {{ range .ImageUrls }}
     <div>
-        <img src="{{.}}"/>
+        <img src="{{.URL}}"/>
+    {{ if $.Authenticated }}
+        <form action="/delete/image" method="post">
+            <input name="imageId" value="{{.Id}}" hidden>
+            <input name="eventId" value="{{$.Event.Id}}" hidden>
+            <input type="submit" value="X">
+        </form>
+    {{end}}
     </div>
 {{end}}
 </section>

@@ -14,11 +14,12 @@ type Service interface {
 	GetEvent(id int) (*Event, error)
 	GetLatestEventId() (int, error)
 	GetComments(eventID int) ([]*Comment, error)
-	GetImages(eventId int) ([]string, error)
+	GetImages(eventId int) ([]*Image, error)
 	GetParticipants(eventId int) ([]*Participant, error)
 	GetEventList() ([]*Event, error)
 
 	DeleteComment(id int) error
+	DeleteImage(id int) (string, error)
 
 	CheckCredentials(name, password string) (bool, error)
 }
@@ -47,4 +48,9 @@ type Participant struct {
 	Created time.Time
 	Menu    int
 	EventId int
+}
+
+type Image struct {
+	Id  int
+	URL string
 }
