@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"html/template"
-	"net/http"
 	"path"
 	"strconv"
 	"time"
@@ -13,6 +12,7 @@ import (
 
 	"io/ioutil"
 
+	"net/http"
 	"net/url"
 
 	"github.com/SchiffFlieger/go-random"
@@ -139,7 +139,7 @@ func (s *Server) Comment(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+	s.redirectToEventId(w, r, eventId)
 }
 
 func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +163,7 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+	s.redirectToEventId(w, r, eventId)
 }
 
 func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
@@ -192,7 +192,7 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+	s.redirectToEventId(w, r, eventId)
 }
 
 func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStruct, error) {
@@ -274,7 +274,7 @@ func (s *Server) Participate(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+	s.redirectToEventId(w, r, eventId)
 }
 
 func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
@@ -291,7 +291,7 @@ func (s *Server) Upload(w http.ResponseWriter, r *http.Request) {
 	filename := s.writeFileToDisk(r)
 	s.db.CreateImage("/public/images/"+filename, eventId)
 
-	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+	s.redirectToEventId(w, r, eventId)
 }
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
@@ -330,7 +330,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/?id=%d", eventId), http.StatusSeeOther)
+	s.redirectToEventId(w, r, eventId)
 }
 
 func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
@@ -360,7 +360,7 @@ func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	s.redirectToEventId(w, r, redirectToLatest)
 }
 
 func (s *Server) writeFileToDisk(r *http.Request) string {
@@ -389,3 +389,15 @@ func (s *Server) writeFileToDisk(r *http.Request) string {
 
 	return filename
 }
+
+func (s *Server) redirectToEventId(w http.ResponseWriter, r *http.Request, id int) {
+	if id == redirectToLatest {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/?id=%d", id), http.StatusSeeOther)
+	}
+}
+
+const (
+	redirectToLatest = -1
+)
