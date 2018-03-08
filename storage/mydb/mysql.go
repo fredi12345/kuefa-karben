@@ -22,7 +22,7 @@ const (
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
 	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
-	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext FROM event WHERE event_id=?;`
+	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url FROM event WHERE event_id=?;`
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_url FROM images WHERE event_id=? ORDER BY id`
@@ -92,7 +92,7 @@ func (c *connection) GetLatestEventId() (int, error) {
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
 	event := storage.Event{}
 	event.Id = id
-	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText)
+	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageUrl)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err

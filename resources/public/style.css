@@ -55,6 +55,10 @@ section {
     margin-bottom: 10px;
 }
 
+#main img {
+    max-height: 400px;
+}
+
 section > h4 {
     margin-bottom: 10px;
     left: 0;
