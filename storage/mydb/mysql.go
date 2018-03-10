@@ -33,6 +33,7 @@ const (
 
 	dbDeleteComment = `DELETE FROM comment WHERE id=?`
 	dbDeleteImage   = `DELETE FROM images WHERE id=?`
+	dbDeleteParticipant = `DELETE FROM participant WHERE id=?`
 )
 
 var (
@@ -46,6 +47,7 @@ type connection struct {
 	db  *sql.DB
 	rnd *random.Rnd
 }
+
 
 func (c *connection) DeleteImage(id int) (string, error) {
 	var url string
@@ -62,6 +64,12 @@ func (c *connection) DeleteComment(id int) error {
 	_, err := c.db.Exec(dbDeleteComment, id)
 	return err
 }
+
+func (c *connection) DeleteParticipant(id int) error {
+	_, err:= c.db.Exec(dbDeleteParticipant, id)
+	return err
+}
+
 
 func (c *connection) GetEventList() ([]*storage.Event, error) {
 	var events []*storage.Event
