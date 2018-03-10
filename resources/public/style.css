@@ -39,11 +39,12 @@ body {
 body:before {
     content: "";
     position: fixed;
-    left: 0;
-    right: 0;
+    left: -5%;
+    right: -5%;
+    top: -5%;
     z-index: -1;
-    height: 100%;
-    width: 100%;
+    height: 110%;
+    width: 110%;
     display: block;
     background-size: cover;
     background-image: url(background.jpg);
