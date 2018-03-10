@@ -333,6 +333,20 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	s.redirectToEventId(w, r, eventId)
 }
 
+func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
+	sess, err := s.cs.Get(r, cookieName)
+	if err != nil {
+		panic(err)
+	}
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err)
+	}
+
+	s.redirectToEventId(w, r, redirectToLatest)
+}
+
 func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {

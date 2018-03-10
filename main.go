@@ -46,5 +46,6 @@ func createHandler(server *web.Server) http.Handler {
 	r.HandleFunc("/create", server.NeedsAuthentication(server.Create)).Methods(http.MethodPost)
 	r.HandleFunc("/delete/comment", server.NeedsAuthentication(server.DeleteComment)).Methods(http.MethodPost)
 	r.HandleFunc("/delete/image", server.NeedsAuthentication(server.DeleteImage)).Methods(http.MethodPost)
+	r.HandleFunc("/logout", server.Logout).Methods(http.MethodPost)
 	return r
 }
