@@ -40,11 +40,11 @@ func createHandler(server *web.Server) http.Handler {
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
 	r.HandleFunc("/impressum", server.Impressum).Methods(http.MethodGet)
 	r.HandleFunc("/participate", server.Participate).Methods(http.MethodPost)
-	r.HandleFunc("/upload", server.Upload).Methods(http.MethodPost)
 	r.HandleFunc("/login", server.Login).Methods(http.MethodPost)
-	r.HandleFunc("/create", server.Create).Methods(http.MethodPost)
 	r.HandleFunc("/comment", server.Comment).Methods(http.MethodPost)
-	r.HandleFunc("/delete/comment", server.DeleteComment).Methods(http.MethodPost)
-	r.HandleFunc("/delete/image", server.DeleteImage).Methods(http.MethodPost)
+	r.HandleFunc("/upload", server.NeedsAuthentication(server.Upload)).Methods(http.MethodPost)
+	r.HandleFunc("/create", server.NeedsAuthentication(server.Create)).Methods(http.MethodPost)
+	r.HandleFunc("/delete/comment", server.NeedsAuthentication(server.DeleteComment)).Methods(http.MethodPost)
+	r.HandleFunc("/delete/image", server.NeedsAuthentication(server.DeleteImage)).Methods(http.MethodPost)
 	return r
 }
