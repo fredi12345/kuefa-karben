@@ -8,8 +8,8 @@ DROP TABLE IF EXISTS kuefa_karben.event;
 CREATE TABLE IF NOT EXISTS event (
   event_id         INT NOT NULL AUTO_INCREMENT,
   theme      VARCHAR(256),
-  event_date DATE,
-  created_date    DATE,
+  event_date DATETIME,
+  created_date DATETIME,
   starter    VARCHAR(512),
   main_dish  VARCHAR(512),
   dessert    VARCHAR(512),
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS event (
 CREATE TABLE IF NOT EXISTS participant (
   id       INT NOT NULL AUTO_INCREMENT,
   name     VARCHAR(255),
-  participant_created  DATE,
+  participant_created  DATETIME,
   menu     INT,
   event_id INT,
   PRIMARY KEY (id),
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS comment (
   id       INT NOT NULL AUTO_INCREMENT,
   content  VARCHAR(1024),
   name     VARCHAR(256),
-  comment_created  DATE,
+  comment_created  DATETIME,
   event_id INT,
   PRIMARY KEY (id),
   FOREIGN KEY (event_id) REFERENCES event (event_id)
@@ -59,4 +59,4 @@ INSERT INTO user ( name, salt, password) VALUES ('test','1Y6LMQth5V','0d16233aff
 INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url) VALUES ('testtheme',Now(), NOW(),'teststarter','testmaindish','testdessert','testinfotext','public/images/first-event.png' );
 INSERT INTO participant (name, participant_created, menu, event_id) VALUES ('testname', Now(), 1, (SELECT event_id FROM Event ORDER BY  event_id LIMIT 1));
 INSERT INTO comment (content, name, comment_created, event_id) VALUES ('testcontent', 'testname', Now(), (SELECT event_id FROM Event ORDER BY event_id LIMIT 1));
-INSERT INTO images (event_id, image_url) VALUES ((SELECT event_id FROM Event ORDER BY  event_id LIMIT 1), NULL );
+INSERT INTO images (event_id, image_url) VALUES ((SELECT event_id FROM Event ORDER BY  event_id LIMIT 1), 'public/images/first-event.png' );
