@@ -150,6 +150,10 @@ input[name=info] {
 
 }
 
+#comments p{
+    white-space: pre-line;
+}
+
 #images img {
     width: 400px;
 }
