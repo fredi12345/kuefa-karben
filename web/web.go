@@ -390,6 +390,21 @@ func (s *Server) writeFileToDisk(r *http.Request) string {
 	return filename
 }
 
+func (s *Server) NeedsAuthentication(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sess, err := s.cs.Get(r, cookieName)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+
+		if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
+			handler(w, r)
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
+		}
+	}
+}
+
 func (s *Server) redirectToEventId(w http.ResponseWriter, r *http.Request, id int) {
 	if id == redirectToLatest {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
