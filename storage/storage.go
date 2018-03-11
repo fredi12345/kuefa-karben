@@ -45,6 +45,7 @@ type Event struct {
 }
 
 type Participant struct {
+	Id		int
 	Name    string
 	Created time.Time
 	Menu    int

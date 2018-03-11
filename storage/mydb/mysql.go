@@ -24,7 +24,7 @@ const (
 
 	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url FROM event WHERE event_id=?;`
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
-	dbGetParticipants  = `SELECT name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
+	dbGetParticipants  = `SELECT participant.id, name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_url FROM images WHERE event_id=? ORDER BY id`
 	dbGetSingleImage   = `SELECT image_url FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
@@ -160,7 +160,7 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 
 	for rows.Next() {
 		var resultItem storage.Participant
-		err := rows.Scan(&resultItem.Name, &resultItem.Menu, &resultItem.Created, &resultItem.EventId)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
 			return nil, fmt.Errorf("mysql.go|GetParticipants: error scanning row: %v", err)
 		}

@@ -18,6 +18,13 @@
 <ul>
 {{ range .Participants}}
     <li>{{.Name}}</li>
+    {{ if $.Authenticated }}
+        <form action="/delete/participant" method="post">
+            <input name="participantId" value="{{.Id}}" hidden>
+            <input name="eventId" value="{{$.Event.Id}}" hidden>
+            <input type="submit" value="X">
+        </form>
+    {{end}}
 {{end}}
 </ul>
 {{end}}
