@@ -21,6 +21,7 @@ type Service interface {
 	DeleteComment(id int) error
 	DeleteImage(id int) (string, error)
 	DeleteParticipant(id int) error
+	DeleteEvent(id int) error
 
 	CheckCredentials(name, password string) (bool, error)
 }

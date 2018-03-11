@@ -22,7 +22,7 @@ const (
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
 	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
-	dbGetEvent         = `SELECT theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url FROM event WHERE event_id=?;`
+	dbGetEvent         = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url FROM event WHERE event_id=?;`
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT participant.id, name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_url FROM images WHERE event_id=? ORDER BY id`
@@ -34,6 +34,7 @@ const (
 	dbDeleteComment = `DELETE FROM comment WHERE id=?`
 	dbDeleteImage   = `DELETE FROM images WHERE id=?`
 	dbDeleteParticipant = `DELETE FROM participant WHERE id=?`
+	dbDeleteEvent = `DELETE FROM event WHERE event_id=?`
 )
 
 var (
@@ -70,6 +71,10 @@ func (c *connection) DeleteParticipant(id int) error {
 	return err
 }
 
+func (c *connection) DeleteEvent(id int) error {
+	_, err:= c.db.Exec(dbDeleteEvent, id)
+	return err
+}
 
 func (c *connection) GetEventList() ([]*storage.Event, error) {
 	var events []*storage.Event
@@ -100,7 +105,7 @@ func (c *connection) GetLatestEventId() (int, error) {
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
 	event := storage.Event{}
 	event.Id = id
-	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageUrl)
+	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Id, &event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageUrl)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err

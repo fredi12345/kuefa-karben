@@ -1,6 +1,12 @@
 {{define "eventMenu"}}
 {{with .Event}}
 <h2 id="motto">{{ .Theme }}!</h2>
+{{ if $.Authenticated }}
+<form action="/delete/event" method="post">
+    <input name="eventId" value="{{.Id}}" hidden>
+    <input type="submit" value="X">
+</form>
+{{end}}
 <h2 id="date">{{ .EventDate.Format "02.01.2006 - 15:04"}}</h2>
 <br>
 <img src='{{ .ImageUrl }}'/>
