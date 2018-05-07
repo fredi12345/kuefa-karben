@@ -1,0 +1,25 @@
+{{define "participation"}}
+<section id="participation">
+{{ if .ParticipationAllowed}}
+    <h4>Anmeldung</h4>
+    <form id="participate" name="participate" action="/participate" method="post">
+        <input name="name" type="text" placeholder="Name" required>
+        <label><input type="radio" name="menu" value="0" checked>Normal</label>
+        <label><input type="radio" name="menu" value="1">Vegetarisch</label>
+        <label><input type="radio" name="menu" value="2">Vegan</label>
+        <input name="eventId" value="{{.Event.Id}}" hidden>
+        <br>
+        <label><input type="checkbox" required>Ich bin damit einverstanden, dass meine Name hier öffentlich
+            erscheint</label>
+        <br>
+        <input type="submit" value="Teilnehmen">
+    </form>
+{{ end }}
+    <h4>Teilnehmer</h4>
+    <ul>
+    {{ range .Participants}}
+        <li>{{.Name}}</li>
+    {{end}}
+    </ul>
+</section>
+{{end}}

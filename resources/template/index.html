@@ -9,25 +9,15 @@
 <body>
 {{template "head" .}}
 
-<section id="main">
 {{template "eventMenu" .}}
-</section>
-<section id="participation">
 {{template "participation" .}}
-</section>
 {{template "createComment" .}}
 {{template "imageList" .}}
 {{template "commentList" .}}
-<section id="eventList">
 {{template "eventList" .}}
-</section>
 {{ if .Authenticated }}
-<section id="createEvent">
 {{template "createEvent" .}}
-</section>
-<section id="uploadImage">
 {{template "uploadImage" .}}
-</section>
 {{ end }}
 
 {{template "footer" .}}

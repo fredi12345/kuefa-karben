@@ -59,10 +59,13 @@ func NewServer(db storage.Service, imagePath string) *Server {
 		panic(err)
 	}
 
+	t := template.Must(template.ParseGlob(path.Join("resources", "template", "**/*.tmpl")))
+	t = template.Must(t.ParseGlob(path.Join("resources", "template", "*.html")))
+
 	return &Server{
 		db:      db,
 		cs:      sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
-		tmpl:    template.Must(template.ParseGlob(path.Join("resources", "template", "*.html"))),
+		tmpl:    t,
 		imgPath: imagePath,
 		rnd:     random.New(time.Now().UnixNano()),
 	}

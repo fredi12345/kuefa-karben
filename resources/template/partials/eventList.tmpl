@@ -1,0 +1,13 @@
+{{define "eventList"}}
+<section id="eventList">
+{{range .EventList}}
+    <a class="event" href="/?id={{.Id}}" style="background-image: url('{{.ImageUrl}}')">
+        <div class="description">
+
+            <h3>{{.Theme}}</h3>
+            <h4>{{.EventDate.Format "02.01.2006"}}</h4>
+        </div>
+    </a>
+{{end}}
+</section>
+{{end}}
