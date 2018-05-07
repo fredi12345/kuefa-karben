@@ -1,4 +1,5 @@
 {{define "participation"}}
+
 <section id="participation">
 {{ if .ParticipationAllowed}}
     <h4>Anmeldung</h4>
@@ -9,8 +10,8 @@
         <label><input type="radio" name="menu" value="2">Vegan</label>
         <input name="eventId" value="{{.Event.Id}}" hidden>
         <br>
-        <label><input type="checkbox" required>Ich bin damit einverstanden, dass meine Name hier öffentlich
-            erscheint</label>
+        <label><input type="checkbox" required>Ich bin damit einverstanden, dass mein Name hier öffentlich
+            erscheint.</label>
         <br>
         <input type="submit" value="Teilnehmen">
     </form>
@@ -19,6 +20,13 @@
     <ul>
     {{ range .Participants}}
         <li>{{.Name}}</li>
+    {{ if $.Authenticated }}
+        <form action="/delete/participant" method="post">
+            <input name="participantId" value="{{.Id}}" hidden>
+            <input name="eventId" value="{{$.Event.Id}}" hidden>
+            <input type="submit" value="X">
+        </form>
+    {{end}}
     {{end}}
     </ul>
 </section>
