@@ -5,8 +5,6 @@
 html {
     font-family: sans-serif;
     color: black;
-    background-size: cover;
-    background-image: url(background.jpg);
 }
 
 header {
@@ -35,6 +33,22 @@ header h1 {
 body {
     max-width: 1000px;
     margin: 0 auto;
+}
+
+/* Background */
+body:before {
+    content: "";
+    position: fixed;
+    left: -5%;
+    right: -5%;
+    top: -5%;
+    z-index: -1;
+    height: 110%;
+    width: 110%;
+    display: block;
+    background-size: cover;
+    background-image: url(background.jpg);
+    filter: blur(13px);
 }
 
 section {
@@ -135,6 +149,10 @@ input {
 
 input[name=info] {
 
+}
+
+#comments p{
+    white-space: pre-line;
 }
 
 #images img {
