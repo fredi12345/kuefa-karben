@@ -37,17 +37,21 @@ func createHandler(server *web.Server) http.Handler {
 	r := mux.NewRouter()
 	fs := http.FileServer(http.Dir("resources/public"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
+
+	// http get methods
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
 	r.HandleFunc("/impressum", server.Impressum).Methods(http.MethodGet)
-	r.HandleFunc("/participate", server.AddParticipant).Methods(http.MethodPost)
-	r.HandleFunc("/login", server.Login).Methods(http.MethodPost)
-	r.HandleFunc("/comment", server.AddComment).Methods(http.MethodPost)
-	r.HandleFunc("/upload", server.NeedsAuthentication(server.AddImage)).Methods(http.MethodPost)
-	r.HandleFunc("/create", server.NeedsAuthentication(server.CreateEvent)).Methods(http.MethodPost)
-	r.HandleFunc("/delete/comment", server.NeedsAuthentication(server.DeleteComment)).Methods(http.MethodPost)
-	r.HandleFunc("/delete/image", server.NeedsAuthentication(server.DeleteImage)).Methods(http.MethodPost)
-	r.HandleFunc("/delete/participant", server.NeedsAuthentication(server.DeleteParticipant)).Methods(http.MethodPost)
-	r.HandleFunc("/delete/event", server.NeedsAuthentication(server.DeleteEvent)).Methods(http.MethodPost)
-	r.HandleFunc("/logout", server.Logout).Methods(http.MethodPost)
+
+	// http post methods
+	r.HandleFunc("/event/add", server.NeedsAuthentication(server.CreateEvent)).Methods(http.MethodPost)
+	r.HandleFunc("/event/delete", server.NeedsAuthentication(server.DeleteEvent)).Methods(http.MethodPost)
+	r.HandleFunc("/participant/add", server.AddParticipant).Methods(http.MethodPost)
+	r.HandleFunc("/participant/delete", server.NeedsAuthentication(server.DeleteParticipant)).Methods(http.MethodPost)
+	r.HandleFunc("/comment/add", server.AddComment).Methods(http.MethodPost)
+	r.HandleFunc("/comment/delete", server.NeedsAuthentication(server.DeleteComment)).Methods(http.MethodPost)
+	r.HandleFunc("/image/add", server.NeedsAuthentication(server.AddImage)).Methods(http.MethodPost)
+	r.HandleFunc("/image/delete", server.NeedsAuthentication(server.DeleteImage)).Methods(http.MethodPost)
+	r.HandleFunc("/user/login", server.Login).Methods(http.MethodPost)
+	r.HandleFunc("/user/logout", server.Logout).Methods(http.MethodPost)
 	return r
 }

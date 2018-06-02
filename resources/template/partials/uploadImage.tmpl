@@ -3,7 +3,7 @@
     <h4>
         Fotos hochladen
     </h4>
-    <form enctype="multipart/form-data" id="upload" name="upload" action="/upload" method="post">
+    <form enctype="multipart/form-data" id="upload" name="upload" action="/image/add" method="post">
         <input name="image" type="file" accept="image/*" required>
         <input name="eventId" value="{{.Event.Id}}" hidden>
         <input type="submit" value="Hochladen">

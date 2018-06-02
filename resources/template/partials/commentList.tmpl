@@ -5,7 +5,7 @@
     <div>
         <h4>{{.Name}}</h4>
     {{ if $.Authenticated }}
-        <form action="/delete/comment" method="post">
+        <form action="/comment/delete" method="post">
             <input name="commentId" value="{{.Id}}" hidden>
             <input name="eventId" value="{{$.Event.Id}}" hidden>
             <input type="submit" value="X">

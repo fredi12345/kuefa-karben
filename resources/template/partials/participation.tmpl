@@ -3,7 +3,7 @@
 <section id="participation">
 {{ if .ParticipationAllowed}}
     <h4>Anmeldung</h4>
-    <form id="participate" name="participate" action="/participate" method="post">
+    <form id="participate" name="participate" action="/participant/add" method="post">
         <input name="name" type="text" placeholder="Name" required>
         <label><input type="radio" name="menu" value="0" checked>Normal</label>
         <label><input type="radio" name="menu" value="1">Vegetarisch</label>
@@ -21,7 +21,7 @@
     {{ range .Participants}}
         <li>{{.Name}}</li>
     {{ if $.Authenticated }}
-        <form action="/delete/participant" method="post">
+        <form action="/participant/delete" method="post">
             <input name="participantId" value="{{.Id}}" hidden>
             <input name="eventId" value="{{$.Event.Id}}" hidden>
             <input type="submit" value="X">

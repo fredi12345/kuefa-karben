@@ -3,7 +3,7 @@
 {{with .Event}}
     <h2 id="motto">{{ .Theme }}!</h2>
 {{ if $.Authenticated }}
-    <form action="/delete/event" method="post">
+    <form action="/event/delete" method="post">
         <input name="eventId" value="{{.Id}}" hidden>
         <input type="submit" value="X">
     </form>
