@@ -40,6 +40,8 @@ func createHandler(server *web.Server) http.Handler {
 
 	// http get methods
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
+	r.HandleFunc("/event/{id:[0-9]+}", server.EventDetail).Methods(http.MethodGet)
+	r.HandleFunc("/event/all", server.AllEvents).Methods(http.MethodGet)
 	r.HandleFunc("/impressum", server.Impressum).Methods(http.MethodGet)
 
 	// http post methods

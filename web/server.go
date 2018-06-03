@@ -11,6 +11,11 @@ import (
 	"time"
 )
 
+const (
+	cookieName = "session-cookie"
+	cookieAuth = "authenticated"
+)
+
 type Server struct {
 	db      storage.Service
 	cs      sessions.Store

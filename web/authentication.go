@@ -8,11 +8,6 @@ import (
 	"net/http"
 )
 
-const (
-	cookieName = "session-cookie"
-	cookieAuth = "authenticated"
-)
-
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {

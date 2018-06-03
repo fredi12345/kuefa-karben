@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/sessions"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"time"
 )
@@ -61,6 +62,39 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.redirectToEventId(w, r, redirectToLatest)
+}
+
+func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
+	id, err := s.getEventIdByUrl(r.URL)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(id)
+
+	sess, err := s.cs.Get(r, cookieName)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
+
+	templ, err := s.createTemplateStruct(id, sess)
+	if err != nil {
+		panic(err)
+	}
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err)
+	}
+
+	t := s.tmpl.Lookup("index.html")
+	err = t.Execute(w, templ)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {

@@ -80,7 +80,7 @@ section > h4 {
     position: relative;
 }
 
-#eventList {
+#eventPreview {
     white-space: nowrap;
     overflow: hidden;
 }
