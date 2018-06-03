@@ -66,7 +66,26 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request) {
+	sess, err := s.cs.Get(r, cookieName)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+	}
 
+	tmpl, err := s.createTmplEventList(sess)
+	if err != nil {
+		panic(err)
+	}
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err)
+	}
+
+	t := s.tmpl.Lookup("event-all.html")
+	err = t.Execute(w, tmpl)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
@@ -80,7 +99,7 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	templ, err := s.createTmplEventDetail(id, sess)
+	tmpl, err := s.createTmplEventDetail(id, sess)
 	if err != nil {
 		panic(err)
 	}
@@ -91,7 +110,7 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := s.tmpl.Lookup("event-detail.html")
-	err = t.Execute(w, templ)
+	err = t.Execute(w, tmpl)
 	if err != nil {
 		panic(err)
 	}
@@ -176,4 +195,24 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 	}
 
 	return &templ, nil
+}
+
+type tmplEventList struct {
+	EventList     []*storage.Event
+	Authenticated bool
+}
+
+func (s *Server) createTmplEventList(sess *sessions.Session) (*tmplEventList, error) {
+	events, err := s.db.GetEventList()
+	if err != nil {
+		return nil, err
+	}
+
+	tmpl := tmplEventList{EventList: events}
+
+	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
+		tmpl.Authenticated = auth
+	}
+
+	return &tmpl, nil
 }

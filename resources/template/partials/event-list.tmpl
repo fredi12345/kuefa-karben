@@ -1,0 +1,17 @@
+{{define "event-list"}}
+<section id="eventList">
+{{if .EventList}}
+{{range .EventList}}
+    <a class="event" href="/event/{{.Id}}" style="background-image: url('{{.ImageUrl}}')">
+        <div class="description">
+
+            <h3>{{.Theme}}</h3>
+            <h4>{{.EventDate.Format "02.01.2006"}}</h4>
+        </div>
+    </a>
+{{end}}
+{{else}}
+    <p>Es sind keine Veranstaltungen vorhanden.</p>
+{{end}}
+</section>
+{{end}}
