@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"github.com/fredi12345/kuefa-karben/storage"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"net/url"
@@ -69,18 +70,17 @@ func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
-	id, err := s.getEventIdByUrl(r.URL)
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(id)
 
 	sess, err := s.cs.Get(r, cookieName)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
 
-	templ, err := s.createTemplateStruct(id, sess)
+	templ, err := s.createTmplEventDetail(id, sess)
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +90,7 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	t := s.tmpl.Lookup("index.html")
+	t := s.tmpl.Lookup("event-detail.html")
 	err = t.Execute(w, templ)
 	if err != nil {
 		panic(err)
@@ -118,7 +118,7 @@ const (
 	redirectToLatest = -1
 )
 
-type templStruct struct {
+type tmplEventDetail struct {
 	Event                *storage.Event
 	Participants         []*storage.Participant
 	ImageUrls            []*storage.Image
@@ -129,16 +129,8 @@ type templStruct struct {
 	CommentsAllowed      bool
 }
 
-func (t *templStruct) HasImages() bool {
-	return len(t.ImageUrls) > 0
-}
-
-func (t *templStruct) HasComments() bool {
-	return len(t.Comments) > 0
-}
-
-func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStruct, error) {
-	var templ templStruct
+func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEventDetail, error) {
+	var templ tmplEventDetail
 
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
@@ -168,6 +160,12 @@ func (s *Server) createTemplateStruct(id int, sess *sessions.Session) (*templStr
 	if err != nil {
 		return nil, err
 	}
+
+	length := len(events)
+	if length > 2 {
+		events = []*storage.Event{events[length-1], events[length-2]}
+	}
+
 	templ.EventList = events
 
 	templ.ParticipationAllowed = time.Now().Before(ev.EventDate)
