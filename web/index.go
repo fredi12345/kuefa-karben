@@ -2,10 +2,10 @@ package web
 
 import (
 	"fmt"
+	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"os"
-	"time"
 )
 
 func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
@@ -36,16 +36,20 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 	if auth, ok := sess.Values[cookieAuth].(bool); ok {
 		authenticated = auth
 	}
+
+	events, err := s.db.GetEventList()
+	if err != nil {
+		panic(err)
+	}
+
+	length := len(events)
+	if length > 2 {
+		events = []*storage.Event{events[length-1], events[length-2]}
+	}
+
 	tmpl := tmplIndex{
 		Authenticated: authenticated,
-		EventList: []event{
-			{
-				Id:        1,
-				EventDate: time.Now(),
-				ImageUrl:  "/public/images/5progressLogo.Light.png",
-				Theme:     "testtestasdf lecker",
-			},
-		},
+		EventList:     events,
 	}
 
 	return tmpl, nil
@@ -53,12 +57,5 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 
 type tmplIndex struct {
 	Authenticated bool
-	EventList     []event
-}
-
-type event struct {
-	Id        int
-	Theme     string
-	ImageUrl  string
-	EventDate time.Time
+	EventList     []*storage.Event
 }
