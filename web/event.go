@@ -209,3 +209,7 @@ func (s *Server) createTmplEventList(sess *sessions.Session) (*tmplEventList, er
 
 	return &tmpl, nil
 }
+
+func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request) {
+
+}

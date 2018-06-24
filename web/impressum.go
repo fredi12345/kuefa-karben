@@ -11,6 +11,8 @@ func (s *Server) Impressum(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 	}
+
+	//TODO: hier wird Event Detail template genutzt
 	templ, err := s.createTmplEventDetail(1, sess)
 	if err != nil {
 		panic(err)
