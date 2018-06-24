@@ -1,5 +1,6 @@
 {{define "event-list"}}
 <section id="eventList">
+    <h2>Alle Veranstaltungen</h2>
 {{if .EventList}}
 {{range .EventList}}
     <a class="event" href="/event/{{.Id}}" style="background-image: url('{{.ImageUrl}}')">
