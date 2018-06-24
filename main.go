@@ -40,12 +40,13 @@ func createHandler(server *web.Server) http.Handler {
 
 	// http get methods
 	r.HandleFunc("/", server.Index).Methods(http.MethodGet)
+	r.HandleFunc("/event/create", server.NeedsAuthentication(server.CreateEventPage)).Methods(http.MethodGet)
 	r.HandleFunc("/event/{id:[0-9]+}", server.EventDetail).Methods(http.MethodGet)
 	r.HandleFunc("/event/all", server.AllEvents).Methods(http.MethodGet)
 	r.HandleFunc("/impressum", server.Impressum).Methods(http.MethodGet)
 
 	// http post methods
-	r.HandleFunc("/event/add", server.NeedsAuthentication(server.CreateEvent)).Methods(http.MethodPost)
+	r.HandleFunc("/event/add", server.NeedsAuthentication(server.AddEvent)).Methods(http.MethodPost)
 	r.HandleFunc("/event/delete", server.NeedsAuthentication(server.DeleteEvent)).Methods(http.MethodPost)
 	r.HandleFunc("/participant/add", server.AddParticipant).Methods(http.MethodPost)
 	r.HandleFunc("/participant/delete", server.NeedsAuthentication(server.DeleteParticipant)).Methods(http.MethodPost)

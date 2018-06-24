@@ -1,4 +1,13 @@
-{{ define "createEvent" }}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Küche für Alle!</title>
+    <link rel="stylesheet" href="../public/style.css">
+</head>
+<body>
+{{template "head" .}}
 <section id="createEvent">
     <h4>Neue Veranstaltung</h4>
     <form id="createEventForm" name="createEvent" enctype="multipart/form-data" action="/event/add" method="post">
@@ -12,4 +21,6 @@
         <input type="submit" value="Speichern">
     </form>
 </section>
-{{ end }}
+{{template "footer" .}}
+</body>
+</html>

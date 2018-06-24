@@ -2,21 +2,22 @@ package web
 
 import (
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/storage"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/fredi12345/kuefa-karben/storage"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 func (s *Server) Event(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) CreateEvent(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
 		panic(err)
