@@ -9,10 +9,6 @@
 <body>
 {{template "head" .}}
 {{template "event-list" .}}
-{{ if .Authenticated }}
-{{template "createEvent" .}}
-{{template "uploadImage" .}}
-{{ end }}
 
 {{template "footer" .}}
 </body>

@@ -15,10 +15,6 @@
 {{template "imageList" .}}
 {{template "commentList" .}}
 {{template "eventPreview" .}}
-{{ if .Authenticated }}
-{{template "createEvent" .}}
-{{template "uploadImage" .}}
-{{ end }}
 
 {{template "footer" .}}
 </body>
