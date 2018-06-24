@@ -27,7 +27,7 @@ func (s *Server) AddComment(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, eventId)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request) {
@@ -41,15 +41,10 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		panic(err)
-	}
-
 	err = s.db.DeleteComment(commentId)
 	if err != nil {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, eventId)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

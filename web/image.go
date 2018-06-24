@@ -23,7 +23,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request) {
 	filename := s.writeFileToDisk(r)
 	s.db.CreateImage("/public/images/"+filename, eventId)
 
-	s.redirectToEventId(w, r, eventId)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +33,6 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	imageId, err := strconv.Atoi(r.Form.Get("imageId"))
-	if err != nil {
-		panic(err)
-	}
-
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
 		panic(err)
 	}
@@ -52,7 +47,7 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, eventId)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Server) writeFileToDisk(r *http.Request) string {

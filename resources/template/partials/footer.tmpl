@@ -13,7 +13,6 @@
     </form>
 {{else}}
     <form id="logout" name="logout" action="/user/logout" method="post">
-        <input name="eventId" value="{{.Event.Id}}" hidden>
         <input type="submit" value="Logout">
     </form>
 {{end}}

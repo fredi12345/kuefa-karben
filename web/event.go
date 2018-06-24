@@ -43,7 +43,7 @@ func (s *Server) CreateEvent(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, redirectToLatest)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, redirectToLatest)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request) {
@@ -123,14 +123,6 @@ func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
 	}
 
 	return strconv.Atoi(keys[0])
-}
-
-func (s *Server) redirectToEventId(w http.ResponseWriter, r *http.Request, id int) {
-	if id == redirectToLatest {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	} else {
-		http.Redirect(w, r, fmt.Sprintf("/?id=%d", id), http.StatusSeeOther)
-	}
 }
 
 const (

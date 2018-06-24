@@ -19,17 +19,12 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		panic(err)
-	}
-
 	err = s.db.DeleteParticipant(commentId)
 	if err != nil {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, eventId)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 }
 
@@ -60,5 +55,5 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	s.redirectToEventId(w, r, eventId)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
