@@ -2,11 +2,12 @@ package web
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
+	"time"
 )
 
 func (s *Server) AddImage(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +21,14 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	filename := s.writeFileToDisk(r)
+	filename := getUniqueFileName()
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	s.saveNewFile(file, filename)
 	s.db.CreateImage("/public/images/"+filename, eventId)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -50,29 +58,16 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (s *Server) writeFileToDisk(r *http.Request) string {
-	file, handler, err := r.FormFile("image")
+func (s *Server) saveNewFile(file io.Reader, name string) error {
+	f, err := os.Create(filepath.Join(s.imgPath, name))
 	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	infos, err := ioutil.ReadDir(s.imgPath)
-	if err != nil {
-		panic(err)
-	}
-
-	filename := strconv.Itoa(len(infos)) + handler.Filename
-
-	f, err := os.Create(path.Join(s.imgPath, filename))
-	if err != nil {
-		panic(err)
+		return err
 	}
 
 	_, err = io.Copy(f, file)
-	if err != nil {
-		panic(err)
-	}
+	return err
+}
 
-	return filename
+func getUniqueFileName() string {
+	return strconv.Itoa(int(time.Now().UnixNano()))
 }

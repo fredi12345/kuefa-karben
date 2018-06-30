@@ -8,6 +8,9 @@ import (
 	"strconv"
 	"time"
 
+	"bytes"
+	"io"
+
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -36,7 +39,15 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	event.EventDate = d
 
-	filename := s.writeFileToDisk(r)
+	filename := getUniqueFileName()
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	s.saveNewFile(file, filename)
+
 	event.ImageUrl = "/public/images/" + filename
 
 	err = s.db.CreateEvent(event)
@@ -211,5 +222,74 @@ func (s *Server) createTmplEventList(sess *sessions.Session) (*tmplEventList, er
 }
 
 func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseMultipartForm(5 << 20) // 5 MB
+	if err != nil {
+		panic(err)
+	}
 
+	var event storage.Event
+	id, err := strconv.Atoi(r.Form.Get("event-id"))
+	if err != nil {
+		panic(err)
+	}
+
+	event.Id = id
+	event.Theme = r.Form.Get("theme")
+	event.Starter = r.Form.Get("starter")
+	event.MainDish = r.Form.Get("main-dish")
+	event.Dessert = r.Form.Get("dessert")
+	event.InfoText = r.Form.Get("info")
+
+	d, err := time.Parse("2006-01-02", r.Form.Get("date"))
+	if err != nil {
+		panic(err)
+	}
+	event.EventDate = d
+
+	file, err := readFileFromRequest(r)
+	if err != nil {
+		panic(err)
+	}
+
+	if file.Len() == 0 {
+		err = s.db.UpdateEvent(event)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		s.updateEventWithNewImage(file, event)
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (s *Server) updateEventWithNewImage(file *bytes.Buffer, event storage.Event) {
+	filename := getUniqueFileName()
+	err := s.saveNewFile(file, filename)
+	if err != nil {
+		panic(err)
+	}
+	err = s.db.UpdateEvent(event)
+	if err != nil {
+		panic(err)
+	}
+	err = s.db.UpdateEventImage(event.Id, "/public/images/"+filename)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func readFileFromRequest(r *http.Request) (*bytes.Buffer, error) {
+	file, _, err := r.FormFile("image")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, file)
+	if err != nil {
+		return nil, err
+	}
+	return &buf, nil
 }

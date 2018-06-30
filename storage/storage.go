@@ -18,6 +18,9 @@ type Service interface {
 	GetParticipants(eventId int) ([]*Participant, error)
 	GetEventList() ([]*Event, error)
 
+	UpdateEvent(event Event) error
+	UpdateEventImage(id int, url string) error
+
 	DeleteComment(id int) error
 	DeleteImage(id int) (string, error)
 	DeleteParticipant(id int) error
@@ -46,7 +49,7 @@ type Event struct {
 }
 
 type Participant struct {
-	Id		int
+	Id      int
 	Name    string
 	Created time.Time
 	Menu    int

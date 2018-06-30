@@ -31,10 +31,13 @@ const (
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
 	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date`
 
-	dbDeleteComment = `DELETE FROM comment WHERE id=?`
-	dbDeleteImage   = `DELETE FROM images WHERE id=?`
+	dbUpdateEvent      = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=? WHERE event_id=?`
+	dbUpdateEventImage = `UPDATE event SET image_url=? WHERE event_id=?`
+
+	dbDeleteComment     = `DELETE FROM comment WHERE id=?`
+	dbDeleteImage       = `DELETE FROM images WHERE id=?`
 	dbDeleteParticipant = `DELETE FROM participant WHERE id=?`
-	dbDeleteEvent = `DELETE FROM event WHERE event_id=?`
+	dbDeleteEvent       = `DELETE FROM event WHERE event_id=?`
 )
 
 var (
@@ -48,7 +51,6 @@ type connection struct {
 	db  *sql.DB
 	rnd *random.Rnd
 }
-
 
 func (c *connection) DeleteImage(id int) (string, error) {
 	var url string
@@ -67,12 +69,12 @@ func (c *connection) DeleteComment(id int) error {
 }
 
 func (c *connection) DeleteParticipant(id int) error {
-	_, err:= c.db.Exec(dbDeleteParticipant, id)
+	_, err := c.db.Exec(dbDeleteParticipant, id)
 	return err
 }
 
 func (c *connection) DeleteEvent(id int) error {
-	_, err:= c.db.Exec(dbDeleteEvent, id)
+	_, err := c.db.Exec(dbDeleteEvent, id)
 	return err
 }
 
@@ -260,6 +262,16 @@ func (c *connection) CheckCredentials(name, attemptedPassword string) (bool, err
 
 	hashedAttempt := hash(attemptedPassword, salt)
 	return hashedAttempt == hashedPassword, nil
+}
+
+func (c *connection) UpdateEvent(event storage.Event) error {
+	_, err := c.db.Exec(dbUpdateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.Id)
+	return err
+}
+
+func (c *connection) UpdateEventImage(id int, url string) error {
+	_, err := c.db.Exec(dbUpdateEventImage, url, id)
+	return err
 }
 
 func hash(password string, salt string) string {

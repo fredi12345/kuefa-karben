@@ -19,6 +19,7 @@
         <input name="info" type="text" placeholder="Infotext" value="{{.Event.InfoText}}" required><br>
         <img src="{{.Event.ImageUrl}}" class="edit-event"/>
         <input name="image" type="file" accept="image/*"><br>
+        <input name="event-id" type="hidden" value="{{.Event.Id}}" />
         <input type="submit" value="Änderungen übernehmen">
     </form>
 </section>
