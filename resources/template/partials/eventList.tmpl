@@ -1,6 +1,6 @@
-{{define "eventPreview"}}
+{{define "event-list"}}
 <section id="events">
-    <h2>Vergangene/Anstehende Veranstaltungen</h2>
+    <h2>Alle Veranstaltungen</h2>
     {{if .EventList}}
     <div id="eventList">
         {{range .EventList}}
@@ -16,6 +16,5 @@
     {{else}}
     <p>Es sind keine Veranstaltungen vorhanden.</p>
     {{end}}
-    <a href="/event/all">Zeige alle Veranstaltungen</a>
 </section>
 {{end}}

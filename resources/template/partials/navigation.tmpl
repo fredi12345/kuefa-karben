@@ -1,10 +1,10 @@
 {{define "navigation"}}
-<section id="nav">
-    <span><a href="/">Startseite</a></span>
-    <span><a href="/event/all">Alle Veranstaltungen</a></span>
-{{if .Authenticated}}
-    <span><a href="/event/create">Neue Veranstaltung</a></span>
-{{end}}
-    <span><a href="/impressum">Impressum</a></span>
-</section>
+<nav>
+    <a href="/">Startseite</a>
+    <a href="/event/all">Alle Veranstaltungen</a>
+    {{if .Authenticated}}
+    <a href="/event/create">Neue Veranstaltung</a>
+    {{end}}
+    <a href="/impressum">Impressum</a>
+</nav>
 {{end}}
