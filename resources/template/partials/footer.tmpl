@@ -2,9 +2,6 @@
 <footer>
     <!-- TODO Hier Link zu Startseite statt Impressum anzeigen wenn auf Impressum-->
     <a href="/impressum">Impressum</a>
-    <h4>Kontakt</h4>
-    <p>Karbevenue 4</p>
-    <p>12345 Karben</p>
     {{if not .Authenticated}}
     <form id="login" name="login" action="/user/login" method="post">
         <input name="user" type="text" placeholder="Benutzername" required>

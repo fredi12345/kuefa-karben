@@ -45,6 +45,7 @@ nav {
 
 nav a {
     text-decoration: none;
+    white-space: nowrap;
     color: white;
     margin-left: 20px;
     margin-right: 20px;
@@ -125,6 +126,7 @@ section > h4 {
     position: relative;
     margin: 20px 10px 20px 10px;
     background-size: cover;
+    background-position: center;
     background-color: orange;
     height: 200px;
     min-width: 300px;
@@ -159,6 +161,10 @@ section > h4 {
 
 .description h4 {
     margin: 0;
+}
+
+#showAll{
+    float:right;
 }
 
 .stars {
