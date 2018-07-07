@@ -2,18 +2,23 @@
 <section id="main">
 {{with .Event}}
     <h2 id="motto">{{ .Theme }}!</h2>
-{{ if $.Authenticated }}
-    <form action="/event/delete" method="post">
-        <input name="eventId" value="{{.Id}}" hidden>
-        <input type="submit" value="X">
-    </form>
-        <form action="/event/edit" method="get">
-            <input name="eventId" value="{{.Id}}" hidden>
-            <input type="submit" value="✎">
-        </form>
-{{end}}
     <h2 id="date">{{ .EventDate.Format "02.01.2006 - 15:04"}}</h2>
+    {{ if $.Authenticated }}
+    <script>
+        function confirmDeletion() {
+            return confirm("Möchten Sie die Veranstaltung wirklich löschen?");
+        }
+    </script>
+    <form action="/event/edit" method="get">
+        <input name="eventId" value="{{.Id}}" hidden>
+        <input type="submit" value="Bearbeiten">
+    </form>
+    <form id="deleteForm" action="/event/delete" onsubmit="return confirmDeletion()" method="post">
+        <input name="eventId" value="{{.Id}}" hidden>
+        <input type="submit" value="Löschen">
+    </form>
     <br>
+    {{end}}
     <img src='{{ .ImageUrl }}'/>
     <br>
     <h3>Vorspeise</h3>
