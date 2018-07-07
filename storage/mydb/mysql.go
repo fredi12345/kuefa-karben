@@ -177,8 +177,8 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 	return participants, nil
 }
 
-func New(dbName, user, password string) (storage.Service, error) {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s?parseTime=true", user, password, dbName))
+func New(cfg *mysql.Config) (storage.Service, error) {
+	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		return nil, fmt.Errorf("cannot open connection: %v", err)
 	}

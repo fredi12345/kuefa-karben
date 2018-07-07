@@ -3,4 +3,5 @@
     <db>kuefa_karben</db>
     <user>root</user>
     <password>root</password>
+    <port>3306</port>
 </config>

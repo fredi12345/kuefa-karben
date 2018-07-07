@@ -14,12 +14,12 @@ import (
 )
 
 func main() {
-	dbName, user, password, err := config.Read("config.xml")
+	cfg, err := config.Read("config.xml")
 	if err != nil {
 		log.Fatalf("could not read config: %v", err)
 	}
 
-	db, err := mydb.New(dbName, user, password)
+	db, err := mydb.New(cfg)
 	if err != nil {
 		log.Fatalf("could not create database: %v", err)
 	}
