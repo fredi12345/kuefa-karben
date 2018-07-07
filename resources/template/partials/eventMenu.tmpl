@@ -1,19 +1,14 @@
 {{define "eventMenu"}}
 <section id="main">
-{{with .Event}}
+    {{with .Event}}
     <h2 id="motto">{{ .Theme }}!</h2>
     <h2 id="date">{{ .EventDate.Format "02.01.2006 - 15:04"}}</h2>
     {{ if $.Authenticated }}
-    <script>
-        function confirmDeletion() {
-            return confirm("Möchten Sie die Veranstaltung wirklich löschen?");
-        }
-    </script>
     <form action="/event/edit" method="get">
         <input name="eventId" value="{{.Id}}" hidden>
         <input type="submit" value="Bearbeiten">
     </form>
-    <form id="deleteForm" action="/event/delete" onsubmit="return confirmDeletion()" method="post">
+    <form id="deleteForm" action="/event/delete" onsubmit="return confirmDeletion('die Veranstaltung')" method="post">
         <input name="eventId" value="{{.Id}}" hidden>
         <input type="submit" value="Löschen">
     </form>
@@ -32,6 +27,6 @@
     <span class="stars">☆☆☆</span>
     <br>
     <p>{{ .InfoText }}</p>
-{{end}}
+    {{end}}
 </section>
 {{end}}

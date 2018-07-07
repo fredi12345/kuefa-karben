@@ -141,6 +141,10 @@ section > h4 {
     transition: transform 0.3s;
 }
 
+#events {
+    overflow: auto;
+}
+
 .description {
     right: 0;
 / / box-shadow: 0 - 10 px 20 px rgba(0, 0, 0, 0.19), 0 - 6 px 6 px rgba(0, 0, 0, 0.23);
@@ -163,8 +167,37 @@ section > h4 {
     margin: 0;
 }
 
-#showAll{
-    float:right;
+#showAll {
+    float: right;
+}
+
+#participation {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+}
+
+#participation div {
+    flex-grow: 1;
+}
+
+#showAll, button, input[type="submit"] {
+    background: orange;
+    border: none;
+    padding: 10px;
+    text-decoration: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: initial;
+    transition: background 0.15s;
+}
+
+#showAll:hover, button:hover, input[type="submit"]:hover {
+    background: darkorange;
+    transition: background 0.3s;
 }
 
 .stars {
@@ -174,20 +207,29 @@ section > h4 {
 }
 
 #createEventForm {
-    -webkit-column-count: 2;
-    -moz-column-count: 2;
-    column-count: 2;
-
-    column-width: 10px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
 }
 
-#createEvent input[type=text] {
-    width: calc(100% - 20px);
+#createEvent input {
+    min-width: 290px;
+    flex-grow: 1;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 input {
-    padding: 3px;
+    padding: 7px;
     margin: 3px;
+    border: none;
+    outline: none;
+    border-bottom: 2px orange;
+    border-bottom-style: dotted;
+}
+
+input:focus {
+    border-bottom-style: solid;
 }
 
 input[name=info] {
