@@ -1,9 +1,11 @@
 package web
 
 import (
-	"fmt"
 	"net/http"
-	"os"
+
+	"fmt"
+
+	"github.com/gorilla/sessions"
 )
 
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
@@ -54,17 +56,12 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (s *Server) NeedsAuthentication(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		sess, err := s.cs.Get(r, cookieName)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+func (s *Server) NeedsAuthentication(handler ErrorHandlerFunc) ErrorHandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
+		if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
+			return handler(w, r, sess)
 		}
 
-		if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
-			handler(w, r)
-		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-		}
+		return fmt.Errorf("unauthorized")
 	}
 }

@@ -8,54 +8,67 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/sessions"
 )
 
-func (s *Server) AddImage(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	filename := getUniqueFileName()
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer file.Close()
 
-	s.saveNewFile(file, filename)
-	s.db.CreateImage("/public/images/"+filename, eventId)
+	err = s.saveNewFile(file, filename)
+	if err != nil {
+		return err
+	}
+
+	err = s.db.CreateImage("/public/images/"+filename, eventId)
+	if err != nil {
+		return err
+	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	return nil
 }
 
-func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	imageId, err := strconv.Atoi(r.Form.Get("imageId"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	filename, err := s.db.DeleteImage(imageId)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = os.Remove(path.Join(s.imgPath, filename))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	return nil
 }
 
 func (s *Server) saveNewFile(file io.Reader, name string) error {

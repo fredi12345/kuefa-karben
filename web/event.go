@@ -1,10 +1,8 @@
 package web
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"time"
 
@@ -20,10 +18,10 @@ func (s *Server) Event(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	var event storage.Event
@@ -35,14 +33,14 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request) {
 
 	d, err := time.Parse("2006-01-02", r.Form.Get("date"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 	event.EventDate = d
 
 	filename := getUniqueFileName()
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer file.Close()
 
@@ -52,80 +50,78 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request) {
 
 	err = s.db.CreateEvent(event)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	return nil
 }
 
-func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = s.db.DeleteEvent(eventId)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	return nil
 }
 
-func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request) {
-	sess, err := s.cs.Get(r, cookieName)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
+func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	tmpl, err := s.createTmplEventList(sess)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = sess.Save(r, w)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	t := s.tmpl.Lookup("event-all.html")
 	err = t.Execute(w, tmpl)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
-func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request) {
+func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		panic(err)
-	}
-
-	sess, err := s.cs.Get(r, cookieName)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return err
 	}
 
 	tmpl, err := s.createTmplEventDetail(id, sess)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = sess.Save(r, w)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	t := s.tmpl.Lookup("event-detail.html")
 	err = t.Execute(w, tmpl)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
@@ -136,10 +132,6 @@ func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
 
 	return strconv.Atoi(keys[0])
 }
-
-const (
-	redirectToLatest = -1
-)
 
 type tmplEventDetail struct {
 	Event                *storage.Event
@@ -221,16 +213,16 @@ func (s *Server) createTmplEventList(sess *sessions.Session) (*tmplEventList, er
 	return &tmpl, nil
 }
 
-func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request) {
+func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	var event storage.Event
 	id, err := strconv.Atoi(r.Form.Get("event-id"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	event.Id = id
@@ -242,25 +234,27 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request) {
 
 	d, err := time.Parse("2006-01-02", r.Form.Get("date"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 	event.EventDate = d
 
 	file, err := readFileFromRequest(r)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if file.Len() == 0 {
 		err = s.db.UpdateEvent(event)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	} else {
 		s.updateEventWithNewImage(file, event)
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	return nil
 }
 
 func (s *Server) updateEventWithNewImage(file *bytes.Buffer, event storage.Event) {

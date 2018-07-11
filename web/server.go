@@ -1,14 +1,16 @@
 package web
 
 import (
+	"html/template"
+	"net/http"
+	"os"
+	"path"
+	"time"
+
 	"github.com/SchiffFlieger/go-random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"html/template"
-	"os"
-	"path"
-	"time"
 )
 
 const (
@@ -41,3 +43,5 @@ func NewServer(db storage.Service, imagePath string) *Server {
 		rnd:     random.New(time.Now().UnixNano()),
 	}
 }
+
+type ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, session *sessions.Session) error

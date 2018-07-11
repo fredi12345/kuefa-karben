@@ -1,34 +1,30 @@
 package web
 
 import (
-	"fmt"
+	"net/http"
+
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/sessions"
-	"net/http"
-	"os"
 )
 
-func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
-	sess, err := s.cs.Get(r, cookieName)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-	}
-
+func (s *Server) Index(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	templ, err := s.createIndexTmpl(sess)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = sess.Save(r, w)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	t := s.tmpl.Lookup("index.html")
 	err = t.Execute(w, templ)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {

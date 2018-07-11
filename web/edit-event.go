@@ -1,9 +1,7 @@
 package web
 
 import (
-	"fmt"
 	"net/http"
-	"os"
 
 	"strconv"
 
@@ -11,34 +9,31 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request) {
+func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	id, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
-		panic(err)
-	}
-
-	sess, err := s.cs.Get(r, cookieName)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		return err
 	}
 
 	templ := s.createEditEventTmpl(id, sess)
 
 	err = sess.Save(r, w)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	t := s.tmpl.Lookup("edit-event.html")
 	err = t.Execute(w, templ)
 	if err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }
 
 func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) tmplEditEvent {
