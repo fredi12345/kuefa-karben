@@ -48,6 +48,8 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	sess.Values[cookieAuth] = false
+
 	err = sess.Save(r, w)
 	if err != nil {
 		panic(err)
