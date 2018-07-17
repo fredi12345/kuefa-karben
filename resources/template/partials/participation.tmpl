@@ -7,13 +7,12 @@
 
         <form id="participate" name="participate" action="/participant/add" method="post">
             <input name="name" type="text" placeholder="Name" required><br>
-            <label><input type="radio" name="menu" value="0" checked>Klassisch</label>
-            <label><input type="radio" name="menu" value="1">Vegetarisch</label>
-            <label><input type="radio" name="menu" value="2">Vegan</label>
+            <label><input type="radio" name="menu" value="0" checked>🍖</label>
+            <label><input type="radio" name="menu" value="1">🍂</label>
+            <label><input type="radio" name="menu" value="2">🍂🍂</label>
             <input name="eventId" value="{{.Event.Id}}" hidden>
             <br>
-            <label><input type="checkbox" required>Ich bin damit einverstanden, dass mein Name hier öffentlich
-                erscheint.</label>
+            <label><input type="checkbox" required>Diese Angaben dürfen veröffentlicht werden</label>
             <br>
             <input type="submit" value="Teilnehmen">
         </form>
