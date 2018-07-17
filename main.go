@@ -56,8 +56,8 @@ func createHandler(server *web.Server) http.Handler {
 	r.HandleFunc("/comment/delete", server.WithSession(server.NeedsAuthentication(server.DeleteComment))).Methods(http.MethodPost)
 	r.HandleFunc("/image/add", server.WithSession(server.NeedsAuthentication(server.AddImage))).Methods(http.MethodPost)
 	r.HandleFunc("/image/delete", server.WithSession(server.NeedsAuthentication(server.DeleteImage))).Methods(http.MethodPost)
-	r.HandleFunc("/user/login", server.Login).Methods(http.MethodPost)
-	r.HandleFunc("/user/logout", server.Logout).Methods(http.MethodPost)
+	r.HandleFunc("/user/login", server.WithSession(server.Login)).Methods(http.MethodPost)
+	r.HandleFunc("/user/logout", server.WithSession(server.Logout)).Methods(http.MethodPost)
 
 	r.NotFoundHandler = http.HandlerFunc(server.NotFound)
 	return r
