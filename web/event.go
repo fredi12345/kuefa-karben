@@ -15,7 +15,7 @@ import (
 )
 
 func (s *Server) Event(w http.ResponseWriter, r *http.Request) {
-
+//TODO ??? was macht das hier /Fredi
 }
 
 func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
@@ -31,7 +31,7 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 	event.Dessert = r.Form.Get("dessert")
 	event.InfoText = r.Form.Get("info")
 
-	d, err := time.Parse("2006-01-02", r.Form.Get("date"))
+	d, err := time.Parse("2006-01-02T15:04", r.Form.Get("date"))
 	if err != nil {
 		return err
 	}
@@ -232,7 +232,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	event.Dessert = r.Form.Get("dessert")
 	event.InfoText = r.Form.Get("info")
 
-	d, err := time.Parse("2006-01-02", r.Form.Get("date"))
+	d, err := time.Parse("2006-01-02T15:04", r.Form.Get("date"))
 	if err != nil {
 		return err
 	}
