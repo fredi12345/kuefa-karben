@@ -49,7 +49,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request, sess *sessions.S
 	return nil
 }
 
-func (s *Server) NeedsAuthentication(handler ErrorHandlerFunc) ErrorHandlerFunc {
+func (s *Server) NeedsAuthentication(handler SessionHandlerFunc) SessionHandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 		if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 			return handler(w, r, sess)
