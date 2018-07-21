@@ -40,5 +40,5 @@ func redirectToIndex(sess *sessions.Session, err error, r *http.Request, w http.
 	if err != nil {
 		panic(err) // TODO ist panic hier in Ordnung? was könnte man sonst machen? in welchem Fall schlägt save fehlt?
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }

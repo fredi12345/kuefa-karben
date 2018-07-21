@@ -53,7 +53,7 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
@@ -74,7 +74,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
@@ -259,7 +259,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 		s.updateEventWithNewImage(file, event)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }

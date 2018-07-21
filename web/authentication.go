@@ -29,7 +29,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request, sess *sessions.Se
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 	return nil
 }
 
@@ -41,7 +41,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request, sess *sessions.S
 		panic(err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 	return nil
 }
 

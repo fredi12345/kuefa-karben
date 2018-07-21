@@ -26,7 +26,7 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request, sess 
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
@@ -58,7 +58,7 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
