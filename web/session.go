@@ -23,7 +23,7 @@ func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
 		err := handler(w, r, sess)
 
 		if err != nil {
-			if err == ErrAuthenticationFailed {
+			if err == ErrWrongPassword || err == ErrNoAuthentication {
 				redirectToIndex(sess, err, r, w)
 			} else {
 				// TODO unknown error

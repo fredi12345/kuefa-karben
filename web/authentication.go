@@ -19,7 +19,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request, sess *sessions.Se
 
 	ok, err := s.db.CheckCredentials(user, pass)
 	if err != nil || !ok {
-		return ErrAuthenticationFailed
+		return ErrWrongPassword
 	}
 
 	sess.Values[cookieAuth] = true
@@ -51,8 +51,11 @@ func (s *Server) NeedsAuthentication(handler ErrorHandlerFunc) ErrorHandlerFunc 
 			return handler(w, r, sess)
 		}
 
-		return ErrAuthenticationFailed
+		return ErrNoAuthentication
 	}
 }
 
-var ErrAuthenticationFailed = fmt.Errorf("Nutzername oder Passwort falsch!")
+var (
+	ErrWrongPassword    = fmt.Errorf("Nutzername oder Passwort falsch!")
+	ErrNoAuthentication = fmt.Errorf("Sie haben nicht die erforderlichen Rechte um auf die Seite zuzugreifen.")
+)
