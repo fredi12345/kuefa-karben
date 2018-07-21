@@ -44,5 +44,5 @@ func NewServer(db storage.Service, imagePath string) *Server {
 	}
 }
 
-type SessionHandlerFunc func(w http.ResponseWriter, r *http.Request, session *sessions.Session) error
-type ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request) error
+type SessionHandlerFunc func(w http.ResponseWriter, r *http.Request, session *sessions.Session)
+type ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, session *sessions.Session) error

@@ -2,27 +2,34 @@ package web
 
 import (
 	"fmt"
+	"github.com/gorilla/sessions"
 	"net/http"
 	"os"
 )
 
-func (s *Server) WithSession(handler SessionHandlerFunc) ErrorHandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) error {
+func (s *Server) WithSession(handler SessionHandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		sess, err := s.cs.Get(r, cookieName)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 
-		return handler(w, r, sess)
+		handler(w, r, sess)
 	}
 }
 
-func (s *Server) HandleError(handler ErrorHandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		err := handler(w, r)
+func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request, sess *sessions.Session) {
+		err := handler(w, r, sess)
 
 		if err != nil {
-			panic(err)
+			if err == ErrAuthenticationFailed {
+
+				// Wert in session store schreiben
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+			} else {
+				panic(err)
+			}
 		}
 	}
 }
