@@ -15,7 +15,7 @@ import (
 )
 
 func (s *Server) Event(w http.ResponseWriter, r *http.Request) {
-//TODO ??? was macht das hier /Fredi
+	//TODO ??? was macht das hier /Fredi
 }
 
 func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
@@ -142,6 +142,7 @@ type tmplEventDetail struct {
 	Authenticated        bool
 	ParticipationAllowed bool
 	CommentsAllowed      bool
+	Message              *message
 }
 
 func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEventDetail, error) {
@@ -188,6 +189,12 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth
+	}
+
+	if flashes := sess.Flashes(); len(flashes) > 0 {
+		if msg, ok := flashes[0].(*message); ok {
+			templ.Message = msg
+		}
 	}
 
 	return &templ, nil

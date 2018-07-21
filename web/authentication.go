@@ -55,4 +55,4 @@ func (s *Server) NeedsAuthentication(handler ErrorHandlerFunc) ErrorHandlerFunc 
 	}
 }
 
-var ErrAuthenticationFailed = fmt.Errorf("authentication failed")
+var ErrAuthenticationFailed = fmt.Errorf("Nutzername oder Passwort falsch!")

@@ -24,12 +24,21 @@ func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
 
 		if err != nil {
 			if err == ErrAuthenticationFailed {
-
-				// Wert in session store schreiben
-				http.Redirect(w, r, "/", http.StatusSeeOther)
+				redirectToIndex(sess, err, r, w)
 			} else {
+				// TODO unknown error
 				panic(err)
 			}
 		}
 	}
+}
+
+func redirectToIndex(sess *sessions.Session, err error, r *http.Request, w http.ResponseWriter) {
+	sess.AddFlash(&message{Type: TypeError, Text: err.Error()})
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err) // TODO ist panic hier in Ordnung? was könnte man sonst machen? in welchem Fall schlägt save fehlt?
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
