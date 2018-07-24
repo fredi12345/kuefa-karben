@@ -9,6 +9,8 @@ import (
 	"bytes"
 	"io"
 
+	"fmt"
+
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -48,12 +50,12 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 
 	event.ImageUrl = "/public/images/" + filename
 
-	err = s.db.CreateEvent(event)
+	id, err := s.db.CreateEvent(event)
 	if err != nil {
 		return err
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
 
 	return nil
 }

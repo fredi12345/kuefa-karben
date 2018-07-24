@@ -191,15 +191,20 @@ func New(cfg *mysql.Config) (storage.Service, error) {
 	return &connection{db: db, rnd: random.New(time.Now().Unix())}, nil
 }
 
-func (c *connection) CreateEvent(event storage.Event) error {
-	_, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageUrl)
+func (c *connection) CreateEvent(event storage.Event) (int, error) {
+	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageUrl)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
-			return ErrInputToLong
+			return -1, ErrInputToLong
 		}
-		return fmt.Errorf("cannot execute statement: %v", err)
+		return -1, fmt.Errorf("cannot execute statement: %v", err)
 	}
-	return err
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return -1, fmt.Errorf("cannot fetch row id: %v", err)
+	}
+	return int(id), nil
 }
 
 func (c *connection) CreateParticipant(participant storage.Participant) error {

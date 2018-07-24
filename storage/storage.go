@@ -5,7 +5,7 @@ import (
 )
 
 type Service interface {
-	CreateEvent(event Event) error
+	CreateEvent(event Event) (int, error)
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
 	CreateImage(url string, event int) error
