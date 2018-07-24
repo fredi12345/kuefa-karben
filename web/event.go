@@ -16,10 +16,6 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-func (s *Server) Event(w http.ResponseWriter, r *http.Request) {
-	//TODO ??? was macht das hier /Fredi
-}
-
 func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
