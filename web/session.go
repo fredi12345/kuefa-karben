@@ -2,20 +2,43 @@ package web
 
 import (
 	"fmt"
+	"github.com/gorilla/sessions"
 	"net/http"
 	"os"
 )
 
-func (s *Server) WithSession(handler ErrorHandlerFunc) http.HandlerFunc {
+func (s *Server) WithSession(handler SessionHandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		sess, err := s.cs.Get(r, cookieName)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 
-		err = handler(w, r, sess)
+		handler(w, r, sess)
+	}
+}
+
+func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request, sess *sessions.Session) {
+		err := handler(w, r, sess)
+
 		if err != nil {
-			panic(err)
+			if err == ErrWrongPassword || err == ErrNoAuthentication {
+				redirectToIndex(sess, err, r, w)
+			} else {
+				// TODO unknown error
+				panic(err)
+			}
 		}
 	}
+}
+
+func redirectToIndex(sess *sessions.Session, err error, r *http.Request, w http.ResponseWriter) {
+	sess.AddFlash(&message{Type: TypeError, Text: err.Error()})
+
+	err = sess.Save(r, w)
+	if err != nil {
+		panic(err) // TODO ist panic hier in Ordnung? was könnte man sonst machen? in welchem Fall schlägt save fehlt?
+	}
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 }

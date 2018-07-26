@@ -40,7 +40,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
@@ -66,7 +66,7 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }

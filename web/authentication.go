@@ -18,12 +18,8 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request, sess *sessions.Se
 	pass := r.Form.Get("passwd")
 
 	ok, err := s.db.CheckCredentials(user, pass)
-	if err != nil {
-		return err
-	}
-
-	if !ok {
-		return fmt.Errorf("unauthorized")
+	if err != nil || !ok {
+		return ErrWrongPassword
 	}
 
 	sess.Values[cookieAuth] = true
@@ -33,7 +29,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request, sess *sessions.Se
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 	return nil
 }
 
@@ -45,7 +41,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request, sess *sessions.S
 		panic(err)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 	return nil
 }
 
@@ -55,6 +51,11 @@ func (s *Server) NeedsAuthentication(handler ErrorHandlerFunc) ErrorHandlerFunc 
 			return handler(w, r, sess)
 		}
 
-		return fmt.Errorf("unauthorized")
+		return ErrNoAuthentication
 	}
 }
+
+var (
+	ErrWrongPassword    = fmt.Errorf("Nutzername oder Passwort falsch!")
+	ErrNoAuthentication = fmt.Errorf("Sie haben nicht die erforderlichen Rechte um auf die Seite zuzugreifen.")
+)

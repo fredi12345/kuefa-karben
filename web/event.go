@@ -9,14 +9,12 @@ import (
 	"bytes"
 	"io"
 
+	"fmt"
+
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
-
-func (s *Server) Event(w http.ResponseWriter, r *http.Request) {
-//TODO ??? was macht das hier /Fredi
-}
 
 func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
@@ -48,12 +46,12 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 
 	event.ImageUrl = "/public/images/" + filename
 
-	err = s.db.CreateEvent(event)
+	id, err := s.db.CreateEvent(event)
 	if err != nil {
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
 
 	return nil
 }
@@ -74,7 +72,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
@@ -142,6 +140,7 @@ type tmplEventDetail struct {
 	Authenticated        bool
 	ParticipationAllowed bool
 	CommentsAllowed      bool
+	Message              *message
 }
 
 func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEventDetail, error) {
@@ -188,6 +187,12 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth
+	}
+
+	if flashes := sess.Flashes(); len(flashes) > 0 {
+		if msg, ok := flashes[0].(*message); ok {
+			templ.Message = msg
+		}
 	}
 
 	return &templ, nil
@@ -252,7 +257,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 		s.updateEventWithNewImage(file, event)
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }

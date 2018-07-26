@@ -264,3 +264,11 @@ footer {
 footer * {
     margin: 0;
 }
+
+.message-error {
+    background: red;
+}
+
+.message-hint {
+    background: green;
+}

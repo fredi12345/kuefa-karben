@@ -1,7 +1,7 @@
 {{define "participation"}}
 
 <section id="participation">
-    {{ if .ParticipationAllowed}}
+{{ if .ParticipationAllowed}}
     <div id="registration">
         <h4>Anmeldung</h4>
 
@@ -17,22 +17,25 @@
             <input type="submit" value="Teilnehmen">
         </form>
     </div>
-    {{ end }}
+{{ end }}
     <div id="participantList">
         <!--  TODO Nur wenn es schon welche gibt bzw "Noch keine Einträge" schreiben wenn das so ist-->
         <h4>Teilnehmer</h4>
         <ul>
 
-            {{ range .Participants}}
-            <li>{{.Name}}</li>
-            {{ if $.Authenticated }}
+        {{ range .Participants}}
+            <li>
+                <span>{{.Name}}</span>
+                <span>{{.MenuString}}</span>
+            </li>
+        {{ if $.Authenticated }}
             <form action="/participant/delete" method="post" onsubmit="confirmDeletion('den Teilnehmer')">
                 <input name="participantId" value="{{.Id}}" hidden>
                 <input name="eventId" value="{{$.Event.Id}}" hidden>
                 <input type="submit" value="Löschen">
             </form>
-            {{end}}
-            {{end}}
+        {{end}}
+        {{end}}
         </ul>
     </div>
 </section>

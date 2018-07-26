@@ -5,7 +5,7 @@ import (
 )
 
 type Service interface {
-	CreateEvent(event Event) error
+	CreateEvent(event Event) (int, error)
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
 	CreateImage(url string, event int) error
@@ -54,6 +54,12 @@ type Participant struct {
 	Created time.Time
 	Menu    int
 	EventId int
+}
+
+var menuToString = map[int]string{0: "Normal", 1: "Vegetarisch", 2: "Vegan"}
+
+func (p *Participant) MenuString() string {
+	return menuToString[p.Menu]
 }
 
 type Image struct {

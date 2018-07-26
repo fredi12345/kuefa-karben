@@ -29,7 +29,7 @@ func (s *Server) AddComment(w http.ResponseWriter, r *http.Request, sess *sessio
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
@@ -50,7 +50,7 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request, sess *ses
 		return err
 	}
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }

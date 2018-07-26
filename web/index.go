@@ -48,10 +48,17 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 		EventList:     events,
 	}
 
+	if flashes := sess.Flashes(); len(flashes) > 0 {
+		if msg, ok := flashes[0].(*message); ok {
+			tmpl.Message = msg
+		}
+	}
+
 	return tmpl, nil
 }
 
 type tmplIndex struct {
 	Authenticated bool
+	Message       *message
 	EventList     []*storage.Event
 }
