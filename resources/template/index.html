@@ -6,18 +6,18 @@
     <title>Küche für Alle!</title>
     <link rel="stylesheet" href="../public/style.css">
 </head>
+<!-- TODO: Dieses Skript muss auf alle Seiten auf denen Sachen gelöscht werden können. Evtl. mit dem head/meta Daten auch in ein Template packen? -->
 <script>
     function confirmDeletion(objectToDelete) {
         return confirm("Möchten Sie " + objectToDelete + " wirklich löschen?");
     }
 </script>
 <body>
-{{template "head" .}}
+    {{template "head" .}}
     {{template "message" .}}
     {{template "about" .}}
     {{template "eventPreview" .}}
     {{template "findUs" .}}
-
     {{template "footer" .}}
 </body>
 </html>

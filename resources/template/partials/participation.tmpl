@@ -1,41 +1,42 @@
 {{define "participation"}}
 
 <section id="participation">
-{{ if .ParticipationAllowed}}
+    {{ if .ParticipationAllowed}}
     <div id="registration">
         <h4>Anmeldung</h4>
 
         <form id="participate" name="participate" action="/participant/add" method="post">
             <input name="name" type="text" placeholder="Name" required><br>
-            <label><input type="radio" name="menu" value="0" checked>🍖</label>
-            <label><input type="radio" name="menu" value="1">🍂</label>
-            <label><input type="radio" name="menu" value="2">🍂🍂</label>
+            <label><input type="radio" name="menu" value="0" checked>Standard</label>
+            <label><input type="radio" name="menu" value="1">Vegetarisch</label>
+            <label><input type="radio" name="menu" value="2">Vegan</label>
             <input name="eventId" value="{{.Event.Id}}" hidden>
             <br>
-            <label><input type="checkbox" required>Diese Angaben dürfen veröffentlicht werden</label>
+            <label><input type="checkbox" class="publicationInfoCheck" required>Dein Name erscheint öffentlich auf
+                dieser Seite. Benutze gegebenenfalls einen Spitznamen, um anonym zu bleiben.</label>
             <br>
             <input type="submit" value="Teilnehmen">
         </form>
     </div>
-{{ end }}
+    {{ end }}
     <div id="participantList">
         <!--  TODO Nur wenn es schon welche gibt bzw "Noch keine Einträge" schreiben wenn das so ist-->
         <h4>Teilnehmer</h4>
         <ul>
 
-        {{ range .Participants}}
+            {{ range .Participants}}
             <li>
                 <span>{{.Name}}</span>
                 <span>{{.MenuString}}</span>
             </li>
-        {{ if $.Authenticated }}
+            {{ if $.Authenticated }}
             <form action="/participant/delete" method="post" onsubmit="confirmDeletion('den Teilnehmer')">
                 <input name="participantId" value="{{.Id}}" hidden>
                 <input name="eventId" value="{{$.Event.Id}}" hidden>
                 <input type="submit" value="Löschen">
             </form>
-        {{end}}
-        {{end}}
+            {{end}}
+            {{end}}
         </ul>
     </div>
 </section>

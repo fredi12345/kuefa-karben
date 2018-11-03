@@ -10,7 +10,7 @@
     </form>
     <form id="deleteForm" action="/event/delete" onsubmit="return confirmDeletion('die Veranstaltung')" method="post">
         <input name="eventId" value="{{.Id}}" hidden>
-        <input type="submit" value="Löschen">
+        <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
     </form>
     <br>
     {{end}}
@@ -18,13 +18,13 @@
     <br>
     <h3>Vorspeise</h3>
     <p>{{ .Starter }}</p>
-    <span class="stars">☆☆☆</span>
+    <span class="stars">★★★</span>
     <h3>Hauptgang</h3>
     <p>{{ .MainDish }}</p>
-    <span class="stars">☆☆☆</span>
+    <span class="stars">★★★</span>
     <h3>Nachspeise für die Hungrigen</h3>
     <p>{{ .Dessert }}</p>
-    <span class="stars">☆☆☆</span>
+    <span class="stars">★★★</span>
     <br>
     <p>{{ .InfoText }}</p>
     {{end}}

@@ -6,17 +6,22 @@
     <title>Küche für Alle!</title>
     <link rel="stylesheet" href="../public/style.css">
 </head>
+<script>
+    function confirmDeletion(objectToDelete) {
+        return confirm("Möchten Sie " + objectToDelete + " wirklich löschen?");
+    }
+</script>
 <body>
-{{template "head" .}}
+    {{template "head" .}}
+    {{template "message" .}}
 
-{{template "message" .}}
-{{template "eventMenu" .}}
-{{template "participation" .}}
-{{template "createComment" .}}
-{{template "imageList" .}}
-{{template "commentList" .}}
-{{template "eventPreview" .}}
+    {{template "eventMenu" .}}
+    {{template "participation" .}}
+    {{template "createComment" .}}
+    {{template "commentList" .}}
+    {{template "imageList" .}}
+    {{template "eventPreview" .}}
 
-{{template "footer" .}}
+    {{template "footer" .}}
 </body>
 </html>

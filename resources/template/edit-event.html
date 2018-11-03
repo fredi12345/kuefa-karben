@@ -6,6 +6,11 @@
     <title>Küche für Alle!</title>
     <link rel="stylesheet" href="../public/style.css">
 </head>
+<script>
+    function confirmDeletion(objectToDelete) {
+        return confirm("Möchten Sie " + objectToDelete + " wirklich löschen?");
+    }
+</script>
 <body>
 {{template "head" .}}
 <section id="createEvent">

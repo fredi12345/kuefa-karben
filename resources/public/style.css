@@ -6,7 +6,7 @@ html {
 
 header {
     position: relative;
-    background: white;
+    background: #404040;
     display: block;
     #border-radius: 0 0 10px 10px;
     overflow: hidden;
@@ -14,10 +14,8 @@ header {
 }
 
 header img {
-    position: relative;
-    clear: both;
     display: block;
-    width: 50%;
+    width: 100%;
     margin-left: auto;
     margin-right: auto;
 }
@@ -27,8 +25,7 @@ header h1 {
     position: relative;
     text-align: center;
     color: white;
-    background-color: black;
-    text-shadow: 2px 2px 5px grey;
+    text-shadow: 1px 1px 1px black;
     text-transform: uppercase;
     letter-spacing: 5px;
     padding: 20px;
@@ -37,9 +34,9 @@ header h1 {
 }
 
 nav {
+    text-shadow: 1px 1px 1px black;
     text-align: center;
     padding: 20px;
-    background: black;
     border-top: 2px solid white;
 }
 
@@ -50,12 +47,12 @@ nav a {
     margin-left: 20px;
     margin-right: 20px;
     letter-spacing: initial;
-    transition: letter-spacing 0.25s;
+    transition: letter-spacing 0.15s;
 }
 
 nav a:hover {
     letter-spacing: 2px;
-    transition: letter-spacing 0.35s;
+    transition: letter-spacing 0.30s;
 }
 
 p {
@@ -84,6 +81,7 @@ body:before {
 }
 
 section {
+    position: relative;
     margin-top: 20px;
     padding: 40px;
     background: white;
@@ -109,7 +107,7 @@ section h2 {
     box-shadow: inset 0 0 10px #000000;
 }
 
-section > h4 {
+section h4 {
     margin: 0 0 10px;
     left: 0;
     right: 0;
@@ -152,7 +150,7 @@ section > h4 {
     left: 0;
     color: white;
     text-decoration: none;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(64, 64, 64, 0.8);
     position: absolute;
     padding: 10px;
 
@@ -169,6 +167,7 @@ section > h4 {
 
 #showAll {
     float: right;
+    margin-right: 10px;
 }
 
 #participation {
@@ -219,25 +218,54 @@ section > h4 {
     margin-right: 20px;
 }
 
-input {
+input, textarea {
     padding: 7px;
     margin: 3px;
-    border: none;
+    border: 2px solid lightgray;
     outline: none;
-    border-bottom: 2px orange;
-    border-bottom-style: dotted;
+    transition: border 0.3s ease;
 }
 
-input:focus {
-    border-bottom-style: solid;
+input:focus, textarea:focus {
+
+    border-color: #404040;
+    #background-color: #eee;
 }
 
 input[name=info] {
 
 }
 
-#comments p {
-    white-space: pre-line;
+.comment {
+    position: relative;
+    padding: 10px;
+}
+
+.comment:nth-child(2n) {
+    background-color: #eee;
+}
+
+.commentDate {
+    display: inline-block;
+    color: gray;
+    font-size: small;
+}
+
+.commentName {
+    font-size: large;
+    display: inline-block;
+    color: gray;
+}
+
+input.deleteButton {
+    right: 0;
+    top: 0;
+    position: absolute;
+    background-color: #f44336;
+}
+
+input.deleteButton:hover {
+    background-color: #b71c1c;
 }
 
 #images img {
@@ -255,7 +283,7 @@ input[name=info] {
 
 footer {
     border-radius: 10px 10px 0 0;
-    background: grey;
+    background: #404040;
     padding: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     margin-top: 20px;
