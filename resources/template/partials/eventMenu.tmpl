@@ -6,7 +6,7 @@
     {{ if $.Authenticated }}
     <form action="/event/edit" method="get">
         <input name="eventId" value="{{.Id}}" hidden>
-        <input type="submit" value="Bearbeiten">
+        <input class="editButton" type="submit" value="✎ Bearbeiten" alt="Bearbeiten">
     </form>
     <form id="deleteForm" action="/event/delete" onsubmit="return confirmDeletion('die Veranstaltung')" method="post">
         <input name="eventId" value="{{.Id}}" hidden>

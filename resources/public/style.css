@@ -8,7 +8,7 @@ header {
     position: relative;
     background: #404040;
     display: block;
-    #border-radius: 0 0 10px 10px;
+    border-radius: 0 0 2px 2px;
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
@@ -81,6 +81,7 @@ body:before {
 }
 
 section {
+    overflow: auto;
     position: relative;
     margin-top: 20px;
     padding: 40px;
@@ -125,8 +126,8 @@ section h4 {
     margin: 20px 10px 20px 10px;
     background-size: cover;
     background-position: center;
-    background-color: orange;
-    height: 200px;
+    background-color: #ff9800;
+    height: 230px;
     min-width: 300px;
     max-width: 500px;
     align-self: flex-start;
@@ -182,7 +183,7 @@ section h4 {
 }
 
 #showAll, button, input[type="submit"] {
-    background: orange;
+    background: #ff9800;
     border: none;
     padding: 10px;
     text-decoration: none;
@@ -195,7 +196,7 @@ section h4 {
 }
 
 #showAll:hover, button:hover, input[type="submit"]:hover {
-    background: darkorange;
+    background: #c66900;
     transition: background 0.3s;
 }
 
@@ -205,15 +206,30 @@ section h4 {
     display: block;
 }
 
-#createEventForm {
+#flexcontainer {
     display: flex;
     justify-content: space-around;
+    align-items: flex-start;
     flex-wrap: wrap;
+}
+
+.buttonRight {
+    float: right;
+    margin-top: 20px;
+}
+
+#comments + #createComment {
+    margin-top: 0;
+    padding-top: 0;
+    position: relative;
+    top: -2px;
+    border-radius: 0 0 2px 2px;
 }
 
 #createEvent input {
     min-width: 290px;
     flex-grow: 1;
+    min-height: 21px;
     margin-left: 20px;
     margin-right: 20px;
 }
@@ -234,6 +250,20 @@ input:focus, textarea:focus {
 
 input[name=info] {
 
+}
+
+#createComment textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+.publicationInfoCheck + label {
+    font-size: 12px;
+}
+
+#createComment div {
+    text-align: right;
+    margin-top: 10px;
 }
 
 .comment {
@@ -265,11 +295,44 @@ input.deleteButton {
 }
 
 input.deleteButton:hover {
-    background-color: #b71c1c;
+    background-color: #ba000d;
 }
 
-#images img {
-    width: 400px;
+input.editButton {
+    right: 107px;
+    top: 0;
+    position: absolute;
+    background-color: #3f51b5;
+}
+
+input.editButton:hover {
+    background-color: #002984;
+}
+
+#gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.imageBox {
+    position: relative;
+    margin: 10px 10px 10px 10px;
+    max-height: 300px;
+    width: 200px;
+    align-self: flex-start;
+    flex-grow: 1;
+}
+
+.imageBox img {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.15s;
+}
+
+.imageBox:hover img {
+    transform: scale(1.05);
+    transition: transform 0.3s;
 }
 
 .event img {
@@ -277,12 +340,14 @@ input.deleteButton:hover {
     max-height: 200px;
 }
 
-.edit-event {
-    max-height: 100px;
+#createEvent img {
+    margin-right: 20px;
+    max-height: 200px;
+    max-width: 500px;
 }
 
 footer {
-    border-radius: 10px 10px 0 0;
+    border-radius: 2px 2px 0 0;
     background: #404040;
     padding: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
@@ -293,6 +358,11 @@ footer * {
     margin: 0;
 }
 
+.loginsubmit {
+    float: none;
+    margin: initial;
+}
+
 .message-error {
     background: red;
 }
@@ -300,3 +370,40 @@ footer * {
 .message-hint {
     background: green;
 }
+
+/* Find-Us Begin */
+address {
+    font-style: normal;
+}
+
+#findUs div + div {
+    margin-top: 20px;
+}
+
+#map {
+    width: 100%;
+    margin-top: 20px;
+}
+
+#fbpage a {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+    #border: 1px solid #ddd;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    border-radius: 2px;
+    line-height: 14px;
+    padding-left: 42px;
+    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+#fbpage img {
+    width: 34px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/*Find-Us End */

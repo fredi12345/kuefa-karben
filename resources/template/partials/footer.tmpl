@@ -4,12 +4,11 @@
     <form id="login" name="login" action="/user/login" method="post">
         <input name="user" type="text" placeholder="Benutzername" required>
         <input name="passwd" type="password" placeholder="Passwort" required>
-        <input type="submit" value="Login">
+        <input class="loginsubmit" type="submit" value="Login">
     </form>
     {{else}}
-    <!-- <span><a href="/event/create">Neue Veranstaltung</a></span> -->
     <form id="logout" name="logout" action="/user/logout" method="post">
-        <input type="submit" value="Logout">
+        <input class="loginsubmit" type="submit" value="Logout">
     </form>
     {{end}}
 </footer>

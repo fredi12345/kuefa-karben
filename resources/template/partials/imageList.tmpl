@@ -1,18 +1,22 @@
 {{define "imageList"}}
 {{ if .ImageUrls }}
 <section id="images">
-{{ range .ImageUrls }}
-    <div>
-        <img src="{{.URL}}"/>
-    {{ if $.Authenticated }}
-        <form action="/image/delete" method="post">
-            <input name="imageId" value="{{.Id}}" hidden>
-            <input name="eventId" value="{{$.Event.Id}}" hidden>
-            <input type="submit" value="X">
-        </form>
-    {{end}}
+    <h4>Bilder</h4>
+
+    <div id="gallery">
+        {{ range .ImageUrls }}
+        <div class="imageBox">
+            <img src="{{.URL}}"/>
+            {{ if $.Authenticated }}
+            <form action="/image/delete" method="post" onsubmit="return confirmDeletion('das Bild')">
+                <input name="imageId" value="{{.Id}}" hidden>
+                <input name="eventId" value="{{$.Event.Id}}" hidden>
+                <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
+            </form>
+            {{end}}
+        </div>
+        {{end}}
     </div>
-{{end}}
 </section>
 {{end}}
 {{end}}
