@@ -78,7 +78,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 }
 
 func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	tmpl, err := s.createTmplEventList(sess)
+	tmpl, err := s.createTmplEventList(sess, r)
 	if err != nil {
 		return err
 	}
@@ -170,14 +170,14 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 	}
 	templ.Comments = comments
 
-	events, err := s.db.GetEventList()
+	events, err := s.db.GetEventList(1)
 	if err != nil {
 		return nil, err
 	}
 
 	length := len(events)
 	if length > 2 {
-		events = []*storage.Event{events[length-1], events[length-2]}
+		events = []*storage.Event{events[0], events[1]}
 	}
 
 	templ.EventList = events
@@ -203,8 +203,13 @@ type tmplEventList struct {
 	Authenticated bool
 }
 
-func (s *Server) createTmplEventList(sess *sessions.Session) (*tmplEventList, error) {
-	events, err := s.db.GetEventList()
+func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*tmplEventList, error) {
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		return nil, err
+	}
+
+	events, err := s.db.GetEventList(id)
 	if err != nil {
 		return nil, err
 	}

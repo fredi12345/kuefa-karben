@@ -29,7 +29,7 @@ const (
 	dbGetSingleImage   = `SELECT image_url FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
-	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date`
+	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date DESC LIMIT ?,9 `
 
 	dbUpdateEvent      = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=? WHERE event_id=?`
 	dbUpdateEventImage = `UPDATE event SET image_url=? WHERE event_id=?`
@@ -78,9 +78,10 @@ func (c *connection) DeleteEvent(id int) error {
 	return err
 }
 
-func (c *connection) GetEventList() ([]*storage.Event, error) {
+func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
 	var events []*storage.Event
-	rows, err := c.db.Query(dbGetEventList)
+	var offset = (page-1)*9
+	rows, err := c.db.Query(dbGetEventList, offset)
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query: %v", err)
 	}

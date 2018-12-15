@@ -33,14 +33,14 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 		authenticated = auth
 	}
 
-	events, err := s.db.GetEventList()
+	events, err := s.db.GetEventList(1)
 	if err != nil {
 		panic(err)
 	}
 
 	length := len(events)
 	if length > 2 {
-		events = []*storage.Event{events[length-1], events[length-2]}
+		events = []*storage.Event{events[0], events[1]}
 	}
 
 	tmpl := tmplIndex{

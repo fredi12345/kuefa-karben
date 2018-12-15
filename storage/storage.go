@@ -16,7 +16,7 @@ type Service interface {
 	GetComments(eventID int) ([]*Comment, error)
 	GetImages(eventId int) ([]*Image, error)
 	GetParticipants(eventId int) ([]*Participant, error)
-	GetEventList() ([]*Event, error)
+	GetEventList(page int) ([]*Event, error)
 
 	UpdateEvent(event Event) error
 	UpdateEventImage(id int, url string) error
