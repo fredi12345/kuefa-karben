@@ -80,7 +80,7 @@ func (c *connection) DeleteEvent(id int) error {
 
 func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
 	var events []*storage.Event
-	var offset = (page-1)*9
+	var offset = (page - 1) * 9
 	rows, err := c.db.Query(dbGetEventList, offset)
 	if err != nil {
 		return nil, fmt.Errorf("cannot execute query: %v", err)

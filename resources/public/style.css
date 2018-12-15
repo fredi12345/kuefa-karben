@@ -182,7 +182,7 @@ section h4 {
     flex-grow: 1;
 }
 
-#showAll, button, input[type="submit"] {
+#showAll, button, .button, input[type="submit"] {
     background: #ff9800;
     border: none;
     padding: 10px;
@@ -216,6 +216,16 @@ section h4 {
 .buttonRight {
     float: right;
     margin-top: 20px;
+}
+
+#older {
+    float: right;
+    display: inline-block;
+}
+
+#newer {
+    float: left;
+    display: inline-block;
 }
 
 #comments + #createComment {

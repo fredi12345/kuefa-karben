@@ -13,6 +13,10 @@
         </a>
         {{end}}
     </div>
+    <div id="paging">
+        <a id="newer" class="button" href="/event/all/{{.PreviousPage}}">Neuere</a>
+        <a id="older" class="button" href="/event/all/{{.NextPage}}">Ältere</a>
+    </div>
     {{else}}
     <p>Es sind keine Veranstaltungen vorhanden.</p>
     {{end}}
