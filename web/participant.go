@@ -46,11 +46,13 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 		return err
 	}
 	name := r.Form.Get("name")
+	message := r.Form.Get("message")
 
 	part := storage.Participant{
 		Name:    name,
 		EventId: eventId,
 		Menu:    menu,
+		Message: message,
 		Created: time.Now()}
 
 	err = s.db.CreateParticipant(part)
