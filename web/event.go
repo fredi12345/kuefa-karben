@@ -206,13 +206,12 @@ type tmplEventList struct {
 }
 
 func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*tmplEventList, error) {
-	//TODO "ID" meinte hier die Seite, "page" wäre also treffender, könnte mal angepasst werden
-	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	page, err := strconv.Atoi(mux.Vars(r)["page"])
 	if err != nil {
 		return nil, err
 	}
 
-	events, err := s.db.GetEventList(id)
+	events, err := s.db.GetEventList(page)
 	if err != nil {
 		return nil, err
 	}
@@ -223,14 +222,14 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 		tmpl.Authenticated = auth
 	}
 
-	if id <= 1 {
+	if page <= 1 {
 		tmpl.PreviousPage = 1
 		//TODO disablen wäre besser
 	} else {
-		tmpl.PreviousPage = id - 1
+		tmpl.PreviousPage = page - 1
 	}
 
-	tmpl.NextPage = id + 1 //TODO feststellen ob schon auf letzte Seite und dann auch disablen
+	tmpl.NextPage = page + 1 //TODO feststellen ob schon auf letzte Seite und dann auch disablen
 
 	return &tmpl, nil
 }

@@ -18,13 +18,13 @@ import (
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
 	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_url, created_date) VALUES (?,?,?,?,?,?,?, NOW())`
-	dbCreateParticipant = `INSERT INTO participant (name, menu, event_id, participant_created) VALUES (?, ?, ?, Now()) `
+	dbCreateParticipant = `INSERT INTO participant (name, menu, message, event_id, participant_created) VALUES (?, ?, ?, ?, Now()) `
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
 	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
 
 	dbGetEvent         = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url FROM event WHERE event_id=?;`
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
-	dbGetParticipants  = `SELECT participant.id, name, menu, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
+	dbGetParticipants  = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_url FROM images WHERE event_id=? ORDER BY id`
 	dbGetSingleImage   = `SELECT image_url FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
@@ -168,7 +168,7 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 
 	for rows.Next() {
 		var resultItem storage.Participant
-		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Created, &resultItem.EventId)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
 			return nil, fmt.Errorf("mysql.go|GetParticipants: error scanning row: %v", err)
 		}
@@ -209,7 +209,7 @@ func (c *connection) CreateEvent(event storage.Event) (int, error) {
 }
 
 func (c *connection) CreateParticipant(participant storage.Participant) error {
-	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu, participant.EventId)
+	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu, participant.Message, participant.EventId)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return ErrInputToLong

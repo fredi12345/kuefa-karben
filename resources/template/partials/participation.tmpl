@@ -7,6 +7,8 @@
 
         <form id="participate" name="participate" action="/participant/add" method="post">
             <input name="name" type="text" placeholder="Name" required><br>
+            <input name="message" id="participationMessage" type="text" placeholder="Bemerkung/Nachricht (Optional)"
+                   maxlength="1000">
             <label><input type="radio" name="menu" value="0" checked>Standard</label>
             <label><input type="radio" name="menu" value="1">Vegetarisch</label>
             <label><input type="radio" name="menu" value="2">Vegan</label>
@@ -30,6 +32,9 @@
                 <span>{{.MenuString}}</span>
             </li>
             {{ if $.Authenticated }}
+            {{ if .Message}}
+            <p class="participationMessage">{{.Message}}</p>
+            {{end}}
             <form action="/participant/delete" method="post" onsubmit="confirmDeletion('den Teilnehmer')">
                 <input name="participantId" value="{{.Id}}" hidden>
                 <input name="eventId" value="{{$.Event.Id}}" hidden>
