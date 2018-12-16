@@ -53,6 +53,7 @@ type Participant struct {
 	Name    string
 	Created time.Time
 	Menu    int
+	Message string
 	EventId int
 }
 
