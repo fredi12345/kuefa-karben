@@ -17,6 +17,7 @@ type Service interface {
 	GetImages(eventId int) ([]*Image, error)
 	GetParticipants(eventId int) ([]*Participant, error)
 	GetEventList(page int) ([]*Event, error)
+	GetEventCount() (int, error)
 
 	UpdateEvent(event Event) error
 	UpdateEventImage(id int, url string) error

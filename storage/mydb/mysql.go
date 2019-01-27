@@ -30,6 +30,7 @@ const (
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
 	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date DESC LIMIT ?,9 `
+	dbGetEventCount    = `SELECT COUNT(event_id) FROM event`
 
 	dbUpdateEvent      = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=? WHERE event_id=?`
 	dbUpdateEventImage = `UPDATE event SET image_url=? WHERE event_id=?`
@@ -97,6 +98,14 @@ func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
 	}
 
 	return events, err
+}
+
+//Event count to hide 'next page button' on last page
+func (c *connection) GetEventCount() (int, error) {
+	var count int
+	row := c.db.QueryRow(dbGetEventCount)
+	err := row.Scan(&count)
+	return count, err
 }
 
 func (c *connection) GetLatestEventId() (int, error) {

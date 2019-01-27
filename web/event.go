@@ -105,6 +105,9 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	tmpl, err := s.createTmplEventDetail(id, sess)
 	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			s.NotFound(w, r)
+		}
 		return err
 	}
 
@@ -223,13 +226,17 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 	}
 
 	if page <= 1 {
-		tmpl.PreviousPage = 1
-		//TODO disablen wäre besser
+		tmpl.PreviousPage = -1 // Im Template: Wenn <0 werden die Buttons ausgeblendet
 	} else {
 		tmpl.PreviousPage = page - 1
 	}
 
-	tmpl.NextPage = page + 1 //TODO feststellen ob schon auf letzte Seite und dann auch disablen
+	eventCount, err := s.db.GetEventCount()
+	if eventCount > page*9 {
+		tmpl.NextPage = page + 1
+	} else {
+		tmpl.NextPage = -1
+	}
 
 	return &tmpl, nil
 }
