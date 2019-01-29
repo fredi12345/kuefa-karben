@@ -107,6 +107,7 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			s.NotFound(w, r)
+			return nil
 		}
 		return err
 	}
