@@ -13,6 +13,7 @@ func (s *Server) Impressum(w http.ResponseWriter, r *http.Request, sess *session
 		return err
 	}
 
+	templ.PageLocation = "impressum"
 	err = sess.Save(r, w)
 	if err != nil {
 		return err

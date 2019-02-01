@@ -1,10 +1,10 @@
 {{define "navigation"}}
     <nav>
-        <a href="/">Startseite</a>
-        <a href="/event/all/1">Veranstaltungen</a>
+        <a href="/" {{if eq .PageLocation "index"}} class="active"{{end}}>Startseite</a>
+        <a href="/event/all/1" {{if eq .PageLocation "eventList"}}class="active"{{end}}>Veranstaltungen</a>
         {{if .Authenticated}}
-            <a href="/event/create">Neue Veranstaltung</a>
+            <a href="/event/create" {{if eq .PageLocation "create-event"}}class="active"{{end}}>Neue Veranstaltung</a>
         {{end}}
-        <a href="/impressum">Impressum</a>
+        <a href="/impressum" {{if eq .PageLocation "impressum"}}class="active"{{end}}>Impressum</a>
     </nav>
 {{end}}

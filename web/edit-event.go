@@ -47,10 +47,11 @@ func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) tmplEditEve
 		panic(err)
 	}
 
-	return tmplEditEvent{Authenticated: authenticated, Event: event}
+	return tmplEditEvent{Authenticated: authenticated, PageLocation: "edit-event", Event: event}
 }
 
 type tmplEditEvent struct {
 	Authenticated bool
+	PageLocation  string
 	Event         *storage.Event
 }

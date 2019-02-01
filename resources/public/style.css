@@ -34,19 +34,21 @@ header h1 {
 }
 
 nav {
+    flex-wrap: wrap;
     text-shadow: 1px 1px 1px black;
     text-align: center;
-    padding: 20px;
+    padding: 6px;
     border-top: 2px solid white;
+    display: flex;
 }
 
 nav a {
     text-decoration: none;
     white-space: nowrap;
     color: white;
+    flex: 1;
     border-radius: 5px;
-    margin-left: 20px;
-    margin-right: 20px;
+    margin: 5px 20px;
     padding: 8px;
     transition: background-color 0.15s;
 }
@@ -54,6 +56,10 @@ nav a {
 nav a:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transition: background-color 0.30s;
+}
+
+nav a.active {
+    border: 1px solid white;
 }
 
 p {
@@ -253,6 +259,11 @@ input, textarea {
     transition: border 0.3s ease;
 }
 
+textarea {
+    width: calc(100% - 57px);
+    resize: vertical;
+}
+
 input:focus, textarea:focus {
 
     border-color: #404040;
@@ -396,7 +407,7 @@ address {
     margin-top: 20px;
 }
 
-#fbpage a {
+.externalLink a {
     position: relative;
     overflow: hidden;
     display: inline-block;
@@ -410,7 +421,7 @@ address {
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
-#fbpage img {
+.externalLink img {
     width: 34px;
     position: absolute;
     top: 0;

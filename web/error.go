@@ -39,6 +39,7 @@ func (s *Server) createNotFoundTmpl(sess *sessions.Session) (tmplNotFound, error
 
 	tmpl := tmplNotFound{
 		Authenticated: authenticated,
+		PageLocation:  "notFound",
 	}
 
 	return tmpl, nil
@@ -46,4 +47,5 @@ func (s *Server) createNotFoundTmpl(sess *sessions.Session) (tmplNotFound, error
 
 type tmplNotFound struct {
 	Authenticated bool
+	PageLocation  string
 }

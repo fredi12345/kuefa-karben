@@ -142,6 +142,7 @@ type tmplEventDetail struct {
 	EventList            []*storage.Event
 	Comments             []*storage.Comment
 	Authenticated        bool
+	PageLocation         string
 	ParticipationAllowed bool
 	CommentsAllowed      bool
 	Message              *message
@@ -188,6 +189,7 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	templ.ParticipationAllowed = time.Now().Before(ev.EventDate)
 	templ.CommentsAllowed = time.Now().After(ev.EventDate)
+	templ.PageLocation = "event"
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth
@@ -205,6 +207,7 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 type tmplEventList struct {
 	EventList     []*storage.Event
 	Authenticated bool
+	PageLocation  string
 	PreviousPage  int
 	NextPage      int
 }
@@ -220,7 +223,7 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 		return nil, err
 	}
 
-	tmpl := tmplEventList{EventList: events}
+	tmpl := tmplEventList{EventList: events, PageLocation: "eventList"}
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		tmpl.Authenticated = auth

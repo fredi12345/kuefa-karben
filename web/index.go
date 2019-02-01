@@ -45,6 +45,7 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 
 	tmpl := tmplIndex{
 		Authenticated: authenticated,
+		PageLocation:  "index",
 		EventList:     events,
 	}
 
@@ -59,6 +60,7 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 
 type tmplIndex struct {
 	Authenticated bool
+	PageLocation  string
 	Message       *message
 	EventList     []*storage.Event
 }

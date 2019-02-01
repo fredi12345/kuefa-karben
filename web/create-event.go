@@ -29,9 +29,10 @@ func (s *Server) createCreateEventTmpl(sess *sessions.Session) tmplCreateEvent {
 		authenticated = auth
 	}
 
-	return tmplCreateEvent{Authenticated: authenticated}
+	return tmplCreateEvent{Authenticated: authenticated, PageLocation: "create-event"}
 }
 
 type tmplCreateEvent struct {
 	Authenticated bool
+	PageLocation  string
 }
