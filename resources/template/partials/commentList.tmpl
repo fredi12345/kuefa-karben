@@ -4,17 +4,18 @@
     <h4>Kommentare</h4>
     {{ range .Comments }}
     <div class="comment">
+        {{ if $.Authenticated }}
+            <form action="/comment/delete" method="post" onsubmit="return confirmDeletion('das Kommentar')">
+                <input name="commentId" value="{{.Id}}" hidden>
+                <input name="eventId" value="{{$.Event.Id}}" hidden>
+                <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
+            </form>
+        {{end}}
         <p class="commentName">{{.Name}}</p>
         <p class="commentDate">{{.Created.Format "02.01.2006 - 15:04"}}</p>
         <p class="commentText">{{.Content}}</p>
 
-        {{ if $.Authenticated }}
-        <form action="/comment/delete" method="post" onsubmit="return confirmDeletion('das Kommentar')">
-            <input name="commentId" value="{{.Id}}" hidden>
-            <input name="eventId" value="{{$.Event.Id}}" hidden>
-            <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
-        </form>
-        {{end}}
+
 
     </div>
     {{end}}

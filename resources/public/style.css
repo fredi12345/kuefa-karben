@@ -46,11 +46,15 @@ nav a {
     text-decoration: none;
     white-space: nowrap;
     color: white;
-    flex: 1;
+    flex: 2;
     border-radius: 5px;
     margin: 5px 20px;
     padding: 8px;
     transition: background-color 0.15s;
+}
+
+nav a:last-child{
+    flex:1;
 }
 
 nav a:hover {
@@ -99,6 +103,7 @@ section {
 
 section h2 {
     margin-top: 0;
+    clear: both;
 }
 
 #main {
@@ -120,6 +125,10 @@ section h4 {
     left: 0;
     right: 0;
     position: relative;
+}
+
+#images div+div h4 {
+    margin-top: 20px;
 }
 
 #eventList {
@@ -147,21 +156,25 @@ section h4 {
     transition: transform 0.3s;
 }
 
+.event img {
+    width: 300px;
+    max-height: 200px;
+}
+
 #events {
     overflow: auto;
 }
 
 .description {
     right: 0;
-/ / box-shadow: 0 - 10 px 20 px rgba(0, 0, 0, 0.19), 0 - 6 px 6 px rgba(0, 0, 0, 0.23);
     bottom: 0;
     left: 0;
     color: white;
+    text-shadow: 0 0 1px rgba(0,0,0,0.5);
     text-decoration: none;
-    background: rgba(64, 64, 64, 0.8);
+    background-image: linear-gradient(rgba(64, 64, 64, 0), rgba(64, 64, 64, 0.9));
     position: absolute;
-    padding: 10px;
-
+    padding: 20px 10px 10px;
 }
 
 .description h3 {
@@ -189,11 +202,22 @@ section h4 {
     flex-grow: 1;
 }
 
+#participantList div{
+    padding: 10px;
+    clear: both;
+    display: flow-root;
+}
+#participantList div:nth-child(2n) {
+    background-color: #eee;
+}
+
 #showAll, button, .button, input[type="submit"] {
     background: #ff9800;
     border: none;
     padding: 10px;
     text-decoration: none;
+    text-shadow: 0 0 1px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
     border-radius: 5px;
     color: white;
     font-weight: bold;
@@ -265,13 +289,7 @@ textarea {
 }
 
 input:focus, textarea:focus {
-
     border-color: #404040;
-    #background-color: #eee;
-}
-
-input[name=info] {
-
 }
 
 #createComment textarea {
@@ -279,8 +297,12 @@ input[name=info] {
     resize: vertical;
 }
 
-.publicationInfoCheck + label {
-    font-size: 12px;
+.info {
+    background-color: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: medium;
+    margin: 10px 0;
 }
 
 #createComment div {
@@ -310,9 +332,8 @@ input[name=info] {
 }
 
 input.deleteButton {
-    right: 0;
-    top: 0;
-    position: absolute;
+    float: right;
+    clear: both;
     background-color: #f44336;
 }
 
@@ -321,9 +342,7 @@ input.deleteButton:hover {
 }
 
 input.editButton {
-    right: 107px;
-    top: 0;
-    position: absolute;
+    float: right;
     background-color: #3f51b5;
 }
 
@@ -334,20 +353,19 @@ input.editButton:hover {
 #gallery {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
 }
 
 .imageBox {
     position: relative;
     margin: 10px 10px 10px 10px;
-    max-height: 300px;
-    width: 200px;
-    align-self: flex-start;
-    flex-grow: 1;
+    height: 150px;
+    width: 230px;
 }
 
 .imageBox img {
     width: 100%;
+    object-fit: contain;
     height: 100%;
     transition: transform 0.15s;
 }
@@ -357,9 +375,11 @@ input.editButton:hover {
     transition: transform 0.3s;
 }
 
-.event img {
-    width: 300px;
-    max-height: 200px;
+.imageBox input.deleteButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 5;
 }
 
 #createEvent img {
@@ -394,12 +414,18 @@ footer * {
 }
 
 /* Find-Us Begin */
-address {
-    font-style: normal;
+#findUs{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+section#findUs>div {
+    padding: 20px;
+    flex: 1;
 }
 
-#findUs div + div {
-    margin-top: 20px;
+address {
+    font-style: normal;
 }
 
 #map {
@@ -407,25 +433,21 @@ address {
     margin-top: 20px;
 }
 
-.externalLink a {
-    position: relative;
+#findUs a {
     overflow: hidden;
     display: inline-block;
-    #border: 1px solid #ddd;
-    padding: 10px;
+    white-space: nowrap;
     text-decoration: none;
     color: black;
     border-radius: 2px;
     line-height: 14px;
-    padding-left: 42px;
+    padding: 10px;
+    margin-top:10px;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
-.externalLink img {
+#findUs a img {
     width: 34px;
-    position: absolute;
-    top: 0;
-    left: 0;
+    margin: -10px 5px -10px -10px;
 }
-
 /*Find-Us End */
