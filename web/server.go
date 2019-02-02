@@ -19,14 +19,15 @@ const (
 )
 
 type Server struct {
-	db      storage.Service
-	cs      sessions.Store
-	tmpl    *template.Template
-	imgPath string
-	rnd     *random.Rnd
+	db        storage.Service
+	cs        sessions.Store
+	tmpl      *template.Template
+	imgPath   string
+	thumbPath string
+	rnd       *random.Rnd
 }
 
-func NewServer(db storage.Service, imagePath string) *Server {
+func NewServer(db storage.Service, imagePath string, thumbPath string) *Server {
 	err := os.MkdirAll(imagePath, os.ModePerm)
 	if err != nil {
 		panic(err)
@@ -36,11 +37,12 @@ func NewServer(db storage.Service, imagePath string) *Server {
 	t = template.Must(t.ParseGlob(path.Join("resources", "template", "*.html")))
 
 	return &Server{
-		db:      db,
-		cs:      sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
-		tmpl:    t,
-		imgPath: imagePath,
-		rnd:     random.New(time.Now().UnixNano()),
+		db:        db,
+		cs:        sessions.NewCookieStore(securecookie.GenerateRandomKey(64)),
+		tmpl:      t,
+		imgPath:   imagePath,
+		thumbPath: thumbPath,
+		rnd:       random.New(time.Now().UnixNano()),
 	}
 }
 

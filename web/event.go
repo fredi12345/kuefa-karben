@@ -41,10 +41,11 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 		return err
 	}
 	defer file.Close()
-
-	s.saveNewFile(file, filename)
-
-	event.ImageUrl = "/public/images/" + filename
+	err = s.saveNewFullImageFile(file, filename)
+	if err != nil {
+		return err
+	}
+	event.ImageName = filename
 
 	id, err := s.db.CreateEvent(event)
 	if err != nil {
@@ -138,7 +139,7 @@ func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
 type tmplEventDetail struct {
 	Event                *storage.Event
 	Participants         []*storage.Participant
-	ImageUrls            []*storage.Image
+	ImageNames           []*storage.Image
 	EventList            []*storage.Event
 	Comments             []*storage.Comment
 	Authenticated        bool
@@ -163,11 +164,11 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 	}
 	templ.Participants = part
 
-	urls, err := s.db.GetImages(id)
+	imagesFileNames, err := s.db.GetImages(id)
 	if err != nil {
 		return nil, err
 	}
-	templ.ImageUrls = urls
+	templ.ImageNames = imagesFileNames
 
 	comments, err := s.db.GetComments(id)
 	if err != nil {
@@ -289,9 +290,10 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	return nil
 }
 
+//TODO altes Bild entfernen
 func (s *Server) updateEventWithNewImage(file *bytes.Buffer, event storage.Event) {
 	filename := getUniqueFileName()
-	err := s.saveNewFile(file, filename)
+	err := s.saveNewFullImageFile(file, filename)
 	if err != nil {
 		panic(err)
 	}

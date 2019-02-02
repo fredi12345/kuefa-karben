@@ -17,23 +17,23 @@ import (
 
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
-	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_url, created_date) VALUES (?,?,?,?,?,?,?, NOW())`
+	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_name, created_date) VALUES (?,?,?,?,?,?,?, NOW())`
 	dbCreateParticipant = `INSERT INTO participant (name, menu, message, event_id, participant_created) VALUES (?, ?, ?, ?, Now()) `
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
-	dbCreateImage       = `INSERT INTO images (event_id, image_url) VALUES (?, ?)`
+	dbCreateImage       = `INSERT INTO images (event_id, image_name) VALUES (?, ?)`
 
-	dbGetEvent         = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url FROM event WHERE event_id=?;`
+	dbGetEvent         = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name FROM event WHERE event_id=?;`
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
-	dbGetImages        = `SELECT images.id, image_url FROM images WHERE event_id=? ORDER BY id`
-	dbGetSingleImage   = `SELECT image_url FROM images WHERE id=?`
+	dbGetImages        = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
+	dbGetSingleImage   = `SELECT image_name FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
-	dbGetEventList     = `SELECT event_id,theme,event_date,image_url FROM event ORDER BY event_date DESC LIMIT ?,9 `
+	dbGetEventList     = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,9 `
 	dbGetEventCount    = `SELECT COUNT(event_id) FROM event`
 
 	dbUpdateEvent      = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=? WHERE event_id=?`
-	dbUpdateEventImage = `UPDATE event SET image_url=? WHERE event_id=?`
+	dbUpdateEventImage = `UPDATE event SET image_name=? WHERE event_id=?`
 
 	dbDeleteComment     = `DELETE FROM comment WHERE id=?`
 	dbDeleteImage       = `DELETE FROM images WHERE id=?`
@@ -54,10 +54,10 @@ type connection struct {
 }
 
 func (c *connection) DeleteImage(id int) (string, error) {
-	var url string
-	err := c.db.QueryRow(dbGetSingleImage, id).Scan(&url)
+	var name string
+	err := c.db.QueryRow(dbGetSingleImage, id).Scan(&name)
 
-	tmp := strings.Split(url, "/")
+	tmp := strings.Split(name, "/")
 	filename := tmp[len(tmp)-1]
 
 	_, err = c.db.Exec(dbDeleteImage, id)
@@ -90,7 +90,7 @@ func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
 
 	for rows.Next() {
 		var resultItem storage.Event
-		err := rows.Scan(&resultItem.Id, &resultItem.Theme, &resultItem.EventDate, &resultItem.ImageUrl)
+		err := rows.Scan(&resultItem.Id, &resultItem.Theme, &resultItem.EventDate, &resultItem.ImageName)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
@@ -117,7 +117,7 @@ func (c *connection) GetLatestEventId() (int, error) {
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
 	event := storage.Event{}
 	event.Id = id
-	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Id, &event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageUrl)
+	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Id, &event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageName)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err
@@ -157,7 +157,7 @@ func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 
 	for rows.Next() {
 		var resultItem storage.Image
-		err := rows.Scan(&resultItem.Id, &resultItem.URL)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %v", err)
 		}
@@ -202,7 +202,7 @@ func New(cfg *mysql.Config) (storage.Service, error) {
 }
 
 func (c *connection) CreateEvent(event storage.Event) (int, error) {
-	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageUrl)
+	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageName)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return -1, ErrInputToLong
@@ -239,8 +239,8 @@ func (c *connection) CreateComment(comment storage.Comment) error {
 	return err
 }
 
-func (c *connection) CreateImage(url string, event int) error {
-	_, err := c.db.Exec(dbCreateImage, event, url)
+func (c *connection) CreateImage(name string, event int) error {
+	_, err := c.db.Exec(dbCreateImage, event, name)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return ErrInputToLong
@@ -284,8 +284,8 @@ func (c *connection) UpdateEvent(event storage.Event) error {
 	return err
 }
 
-func (c *connection) UpdateEventImage(id int, url string) error {
-	_, err := c.db.Exec(dbUpdateEventImage, url, id)
+func (c *connection) UpdateEventImage(id int, name string) error {
+	_, err := c.db.Exec(dbUpdateEventImage, name, id)
 	return err
 }
 

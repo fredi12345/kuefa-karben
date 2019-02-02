@@ -1,22 +1,33 @@
 {{define "imageList"}}
-{{ if .ImageUrls }}
-<section id="images">
-    <h4>Bilder</h4>
+    {{ if or .ImageNames $.Authenticated}}
+        <section id="images">
+            <h4>Bilder</h4>
 
-    <div id="gallery">
-        {{ range .ImageUrls }}
-        <div class="imageBox">
-            <img src="{{.URL}}"/>
+            <div id="gallery">
+                {{ range .ImageNames }}
+                    <div class="imageBox">
+                        {{ if $.Authenticated }}
+                            <form action="/image/delete" method="post" onsubmit="return confirmDeletion('das Bild')">
+                                <input name="imageId" value="{{.Id}}" hidden>
+                                <input name="eventId" value="{{$.Event.Id}}" hidden>
+                                <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
+                            </form>
+                        {{end}}
+                        <a href="/public/images/{{.Name}}"><img src="/public/thumbs/{{.Name}}"/></a>
+                    </div>
+                {{end}}
+            </div>
             {{ if $.Authenticated }}
-            <form action="/image/delete" method="post" onsubmit="return confirmDeletion('das Bild')">
-                <input name="imageId" value="{{.Id}}" hidden>
-                <input name="eventId" value="{{$.Event.Id}}" hidden>
-                <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
-            </form>
+                <h4>Bilder hinzufügen</h4>
+                    <!-- TODO maximale Dateigröße?-->
+                    <p class="info">Es können mehrere Bilder gleichzeitig ausgewählt werden.<br>Unterstützte Bildformate: .jpg, .png<br>Maximale Dateigröße: X MB</p>
+                <form id="imageUpload" name="imageUpload" action="/image/add" enctype="multipart/form-data"
+                      method="post">
+                    <input name="eventId" value="{{.Event.Id}}" hidden>
+                    <input type="file" accept="image/*" name="images" multiple required>
+                    <input type="submit" value="Hochladen">
+                </form>
             {{end}}
-        </div>
-        {{end}}
-    </div>
-</section>
-{{end}}
+        </section>
+    {{end}}
 {{end}}

@@ -1,7 +1,13 @@
 package web
 
 import (
+	"bytes"
+	"github.com/nfnt/resize"
+	"image"
+	"image/jpeg"
+	_ "image/png"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -13,7 +19,7 @@ import (
 )
 
 func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	err := r.ParseMultipartForm(5 << 20) // 5 MB
+	err := r.ParseMultipartForm(5 << 20) // 5 MB TODO bedeutet das Bilder dürfen maximal 5MB groß sein? Sollte vielleicht nach oben korrigiert werden
 	if err != nil {
 		return err
 	}
@@ -23,28 +29,54 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 		return err
 	}
 
-	filename := getUniqueFileName()
-	file, _, err := r.FormFile("image")
-	if err != nil {
-		return err
-	}
-	defer file.Close()
+	m := r.MultipartForm
 
-	err = s.saveNewFile(file, filename)
-	if err != nil {
-		return err
-	}
+	files := m.File["images"]
 
-	err = s.db.CreateImage("/public/images/"+filename, eventId)
-	if err != nil {
-		return err
-	}
+	for i := range files {
 
+		filename := getUniqueFileName()
+		file, err := files[i].Open()
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		buffer, err := ioutil.ReadAll(file)
+
+		//TODO: Andere Formate als jpg und png; errorhandling wenn datei gar keine Bilddatei ist
+		img, _, err := image.Decode(bytes.NewReader(buffer))
+		if err != nil {
+			panic(err)
+			return err
+		}
+
+		thumbnailImage := resize.Thumbnail(400, 400, img, resize.Bilinear)
+
+		err = s.saveNewThumbnailImage(thumbnailImage, filename)
+		if err != nil {
+			panic(err)
+			return err
+		}
+
+		err = s.saveNewFullImageFile(bytes.NewReader(buffer), filename)
+		if err != nil {
+			panic(err)
+			return err
+		}
+
+		err = s.db.CreateImage(filename, eventId)
+		if err != nil {
+			panic(err)
+			return err
+		}
+	}
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
 	return nil
 }
 
+//TODO zugehöriges thumbnail auch löschen; Achtung die Titelbilder haben keine Thumbnails...sollten sie?
 func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
@@ -71,16 +103,27 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 	return nil
 }
 
-func (s *Server) saveNewFile(file io.Reader, name string) error {
+func (s *Server) saveNewThumbnailImage(img image.Image, name string) error {
+	f, err := os.Create(filepath.Join(s.thumbPath, name))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	err = jpeg.Encode(f, img, nil)
+	return err
+}
+func (s *Server) saveNewFullImageFile(img io.Reader, name string) error {
 	f, err := os.Create(filepath.Join(s.imgPath, name))
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
-	_, err = io.Copy(f, file)
+	_, err = io.Copy(f, img)
 	return err
 }
 
 func getUniqueFileName() string {
-	return strconv.Itoa(int(time.Now().UnixNano()))
+	return strconv.Itoa(int(time.Now().UnixNano())) + ".jpg"
 }

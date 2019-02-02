@@ -4,7 +4,7 @@
     {{if .EventList}}
     <div id="eventList">
         {{range .EventList}}
-        <a class="event" href="/event/{{.Id}}" style="background-image: url('{{.ImageUrl}}')">
+        <a class="event" href="/event/{{.Id}}" style="background-image: url('/public/images/{{.ImageName}}')">
             <div class="description">
 
                 <h3>{{.Theme}}</h3>

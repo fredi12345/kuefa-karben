@@ -27,7 +27,7 @@
                 <input name="dessert" type="text" placeholder="Nachtisch" value="{{.Event.Dessert}}" required>
                 <input name="info" type="text" placeholder="Infotext" value="{{.Event.InfoText}}" required>
                 <input name="image" type="file" accept="image/*">
-                <img src="{{.Event.ImageUrl}}"/>
+                <img src="/public/images/{{.Event.ImageName}}"/>
                 <input name="event-id" type="hidden" value="{{.Event.Id}}"/>
             </div>
             <input type="submit" class="buttonRight" value="Änderungen übernehmen">

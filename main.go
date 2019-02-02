@@ -24,7 +24,10 @@ func main() {
 		log.Fatalf("could not create database: %v", err)
 	}
 
-	server := web.NewServer(db, path.Join("resources", "public", "images"))
+	imgPath := path.Join("resources", "public", "images")
+	thumbPath := path.Join("resources", "public", "thumbs")
+
+	server := web.NewServer(db, imgPath, thumbPath)
 	handler := createHandler(server)
 	fmt.Println("http://localhost:8080")
 

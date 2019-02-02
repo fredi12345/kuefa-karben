@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS event (
   main_dish    VARCHAR(512),
   dessert      VARCHAR(512),
   infotext     VARCHAR(2048),
-  image_url    VARCHAR(256),
+  image_name    VARCHAR(256),
   PRIMARY KEY (event_id)
 );
 
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS comment (
 CREATE TABLE IF NOT EXISTS images (
   id        INT NOT NULL AUTO_INCREMENT,
   event_id  INT,
-  image_url VARCHAR(256),
+  image_name VARCHAR(256),
   PRIMARY KEY (id),
   FOREIGN KEY (event_id) REFERENCES event (event_id)
 );
@@ -60,16 +60,16 @@ INSERT INTO user (name, salt, password)
 VALUES ('test', '1Y6LMQth5V', '0d16233affc52371347cbb20123ff8157158e8589bcfeabff2e44d30891fc32a');
 
 #Events
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Testevent',
-        '2016-01-01T00:30',
+        '2020-01-01T00:30',
         '2018-07-19T22:12',
         'Eine leckere Vorspeise',
         'Ein leckeres Hauptgericht',
         'Ein leckerer Nachtisch',
         'Wir freuen uns auf eure Teilnahme.',
-        '/public/images/Cover-Test.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-Test.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Herbstessen',
         '2016-10-16T17:30',
         '2018-07-19T22:12',
@@ -77,8 +77,8 @@ VALUES ('Herbstessen',
         'Braten mit Klößen und Gemüse',
         'Nachtisch',
         'Das erste Herbstessen der Küfa Karben findet im Jugendcafé im JuKuZ statt. Wir freuen uns auf ein gemeinsames Essen in entspannter Atmosphäre!',
-        '/public/images/Cover-2016-10-16.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2016-10-16.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Weihnachtsessen',
         '2016-11-27T17:30',
         '2018-07-19T22:12',
@@ -86,8 +86,8 @@ VALUES ('Weihnachtsessen',
         'Gulasch mit Rotkohl und Bandnudeln vegane Variante: Champignongulasch',
         'Spekulatius-Orangen-Creme',
         'Gibt es einen geeigneteren Anlass als den 1. Advent, um zum Essen einzuladen? Vermutlich, aber wir nehmen mit diesem gerne Vorlieb.',
-        '/public/images/Cover-2016-11-27.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2016-11-27.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Frühlingsessen',
         '2017-03-19T17:30',
         '2018-07-19T22:12',
@@ -95,8 +95,8 @@ VALUES ('Frühlingsessen',
         'Hähnchen (bzw. Tofuspieße) mit Gnocchis und Bärlauchpesto',
         'Blätterteig mit Ziegenkäse, Honig und Nüssen',
         'Nach langer Pause folgt nun endlich das dritte gemeinsame Essen der Küfa! Wir freuen uns auf euch!',
-        '/public/images/Cover-2017-03-19.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2017-03-19.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('4. Küfa-Essen',
         '2017-04-23T18:00',
         '2018-07-19T22:12',
@@ -104,8 +104,8 @@ VALUES ('4. Küfa-Essen',
         'Frankfurter Kartoffelwurst im Speckmantel',
         'Starkbiersoße an Kartoffeln und Gemüse., warme Malzbierbonbons mit Vanillesoße',
         'Am 23. April ist Tag des deutschen Bieres und ganz mottogetreu wird auch unser Menü rund ums Bier konzipiert sein. Natürlich gibt es für unsere jüngeren Gäste auch bierfreie Varationen! :)',
-        '/public/images/Cover-2017-04-23.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2017-04-23.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Gemeinsames Grillen',
         '2017-06-11T18:00',
         '2018-07-19T22:12',
@@ -113,8 +113,8 @@ VALUES ('Gemeinsames Grillen',
         'Teriyaki-Spieße mit gegrilltem Gemüse und Erdnusssoße',
         'Gegrillter Pfirsich mit Pistazieneis und Minze',
         'Wir wollen gemeinsam mit euch die Grillzeit einleiten! Kommt vorbei, wir freuen uns. Es gibt Hansis Grill-Menü!',
-        '/public/images/Cover-2017-06-11.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2017-06-11.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Burgertime',
         '2017-07-16T17:30',
         '2018-07-19T22:12',
@@ -122,8 +122,8 @@ VALUES ('Burgertime',
         'Selbstgemachte Burger mit Krautsalat',
         'S´mores mit Heidelbeeren',
         'Es gibt Burger, klassisch, vegetarisch und vegan. Der Termin steht! Wir freuen uns auf euch!',
-        '/public/images/Cover-2017-07-16.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2017-07-16.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('1 Jahr Küfa - Immer wieder kommt ein neuer Herbst',
         '2017-10-29T17:30',
         '2018-07-19T22:12',
@@ -131,8 +131,8 @@ VALUES ('1 Jahr Küfa - Immer wieder kommt ein neuer Herbst',
         'Mediteranes Hähnchen natürlich wird es auch eine vegane Variante geben',
         'Gebratene Grießnocken mit heißen Kirschen',
         'Ein Jahr ist vorbei und auch dieses Mal haben wir uns ein herbstliches Menü für euch überlegt',
-        '/public/images/Cover-2017-10-29.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2017-10-29.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Novemberessen',
         '2017-11-26T17:30',
         '2018-07-19T22:12',
@@ -140,8 +140,8 @@ VALUES ('Novemberessen',
         'Kohlrouladen mit Kartoffelpüree',
         'Erdnusskürbispralinen mit Haferkrokant',
         'Wir freuen uns auf euch!',
-        '/public/images/Cover-2017-11-26.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2017-11-26.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Asiatisch aufgetischt!',
         '2018-02-25T17:30',
         '2018-07-19T22:12',
@@ -149,8 +149,8 @@ VALUES ('Asiatisch aufgetischt!',
         'Asiatisches Curry mit Reis und Hähnchen- oder Tofuspießen',
         'Gebackene Banane mit Vanilleeis und süßem Honig oder Ahornsirup',
         'Kommt vorbei und genießt zu den Speisen die Getränke zum Jugendcafépreis. Wir freuen uns auf euch!',
-        '/public/images/Cover-2018-02-25.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2018-02-25.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Herzlich Hessisch Uffgetischt',
         '2018-05-20T17:30',
         '2018-07-19T22:12',
@@ -158,8 +158,8 @@ VALUES ('Herzlich Hessisch Uffgetischt',
         'Grüne Soße mit Kartoffeln und Schnitzel (natürlich auch als vegane Variante',
         'Apple Crumble',
         'Wir freuen uns auf euch!',
-        '/public/images/Cover-2018-05-20.png');
-INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_url)
+        'Cover-2018-05-20.png');
+INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('Italenischer Sommer',
         '2019-06-24T17:30',
         '2018-07-19T22:12',
@@ -167,7 +167,7 @@ VALUES ('Italenischer Sommer',
         'Gnocchi an Pesto Penne Bolognese Spaghetti Aglio e Olio',
         'Ricotta-Cannelloni mit warmer Himbeersoße',
         'Wir freuen uns auf euch!',
-        '/public/images/Cover-2018-06-24.png');
+        'Cover-2018-06-24.png');
 
 #Participants
 INSERT INTO participant (name, participant_created, menu, message, event_id)
@@ -190,52 +190,52 @@ INSERT INTO comment (content, name, comment_created, event_id)
 VALUES ('testcontent', 'Tester 3', Now(), (SELECT event_id FROM event ORDER BY event_id LIMIT 1));
 
 #Pictures
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
-INSERT INTO images (event_id, image_url)
-VALUES (1, '/public/images/Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
+INSERT INTO images (event_id, image_name)
+VALUES (1, 'Cover-Test.png');
 
 #Covers
-#INSERT INTO images (event_id, image_url) VALUES ((SELECT event_id FROM event ORDER BY event_id LIMIT 1), 'public/images/first-event.png' );
-INSERT INTO images (event_id, image_url)
-VALUES (2, '/public/images/Cover-2016-10-16.png');
-INSERT INTO images (event_id, image_url)
-VALUES (3, '/public/images/Cover-2016-11-27.png');
-INSERT INTO images (event_id, image_url)
-VALUES (4, '/public/images/Cover-2017-03-19.png');
-INSERT INTO images (event_id, image_url)
-VALUES (5, '/public/images/Cover-2017-04-23.png');
-INSERT INTO images (event_id, image_url)
-VALUES (6, '/public/images/Cover-20117-06-11.png');
-INSERT INTO images (event_id, image_url)
-VALUES (7, '/public/images/Cover-2017-07-16.png');
-INSERT INTO images (event_id, image_url)
-VALUES (8, '/public/images/Cover-2017-10-29.png');
-INSERT INTO images (event_id, image_url)
-VALUES (9, '/public/images/Cover-2017-11-26.png');
-INSERT INTO images (event_id, image_url)
-VALUES (10, '/public/images/Cover-2018-02-25.png');
-INSERT INTO images (event_id, image_url)
-VALUES (11, '/public/images/Cover-2018-05-20.png');
-INSERT INTO images (event_id, image_url)
-VALUES (12, '/public/images/Cover-2018-06-24.png');
+#INSERT INTO images (event_id, image_name) VALUES ((SELECT event_id FROM event ORDER BY event_id LIMIT 1), 'public/images/first-event.png' );
+INSERT INTO images (event_id, image_name)
+VALUES (2, 'Cover-2016-10-16.png');
+INSERT INTO images (event_id, image_name)
+VALUES (3, 'Cover-2016-11-27.png');
+INSERT INTO images (event_id, image_name)
+VALUES (4, 'Cover-2017-03-19.png');
+INSERT INTO images (event_id, image_name)
+VALUES (5, 'Cover-2017-04-23.png');
+INSERT INTO images (event_id, image_name)
+VALUES (6, 'Cover-20117-06-11.png');
+INSERT INTO images (event_id, image_name)
+VALUES (7, 'Cover-2017-07-16.png');
+INSERT INTO images (event_id, image_name)
+VALUES (8, 'Cover-2017-10-29.png');
+INSERT INTO images (event_id, image_name)
+VALUES (9, 'Cover-2017-11-26.png');
+INSERT INTO images (event_id, image_name)
+VALUES (10, 'Cover-2018-02-25.png');
+INSERT INTO images (event_id, image_name)
+VALUES (11, 'Cover-2018-05-20.png');
+INSERT INTO images (event_id, image_name)
+VALUES (12, 'Cover-2018-06-24.png');

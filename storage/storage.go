@@ -8,7 +8,7 @@ type Service interface {
 	CreateEvent(event Event) (int, error)
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
-	CreateImage(url string, event int) error
+	CreateImage(fileName string, event int) error
 	CreateUser(name, password string) error
 
 	GetEvent(id int) (*Event, error)
@@ -20,7 +20,7 @@ type Service interface {
 	GetEventCount() (int, error)
 
 	UpdateEvent(event Event) error
-	UpdateEventImage(id int, url string) error
+	UpdateEventImage(id int, fileName string) error
 
 	DeleteComment(id int) error
 	DeleteImage(id int) (string, error)
@@ -46,7 +46,7 @@ type Event struct {
 	MainDish  string
 	Dessert   string
 	InfoText  string
-	ImageUrl  string
+	ImageName string
 }
 
 type Participant struct {
@@ -65,6 +65,6 @@ func (p *Participant) MenuString() string {
 }
 
 type Image struct {
-	Id  int
-	URL string
+	Id   int
+	Name string
 }
