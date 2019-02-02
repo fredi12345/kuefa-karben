@@ -1,19 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Küche für Alle!</title>
-    <link rel="stylesheet" href="../public/style.css">
-    {{template "favicon" .}}
+    <title>Küfa Karben | Veranstaltung bearbeiten</title>
+    {{template "htmlHead" .}}
 </head>
-<script>
-    function confirmDeletion(objectToDelete) {
-        return confirm("Möchten Sie " + objectToDelete + " wirklich löschen?");
-    }
-</script>
 <body>
-    {{template "head" .}}
+    {{template "header" .}}
     <section id="createEvent">
         <h4>Veranstaltung bearbeiten</h4>
 

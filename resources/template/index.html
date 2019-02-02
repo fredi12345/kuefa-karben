@@ -1,20 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Küche für Alle!</title>
-    <link rel="stylesheet" href="/public/style.css">
-    {{template "favicon" .}}
+    <title>Küfa Karben | Startseite</title>
+    {{template "htmlHead" .}}
 </head>
-<!-- TODO: Dieses Skript muss auf alle Seiten auf denen Sachen gelöscht werden können. Evtl. mit dem head/meta Daten auch in ein Template packen? -->
-<script>
-    function confirmDeletion(objectToDelete) {
-        return confirm("Möchten Sie " + objectToDelete + " wirklich löschen?");
-    }
-</script>
 <body>
-    {{template "head" .}}
+    {{template "header" .}}
     {{template "message" .}}
     {{template "about" .}}
     {{template "eventPreview" .}}
