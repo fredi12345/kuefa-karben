@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
 	"path"
 
 	"github.com/fredi12345/kuefa-karben/config"
