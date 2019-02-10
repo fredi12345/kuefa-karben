@@ -30,11 +30,9 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request, sess 
 	return nil
 }
 
-//TODO: timeCreated und eventID speichern, siehe dazu mysql.go
 func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	r.ParseForm()
 
-	//TODO: Die Parameter kann man bestimmt einfacher zu int casten?
 	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
 		return err

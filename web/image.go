@@ -2,7 +2,6 @@ package web
 
 import (
 	"bytes"
-	"github.com/nfnt/resize"
 	"image"
 	"image/jpeg"
 	_ "image/png"
@@ -15,11 +14,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nfnt/resize"
+
 	"github.com/gorilla/sessions"
 )
 
 func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	err := r.ParseMultipartForm(5 << 20) // 5 MB TODO bedeutet das Bilder dürfen maximal 5MB groß sein? Sollte vielleicht nach oben korrigiert werden
+	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
 		return err
 	}
@@ -44,7 +45,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 
 		buffer, err := ioutil.ReadAll(file)
 
-		//TODO: Andere Formate als jpg und png; errorhandling wenn datei gar keine Bilddatei ist
+		//TODO: errorhandling wenn datei gar keine Bilddatei ist
 		img, _, err := image.Decode(bytes.NewReader(buffer))
 		if err != nil {
 			panic(err)
@@ -76,7 +77,6 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 	return nil
 }
 
-//TODO zugehöriges thumbnail auch löschen; Achtung die Titelbilder haben keine Thumbnails...sollten sie?
 func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {

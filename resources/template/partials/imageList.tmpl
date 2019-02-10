@@ -19,8 +19,7 @@
             </div>
             {{ if $.Authenticated }}
                 <h4>Bilder hinzufügen</h4>
-                    <!-- TODO maximale Dateigröße?-->
-                    <p class="info">Es können mehrere Bilder gleichzeitig ausgewählt werden.<br>Unterstützte Bildformate: .jpg, .png<br>Maximale Dateigröße: X MB</p>
+                    <p class="info">Es können mehrere Bilder gleichzeitig ausgewählt werden.<br>Unterstützte Bildformate: .jpg, .png</p>
                 <form id="imageUpload" name="imageUpload" action="/image/add" enctype="multipart/form-data"
                       method="post">
                     <input name="eventId" value="{{.Event.Id}}" hidden>
