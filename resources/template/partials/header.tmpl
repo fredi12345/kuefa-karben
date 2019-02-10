@@ -1,9 +1,14 @@
 {{define "header"}}
-<header>
-    <a href="/">
-        <img src="../../public/header_wood.jpeg"/>
-    </a>
-    <h1>Küche für Alle - Kochen, Essen, Beisammensein</h1>
-    {{template "navigation" .}}
-</header>
+    <header>
+        <a href="/">
+            <img src="../../public/header_wood.jpeg"/>
+        </a>
+        <h1>Küche für Alle - Kochen, Essen, Beisammensein</h1>
+        {{template "navigation" .}}
+    </header>
+    <div id="cookieNotice">
+        <p>Diese Website verwendet Cookies, um volle Funktionalität zu ermöglichen.</p>
+        <a href="/impressum" class="button">Mehr Infos</a>
+        <button onclick="acceptCookies()">Verstanden</button>
+    </div>
 {{end }}

@@ -33,6 +33,30 @@ header h1 {
     font-weight: initial;
 }
 
+#cookieNotice {
+    display: none;
+    margin-left: auto;
+    position: fixed;
+    top: 0;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    background: #404040;
+    padding: 10px;
+    margin-right: auto;
+    left: 0;
+    color: white;
+    right: 0;
+    text-align: center;
+    z-index: 10;
+}
+
+#cookieNotice p {
+    margin-right: 20px;
+}
+
+#cookieNotice * {
+    display: inline-block;
+}
+
 nav {
     flex-wrap: wrap;
     text-shadow: 1px 1px 1px black;
@@ -231,7 +255,7 @@ section h4 {
     transition: background 0.15s;
 }
 
-#showAll:hover, button:hover, input[type="submit"]:hover {
+#showAll:hover, button:hover, input[type="submit"]:hover, .button:hover {
     background: #c66900;
     transition: background 0.3s;
 }
