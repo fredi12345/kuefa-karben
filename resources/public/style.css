@@ -206,13 +206,13 @@ section h4 {
     margin-top: 20px;
 }
 
-#participantList div {
+.participant {
     padding: 10px;
     clear: both;
     display: flow-root;
 }
 
-#participantList div:nth-child(2n) {
+.participant:nth-child(2n-1) {
     background-color: #eee;
 }
 

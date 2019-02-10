@@ -23,8 +23,10 @@
         <div id="participantList">
             <h4>Teilnehmer</h4>
             {{if .Participants}}
+                <p id="participantCount" class="info">{{len .Participants}} Insgesamt | {{.Classic}} Klassisch
+                    | {{.Vegetarian}} Vegetarisch | {{.Vegan}} Vegan</p>
                 {{ range .Participants}}
-                    <div>
+                    <div class="participant">
                         {{if $.Authenticated}}
                             <form action="/participant/delete" method="post"
                                   onsubmit="return confirmDeletion('den Teilnehmer')">
