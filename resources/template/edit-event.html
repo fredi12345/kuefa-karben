@@ -12,7 +12,7 @@
         <form id="createEventForm" name="createEvent" enctype="multipart/form-data" action="/event/edit" method="post">
             <div id="flexcontainer">
                 <input name="theme" type="text" placeholder="Motto" value="{{.Event.Theme}}" required>
-                <input name="date" type="datetime-local" value="{{.Event.EventDate.Format " 2006-01-02T15:04"}}"
+                <input name="date" type="datetime-local" value="{{.Event.EventDate.Format "2006-01-02T15:04"}}"
                 required>
                 <input name="starter" type="text" placeholder="Vorspeiße" value="{{.Event.Starter}}" required>
                 <input name="main-dish" type="text" placeholder="Hauptgericht" value="{{.Event.MainDish}}" required>
