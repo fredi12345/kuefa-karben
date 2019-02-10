@@ -24,6 +24,7 @@ func main() {
 		log.Fatalf("could not create database: %v", err)
 	}
 
+	//TODO Ordner erstellen wenn nicht vorhanden
 	imgPath := path.Join("resources", "public", "images")
 	thumbPath := path.Join("resources", "public", "thumbs")
 
