@@ -53,8 +53,8 @@ nav a {
     transition: background-color 0.15s;
 }
 
-nav a:last-child{
-    flex:1;
+nav a:last-child {
+    flex: 1;
 }
 
 nav a:hover {
@@ -127,7 +127,7 @@ section h4 {
     position: relative;
 }
 
-#images div+div h4 {
+#images div + div h4 {
     margin-top: 20px;
 }
 
@@ -170,7 +170,7 @@ section h4 {
     bottom: 0;
     left: 0;
     color: white;
-    text-shadow: 0 0 1px rgba(0,0,0,0.5);
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
     text-decoration: none;
     background-image: linear-gradient(rgba(64, 64, 64, 0), rgba(64, 64, 64, 0.9));
     position: absolute;
@@ -202,11 +202,16 @@ section h4 {
     flex-grow: 1;
 }
 
-#participantList div{
+#participantList {
+    margin-top: 20px;
+}
+
+#participantList div {
     padding: 10px;
     clear: both;
     display: flow-root;
 }
+
 #participantList div:nth-child(2n) {
     background-color: #eee;
 }
@@ -216,8 +221,8 @@ section h4 {
     border: none;
     padding: 10px;
     text-decoration: none;
-    text-shadow: 0 0 1px rgba(0,0,0,0.5);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     border-radius: 5px;
     color: white;
     font-weight: bold;
@@ -246,7 +251,6 @@ section h4 {
 
 .buttonRight {
     float: right;
-    margin-top: 20px;
 }
 
 #older {
@@ -284,7 +288,7 @@ input, textarea {
 }
 
 textarea {
-    width: calc(100% - 57px);
+    width: calc(100% - 22px);
     resize: vertical;
 }
 
@@ -292,10 +296,6 @@ input:focus, textarea:focus {
     border-color: #404040;
 }
 
-#createComment textarea {
-    width: 100%;
-    resize: vertical;
-}
 
 .info {
     background-color: #eee;
@@ -319,13 +319,13 @@ input:focus, textarea:focus {
     background-color: #eee;
 }
 
-.commentDate {
+.commentSmall {
     display: inline-block;
     color: gray;
     font-size: small;
 }
 
-.commentName {
+.commentMedium {
     font-size: large;
     display: inline-block;
     color: gray;
@@ -414,12 +414,13 @@ footer * {
 }
 
 /* Find-Us Begin */
-#findUs{
+#findUs {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
 }
-section#findUs>div {
+
+section#findUs > div {
     padding: 20px;
     flex: 1;
 }
@@ -442,7 +443,7 @@ address {
     border-radius: 2px;
     line-height: 14px;
     padding: 10px;
-    margin-top:10px;
+    margin-top: 10px;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
@@ -450,4 +451,5 @@ address {
     width: 34px;
     margin: -10px 5px -10px -10px;
 }
+
 /*Find-Us End */

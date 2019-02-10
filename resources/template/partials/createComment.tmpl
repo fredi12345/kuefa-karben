@@ -1,18 +1,16 @@
 {{ define "createComment" }}
-{{ if .CommentsAllowed }}
-<section id="createComment">
-    <h4>Kommentar hinzufügen</h4>
-    <form id="createCommentForm" name="createComment" action="/comment/add" method="post">
-        <input name="name" type="text" placeholder="Name" required><br>
-        <textarea name="comment" placeholder="Dein Kommentar..." cols="100" rows="5" maxlength="1024"
-                  required></textarea><br>
-        <input type="checkbox" class="publicationInfoCheck" name="publicationInfoCheck" id="publicationInfoCheck"
-               required><label for="publicationInfoCheck">Ich bin damit einverstanden, dass das Kommentar zusammen mit
-        meinem Namen öffentlich auf dieser Seite erscheint. Benutze gegebenenfalls einen Spitznamen, um anonym zu
-        bleiben.</label><br>
-        <input name="eventId" value="{{.Event.Id}}" hidden>
-        <input class="buttonRight" type="submit" value="Speichern">
-    </form>
-</section>
-{{end}}
+    {{ if .CommentsAllowed }}
+        <section id="createComment">
+            <h4>Kommentar hinzufügen</h4>
+            <form id="createCommentForm" name="createComment" action="/comment/add" method="post">
+                <input name="name" type="text" placeholder="Name" required><br>
+                <textarea name="comment" placeholder="Dein Kommentar..." cols="100" rows="5" maxlength="1024"
+                          required></textarea><br>
+                <p class="info">Dein Name erscheint zusammen mit dem Kommentar öffentlich auf dieser Seite. Benutze
+                    gegebenenfalls einen Spitznamen, um anonym zu bleiben.</p>
+                <input name="eventId" value="{{.Event.Id}}" hidden>
+                <input class="buttonRight" type="submit" value="Speichern">
+            </form>
+        </section>
+    {{end}}
 {{ end }}

@@ -1,24 +1,22 @@
 {{define "commentList"}}
-{{ if .Comments }}
-<section id="comments">
-    <h4>Kommentare</h4>
-    {{ range .Comments }}
-    <div class="comment">
-        {{ if $.Authenticated }}
-            <form action="/comment/delete" method="post" onsubmit="return confirmDeletion('das Kommentar')">
-                <input name="commentId" value="{{.Id}}" hidden>
-                <input name="eventId" value="{{$.Event.Id}}" hidden>
-                <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
-            </form>
-        {{end}}
-        <p class="commentName">{{.Name}}</p>
-        <p class="commentDate">{{.Created.Format "02.01.2006 - 15:04"}}</p>
-        <p class="commentText">{{.Content}}</p>
+    {{ if .Comments }}
+        <section id="comments">
+            <h4>Kommentare</h4>
+            {{ range .Comments }}
+                <div class="comment">
+                    {{ if $.Authenticated }}
+                        <form action="/comment/delete" method="post" onsubmit="return confirmDeletion('das Kommentar')">
+                            <input name="commentId" value="{{.Id}}" hidden>
+                            <input name="eventId" value="{{$.Event.Id}}" hidden>
+                            <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
+                        </form>
+                    {{end}}
+                    <p class="commentMedium">{{.Name}}</p>
+                    <p class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</p>
+                    <p class="commentText">{{.Content}}</p>
 
-
-
-    </div>
+                </div>
+            {{end}}
+        </section>
     {{end}}
-</section>
-{{end}}
 {{end}}
