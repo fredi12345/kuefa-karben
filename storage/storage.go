@@ -58,7 +58,7 @@ type Participant struct {
 	EventId int
 }
 
-var menuToString = map[int]string{0: "Normal", 1: "Vegetarisch", 2: "Vegan"}
+var menuToString = map[int]string{0: "Klassisch", 1: "Vegetarisch", 2: "Vegan"}
 
 func (p *Participant) MenuString() string {
 	return menuToString[p.Menu]
