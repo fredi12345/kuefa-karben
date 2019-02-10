@@ -7,17 +7,13 @@ import (
 )
 
 func (s *Server) Impressum(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	//TODO: hier wird Event Detail template genutzt
-	templ, err := s.createTmplEventDetail(1, sess)
+	templ := s.createTmplImpressum(sess)
+
+	err := sess.Save(r, w)
 	if err != nil {
 		return err
 	}
 
-	templ.PageLocation = "impressum"
-	err = sess.Save(r, w)
-	if err != nil {
-		return err
-	}
 	t := s.tmpl.Lookup("impressum.html")
 	err = t.Execute(w, templ)
 	if err != nil {
@@ -25,4 +21,20 @@ func (s *Server) Impressum(w http.ResponseWriter, r *http.Request, sess *session
 	}
 
 	return nil
+}
+
+type tmplImpressum struct {
+	PageLocation  string
+	Authenticated bool
+}
+
+func (s *Server) createTmplImpressum(sess *sessions.Session) tmplImpressum {
+	var templ tmplImpressum
+	templ.PageLocation = "impressum"
+
+	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
+		templ.Authenticated = auth
+	}
+
+	return templ
 }
