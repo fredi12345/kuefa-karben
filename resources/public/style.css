@@ -8,7 +8,7 @@ header {
     position: relative;
     background: #404040;
     display: block;
-    border-radius: 0 0 2px 2px;
+    border-radius: 0 0 10px 10px;
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
@@ -112,7 +112,7 @@ body:before {
     display: block;
     background-size: cover;
     background-image: url(background.jpg);
-    filter: blur(13px);
+    filter: blur(3px);
 }
 
 section {
@@ -121,7 +121,7 @@ section {
     margin-top: 20px;
     padding: 40px;
     background: white;
-    border-radius: 2px;
+    border-radius: 10px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
