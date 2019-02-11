@@ -1,21 +1,22 @@
 {{define "eventPreview"}}
-<section id="events">
-    <h2>Vergangene/Anstehende Veranstaltungen</h2>
-    {{if .EventList}}
-    <div id="eventList">
-        {{range .EventList}}
-        <a class="event" href="/event/{{.Id}}" style="background-image: url('/public/images/{{.ImageName}}')">
-            <div class="description">
+    <section id="events">
+        <h2>Vergangene/Anstehende Veranstaltungen</h2>
+        {{if .EventList}}
+            <div id="eventList">
+                {{range .EventList}}
+                    <a class="event" href="/event/{{.Id}}"
+                       style="background-image: url('/public/thumbs/{{.ImageName}}')">
+                        <div class="description">
 
-                <h3>{{.Theme}}</h3>
-                <h4>{{.EventDate.Format "02.01.2006"}}</h4>
+                            <h3>{{.Theme}}</h3>
+                            <h4>{{.EventDate.Format "02.01.2006"}}</h4>
+                        </div>
+                    </a>
+                {{end}}
             </div>
-        </a>
+        {{else}}
+            <p>Es sind keine Veranstaltungen vorhanden.</p>
         {{end}}
-    </div>
-    {{else}}
-    <p>Es sind keine Veranstaltungen vorhanden.</p>
-    {{end}}
-    <a id="showAll" href="/event/all">Alle Veranstaltungen</a>
-</section>
+        <a id="showAll" href="/event/all">Alle Veranstaltungen</a>
+    </section>
 {{end}}

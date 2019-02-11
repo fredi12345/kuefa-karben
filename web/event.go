@@ -38,10 +38,12 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 		return err
 	}
 	defer file.Close()
-	err = s.saveNewFullImageFile(file, filename)
+
+	err = s.createAndSaveThumbAndFullImage(filename, file)
 	if err != nil {
 		return err
 	}
+
 	event.ImageName = filename
 
 	id, err := s.db.CreateEvent(event)
