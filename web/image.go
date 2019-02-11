@@ -43,26 +43,8 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 		}
 		defer file.Close()
 
-		buffer, err := ioutil.ReadAll(file)
-
-		//TODO: errorhandling wenn datei gar keine Bilddatei ist
-		img, _, err := image.Decode(bytes.NewReader(buffer))
+		err = s.createAndSaveThumbAndFullImage(filename, file)
 		if err != nil {
-			panic(err)
-			return err
-		}
-
-		thumbnailImage := resize.Thumbnail(400, 400, img, resize.Bilinear)
-
-		err = s.saveNewThumbnailImage(thumbnailImage, filename)
-		if err != nil {
-			panic(err)
-			return err
-		}
-
-		err = s.saveNewFullImageFile(bytes.NewReader(buffer), filename)
-		if err != nil {
-			panic(err)
 			return err
 		}
 
@@ -74,6 +56,32 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 	}
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
 
+	return nil
+}
+
+func (s *Server) createAndSaveThumbAndFullImage(filename string, file io.Reader) error {
+	buffer, err := ioutil.ReadAll(file)
+
+	//TODO: errorhandling wenn datei gar keine Bilddatei ist
+	img, _, err := image.Decode(bytes.NewReader(buffer))
+	if err != nil {
+		panic(err)
+		return err
+	}
+
+	thumbnailImage := resize.Thumbnail(400, 400, img, resize.Bilinear)
+
+	err = s.saveNewThumbnailImage(thumbnailImage, filename)
+	if err != nil {
+		panic(err)
+		return err
+	}
+
+	err = s.saveNewFullImageFile(bytes.NewReader(buffer), filename)
+	if err != nil {
+		panic(err)
+		return err
+	}
 	return nil
 }
 

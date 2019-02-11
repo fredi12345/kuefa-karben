@@ -75,7 +75,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 			return err
 		}
 
-		err = s.saveNewFullImageFile(file, filename)
+		err = s.createAndSaveThumbAndFullImage(filename, file)
 		if err != nil {
 			return err
 		}
