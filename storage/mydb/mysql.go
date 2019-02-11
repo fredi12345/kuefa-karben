@@ -284,11 +284,6 @@ func (c *connection) UpdateEvent(event storage.Event) error {
 	return err
 }
 
-func (c *connection) UpdateEventImage(id int, name string) error {
-	_, err := c.db.Exec(dbUpdateEventImage, name, id)
-	return err
-}
-
 func hash(password string, salt string) string {
 	hasher := sha256.New()
 	io.WriteString(hasher, password)

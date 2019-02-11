@@ -20,7 +20,6 @@ type Service interface {
 	GetEventCount() (int, error)
 
 	UpdateEvent(event Event) error
-	UpdateEventImage(id int, fileName string) error
 
 	DeleteComment(id int) error
 	DeleteImage(id int) (string, error)

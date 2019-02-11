@@ -15,7 +15,9 @@
                 <input name="starter" type="text" placeholder="Vorspeiße" required>
                 <input name="main-dish" type="text" placeholder="Hauptgericht" required>
                 <input name="dessert" type="text" placeholder="Nachtisch" required>
-                <input id="eventImageInput" name="image" type="file" accept="image/*" required>
+                <input id="eventImageInput" name="image" type="file" accept="image/*" onchange="previewImage(this)"
+                       required>
+                <img src="" style="display:none" id="imagePreview">
                 <textarea name="info" placeholder="Beschreibung" rows="3" required></textarea>
             </div>
             <input class="buttonRight" type="submit" value="Speichern">
