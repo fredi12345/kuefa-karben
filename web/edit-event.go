@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -85,7 +86,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 		return err
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
 	return nil
 }
 
