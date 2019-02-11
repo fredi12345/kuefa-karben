@@ -17,9 +17,9 @@
                 <input name="starter" type="text" placeholder="Vorspeiße" value="{{.Event.Starter}}" required>
                 <input name="main-dish" type="text" placeholder="Hauptgericht" value="{{.Event.MainDish}}" required>
                 <input name="dessert" type="text" placeholder="Nachtisch" value="{{.Event.Dessert}}" required>
-                <input name="info" type="text" placeholder="Infotext" value="{{.Event.InfoText}}" required>
-                <input name="image" type="file" accept="image/*">
-                <img src="/public/images/{{.Event.ImageName}}"/>
+                <input name="image" type="file" accept="image/*" onchange="previewImage(this)">
+                <img src="/public/images/{{.Event.ImageName}}" id="imagePreview"/>
+                <textarea name="info" placeholder="Infotext" rows="3" required>{{.Event.InfoText}}</textarea>
                 <input name="event-id" type="hidden" value="{{.Event.Id}}"/>
             </div>
             <input type="submit" class="buttonRight" value="Änderungen übernehmen">
