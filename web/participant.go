@@ -37,6 +37,8 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 	if err != nil {
 		return err
 	}
+
+	//Klassisch=0, Vegetarisch=1, Vegan=2
 	menu, err := strconv.Atoi(r.Form.Get("menu"))
 	if err != nil {
 		return err

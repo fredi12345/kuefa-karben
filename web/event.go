@@ -146,6 +146,9 @@ type tmplEventDetail struct {
 	PageLocation         string
 	ParticipationAllowed bool
 	CommentsAllowed      bool
+	Classic              int
+	Vegetarian           int
+	Vegan                int
 	Message              *message
 }
 
@@ -163,6 +166,23 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 		return nil, err
 	}
 	templ.Participants = part
+	classic, vegetarian, vegan := 0, 0, 0
+	for i := 0; i < len(part); i++ {
+		switch part[i].Menu {
+		case 0:
+			classic++
+			break
+		case 1:
+			vegetarian++
+			break
+		case 2:
+			vegan++
+			break
+		}
+	}
+	templ.Classic = classic
+	templ.Vegetarian = vegetarian
+	templ.Vegan = vegan
 
 	imagesFileNames, err := s.db.GetImages(id)
 	if err != nil {

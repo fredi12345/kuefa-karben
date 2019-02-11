@@ -7,23 +7,26 @@
 
                 <form id="participate" name="participate" action="/participant/add" method="post">
                     <input name="name" type="text" placeholder="Name" required><br>
-                    <input name="message" id="participationMessage" type="text"
-                           placeholder="Bemerkung/Nachricht (Optional)"
-                           maxlength="1000">
-                    <label><input type="radio" name="menu" value="0" checked>Standard</label>
+                    <textarea rows="2" name="message" id="participationMessage" type="text"
+                              placeholder="Bemerkung/Nachricht (Optional)"
+                              maxlength="1000"></textarea>
+                    <label><input type="radio" name="menu" value="0" checked>Klassisch</label>
                     <label><input type="radio" name="menu" value="1">Vegetarisch</label>
                     <label><input type="radio" name="menu" value="2">Vegan</label>
                     <input name="eventId" value="{{.Event.Id}}" hidden>
-                    <p class="info">Dein Name erscheint öffentlich auf dieser Seite. Benutze gegebenenfalls einen Spitznamen, um anonym zu bleiben.</p>
-                    <input type="submit" value="Teilnehmen">
+                    <p class="info">Dein Name erscheint öffentlich auf dieser Seite. Benutze gegebenenfalls einen
+                        Spitznamen, um anonym zu bleiben.</p>
+                    <input type="submit" class="buttonRight" value="Teilnehmen">
                 </form>
             </div>
         {{ end }}
         <div id="participantList">
             <h4>Teilnehmer</h4>
             {{if .Participants}}
+                <p id="participantCount" class="info">{{len .Participants}} Insgesamt | {{.Classic}} Klassisch
+                    | {{.Vegetarian}} Vegetarisch | {{.Vegan}} Vegan</p>
                 {{ range .Participants}}
-                    <div>
+                    <div class="participant">
                         {{if $.Authenticated}}
                             <form action="/participant/delete" method="post"
                                   onsubmit="return confirmDeletion('den Teilnehmer')">
@@ -33,7 +36,7 @@
                             </form>
                         {{end}}
                         <span>{{.Name}}</span>
-                        <span>{{.MenuString}}</span>
+                        <span class="commentMedium">{{.MenuString}}</span>
 
                         {{ if and $.Authenticated .Message}}
                             <p class="participationMessage">{{.Message}}</p>
