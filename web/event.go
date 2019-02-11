@@ -6,9 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"bytes"
-	"io"
-
 	"fmt"
 
 	"github.com/fredi12345/kuefa-karben/storage"
@@ -264,80 +261,4 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 	}
 
 	return &tmpl, nil
-}
-
-func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	err := r.ParseMultipartForm(5 << 20) // 5 MB
-	if err != nil {
-		return err
-	}
-
-	var event storage.Event
-	id, err := strconv.Atoi(r.Form.Get("event-id"))
-	if err != nil {
-		return err
-	}
-
-	event.Id = id
-	event.Theme = r.Form.Get("theme")
-	event.Starter = r.Form.Get("starter")
-	event.MainDish = r.Form.Get("main-dish")
-	event.Dessert = r.Form.Get("dessert")
-	event.InfoText = r.Form.Get("info")
-
-	d, err := time.Parse("2006-01-02T15:04", r.Form.Get("date"))
-	if err != nil {
-		return err
-	}
-	event.EventDate = d
-
-	file, err := readFileFromRequest(r)
-	if err != nil {
-		return err
-	}
-
-	if file.Len() == 0 {
-		err = s.db.UpdateEvent(event)
-		if err != nil {
-			return err
-		}
-	} else {
-		s.updateEventWithNewImage(file, event)
-	}
-
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
-
-	return nil
-}
-
-//TODO altes Bild entfernen
-func (s *Server) updateEventWithNewImage(file *bytes.Buffer, event storage.Event) {
-	filename := getUniqueFileName()
-	err := s.saveNewFullImageFile(file, filename)
-	if err != nil {
-		panic(err)
-	}
-	err = s.db.UpdateEvent(event)
-	if err != nil {
-		panic(err)
-	}
-	err = s.db.UpdateEventImage(event.Id, "/public/images/"+filename)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func readFileFromRequest(r *http.Request) (*bytes.Buffer, error) {
-	file, _, err := r.FormFile("image")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	var buf bytes.Buffer
-	_, err = io.Copy(&buf, file)
-	if err != nil {
-		return nil, err
-	}
-	return &buf, nil
 }
