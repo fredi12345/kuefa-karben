@@ -3,6 +3,8 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"strconv"
@@ -69,16 +71,31 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	}
 	defer file.Close()
 
+	oldEvent, err := s.db.GetEvent(id)
+	if err != nil {
+		return err
+	}
+
+	event.ImageName = oldEvent.ImageName
+
 	if header.Size > 0 {
-		filename, err := s.getEventImageName(id)
+		err = os.Remove(filepath.Join(s.thumbPath, oldEvent.ImageName))
 		if err != nil {
 			return err
 		}
 
+		err = os.Remove(filepath.Join(s.imgPath, oldEvent.ImageName))
+		if err != nil {
+			return err
+		}
+
+		filename := getUniqueFileName()
 		err = s.createAndSaveThumbAndFullImage(filename, file)
 		if err != nil {
 			return err
 		}
+
+		event.ImageName = filename
 	}
 
 	err = s.db.UpdateEvent(event)

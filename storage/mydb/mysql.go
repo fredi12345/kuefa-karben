@@ -32,8 +32,7 @@ const (
 	dbGetEventList     = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,9 `
 	dbGetEventCount    = `SELECT COUNT(event_id) FROM event`
 
-	dbUpdateEvent      = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=? WHERE event_id=?`
-	dbUpdateEventImage = `UPDATE event SET image_name=? WHERE event_id=?`
+	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=? WHERE event_id=?`
 
 	dbDeleteComment     = `DELETE FROM comment WHERE id=?`
 	dbDeleteImage       = `DELETE FROM images WHERE id=?`
@@ -279,8 +278,8 @@ func (c *connection) CheckCredentials(name, attemptedPassword string) (bool, err
 	return hashedAttempt == hashedPassword, nil
 }
 
-func (c *connection) UpdateEvent(event storage.Event) error {
-	_, err := c.db.Exec(dbUpdateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.Id)
+func (c *connection) UpdateEvent(e storage.Event) error {
+	_, err := c.db.Exec(dbUpdateEvent, e.Theme, e.EventDate, e.Starter, e.MainDish, e.Dessert, e.InfoText, e.ImageName, e.Id)
 	return err
 }
 
