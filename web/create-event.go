@@ -37,4 +37,5 @@ func (s *Server) createCreateEventTmpl(sess *sessions.Session) tmplCreateEvent {
 type tmplCreateEvent struct {
 	Authenticated bool
 	PageLocation  string
+	Message       *message
 }

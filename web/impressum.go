@@ -26,8 +26,9 @@ func (s *Server) Impressum(w http.ResponseWriter, r *http.Request, sess *session
 }
 
 type tmplImpressum struct {
-	PageLocation  string
 	Authenticated bool
+	PageLocation  string
+	Message       *message
 }
 
 func (s *Server) createTmplImpressum(sess *sessions.Session) tmplImpressum {

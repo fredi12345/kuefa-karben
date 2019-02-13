@@ -197,7 +197,7 @@ section h4 {
     color: white;
     text-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
     text-decoration: none;
-    background-image: linear-gradient(rgba(64, 64, 64, 0), rgba(64, 64, 64, 0.9));
+    background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.9));
     position: absolute;
     padding: 20px 10px 10px;
 }
@@ -413,7 +413,7 @@ input.editButton:hover {
 }
 
 footer {
-    border-radius: 2px 2px 0 0;
+    border-radius: 10px 10px 0 0;
     background: #404040;
     padding: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
@@ -424,7 +424,7 @@ footer * {
     margin: 0;
 }
 
-.loginsubmit {
+.loginSubmit {
     float: none;
     margin: initial;
 }
@@ -434,7 +434,7 @@ footer * {
 }
 
 .message-hint {
-    background: green;
+    background-color: #ff9800;
 }
 
 /* Find-Us Begin */

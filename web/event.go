@@ -68,12 +68,24 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithStack(err)
 	}
 
+	images, err := s.db.GetImages(id)
+	for _, image := range images {
+		err = s.deleteImageById(image.Id)
+	}
+
+	event, err := s.db.GetEvent(id)
+	err = s.removeImageFileByFilename(event.ImageName)
+	if err != nil {
+		return err
+	}
+
 	err = s.db.DeleteEvent(id)
 	if err != nil {
 		return errors.Wrap(err, "cannot delete event "+strconv.Itoa(id))
 	}
-
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung '" + event.Theme + "' erfolgreich gelöscht"})
+	_ = sess.Save(r, w)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
 }
 
@@ -136,26 +148,26 @@ func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
 }
 
 type tmplEventDetail struct {
+	Authenticated        bool
+	PageLocation         string
+	Message              *message
 	Event                *storage.Event
 	Participants         []*storage.Participant
 	ImageNames           []*storage.Image
 	EventList            []*storage.Event
 	Comments             []*storage.Comment
-	Authenticated        bool
-	PageLocation         string
 	ParticipationAllowed bool
 	CommentsAllowed      bool
 	Classic              int
 	Vegetarian           int
 	Vegan                int
-	Message              *message
 }
 
 func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEventDetail, error) {
 	var templ tmplEventDetail
 
 	ev, err := s.db.GetEvent(id)
-	if err != nil {
+	if err != nil { //TODO 404 statt unbekannter Fehler
 		return nil, errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
 	}
 	templ.Event = ev
@@ -225,9 +237,10 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 }
 
 type tmplEventList struct {
-	EventList     []*storage.Event
 	Authenticated bool
 	PageLocation  string
+	Message       *message
+	EventList     []*storage.Event
 	PreviousPage  int
 	NextPage      int
 }

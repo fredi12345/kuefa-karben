@@ -1,7 +1,7 @@
 {{define "header"}}
     <header>
         <a href="/">
-            <img src="../../public/header_wood.jpeg"/>
+            <img src="../../public/header_wood.jpeg" alt="Küfa-Logo"/>
         </a>
         <h1>Küche für Alle - Kochen, Essen, Beisammensein</h1>
         {{template "navigation" .}}
@@ -11,4 +11,5 @@
         <a href="/impressum" class="button">Mehr Infos</a>
         <button onclick="acceptCookies()">Verstanden</button>
     </div>
+    {{template "message" .}}
 {{end }}

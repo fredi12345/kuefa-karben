@@ -1,15 +1,15 @@
 {{define "footer"}}
-<footer>
-    {{if not .Authenticated}}
-    <form id="login" name="login" action="/user/login" method="post">
-        <input name="user" type="text" placeholder="Benutzername" required>
-        <input name="passwd" type="password" placeholder="Passwort" required>
-        <input class="loginsubmit" type="submit" value="Login">
-    </form>
-    {{else}}
-    <form id="logout" name="logout" action="/user/logout" method="post">
-        <input class="loginsubmit" type="submit" value="Logout">
-    </form>
-    {{end}}
-</footer>
+    <footer>
+        {{if not .Authenticated}}
+            <form id="login" name="login" action="/user/login" method="post">
+                <input name="user" type="text" placeholder="Benutzername" required>
+                <input name="passwd" type="password" placeholder="Passwort" required>
+                <input class="loginSubmit" type="submit" value="Login">
+            </form>
+        {{else}}
+            <form id="logout" name="logout" action="/user/logout" method="post">
+                <input class="loginSubmit" type="submit" value="Logout">
+            </form>
+        {{end}}
+    </footer>
 {{end}}

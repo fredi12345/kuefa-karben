@@ -48,6 +48,7 @@ func (s *Server) createNotFoundTmpl(sess *sessions.Session) tmplNotFound {
 type tmplNotFound struct {
 	Authenticated bool
 	PageLocation  string
+	Message       *message
 }
 
 func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
