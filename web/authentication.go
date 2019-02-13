@@ -3,6 +3,8 @@ package web
 import (
 	"net/http"
 
+	"github.com/pkg/errors"
+
 	"fmt"
 
 	"github.com/gorilla/sessions"
@@ -11,7 +13,7 @@ import (
 func (s *Server) Login(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	user := r.Form.Get("user")
@@ -26,7 +28,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request, sess *sessions.Se
 
 	err = sess.Save(r, w)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
@@ -38,7 +40,7 @@ func (s *Server) Logout(w http.ResponseWriter, r *http.Request, sess *sessions.S
 
 	err := sess.Save(r, w)
 	if err != nil {
-		panic(err)
+		return errors.WithStack(err)
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)

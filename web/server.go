@@ -11,6 +11,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -27,10 +28,10 @@ type Server struct {
 	rnd       *random.Rnd
 }
 
-func NewServer(db storage.Service, imagePath string, thumbPath string) *Server {
+func NewServer(db storage.Service, imagePath string, thumbPath string) (*Server, error) {
 	err := os.MkdirAll(imagePath, os.ModePerm)
 	if err != nil {
-		panic(err)
+		return nil, errors.WithStack(err)
 	}
 
 	t := template.Must(template.ParseGlob(path.Join("resources", "template", "**/*.tmpl")))
@@ -43,7 +44,7 @@ func NewServer(db storage.Service, imagePath string, thumbPath string) *Server {
 		imgPath:   imagePath,
 		thumbPath: thumbPath,
 		rnd:       random.New(time.Now().UnixNano()),
-	}
+	}, nil
 }
 
 type SessionHandlerFunc func(w http.ResponseWriter, r *http.Request, session *sessions.Session)

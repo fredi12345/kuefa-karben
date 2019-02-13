@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"fmt"
 
 	"github.com/fredi12345/kuefa-karben/storage"
@@ -16,7 +18,7 @@ import (
 func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	var event storage.Event
@@ -28,14 +30,14 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 
 	d, err := time.Parse("2006-01-02T15:04", r.Form.Get("date"))
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 	event.EventDate = d
 
 	filename := getUniqueFileName()
 	file, _, err := r.FormFile("image")
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 	defer file.Close()
 
@@ -48,32 +50,30 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 
 	id, err := s.db.CreateEvent(event)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot create new event")
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
-
 	return nil
 }
 
 func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
+	id, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
-	err = s.db.DeleteEvent(eventId)
+	err = s.db.DeleteEvent(id)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot delete event "+strconv.Itoa(id))
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
-
 	return nil
 }
 
@@ -85,13 +85,13 @@ func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *session
 
 	err = sess.Save(r, w)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	t := s.tmpl.Lookup("event-all.html")
 	err = t.Execute(w, tmpl)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -100,13 +100,13 @@ func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *session
 func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	tmpl, err := s.createTmplEventDetail(id, sess)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			s.NotFound(w, r)
+			s.NotFound(w, r) // TODO KUF-61
 			return nil
 		}
 		return err
@@ -114,13 +114,13 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	err = sess.Save(r, w)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	t := s.tmpl.Lookup("event-detail.html")
 	err = t.Execute(w, tmpl)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -156,13 +156,13 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
 	}
 	templ.Event = ev
 
 	part, err := s.db.GetParticipants(id)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot get participants of event "+strconv.Itoa(id))
 	}
 	templ.Participants = part
 	classic, vegetarian, vegan := 0, 0, 0
@@ -185,19 +185,19 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	imagesFileNames, err := s.db.GetImages(id)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot get images of event "+strconv.Itoa(id))
 	}
 	templ.ImageNames = imagesFileNames
 
 	comments, err := s.db.GetComments(id)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot get comments of event "+strconv.Itoa(id))
 	}
 	templ.Comments = comments
 
 	events, err := s.db.GetEventList(1)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot get event list")
 	}
 
 	length := len(events)
@@ -235,12 +235,12 @@ type tmplEventList struct {
 func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*tmplEventList, error) {
 	page, err := strconv.Atoi(mux.Vars(r)["page"])
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	events, err := s.db.GetEventList(page)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "cannot get event list")
 	}
 
 	tmpl := tmplEventList{EventList: events, PageLocation: "eventList"}
@@ -256,6 +256,10 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 	}
 
 	eventCount, err := s.db.GetEventCount()
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot get event count")
+	}
+
 	if eventCount > page*9 {
 		tmpl.NextPage = page + 1
 	} else {

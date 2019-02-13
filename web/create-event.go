@@ -3,6 +3,8 @@ package web
 import (
 	"net/http"
 
+	"github.com/pkg/errors"
+
 	"github.com/gorilla/sessions"
 )
 
@@ -11,13 +13,13 @@ func (s *Server) CreateEventPage(w http.ResponseWriter, r *http.Request, sess *s
 
 	err := sess.Save(r, w)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	t := s.tmpl.Lookup("create-event.html")
 	err = t.Execute(w, templ)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil

@@ -27,7 +27,11 @@ func main() {
 	imgPath := path.Join("resources", "public", "images")
 	thumbPath := path.Join("resources", "public", "thumbs")
 
-	server := web.NewServer(db, imgPath, thumbPath)
+	server, err := web.NewServer(db, imgPath, thumbPath)
+	if err != nil {
+		log.Fatal("could not create server: %v", err)
+	}
+
 	handler := createHandler(server)
 	fmt.Println("http://localhost:8080")
 

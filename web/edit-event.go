@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"strconv"
 
 	"github.com/fredi12345/kuefa-karben/storage"
@@ -16,25 +18,28 @@ import (
 func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseForm()
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	id, err := strconv.Atoi(r.Form.Get("eventId"))
 	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	templ, err := s.createEditEventTmpl(id, sess)
+	if err != nil {
 		return err
 	}
 
-	templ := s.createEditEventTmpl(id, sess)
-
 	err = sess.Save(r, w)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	t := s.tmpl.Lookup("edit-event.html")
 	err = t.Execute(w, templ)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -43,13 +48,13 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	err := r.ParseMultipartForm(5 << 20) // 5 MB
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	var event storage.Event
 	id, err := strconv.Atoi(r.Form.Get("event-id"))
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	event.Id = id
@@ -61,19 +66,19 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 
 	d, err := time.Parse("2006-01-02T15:04", r.Form.Get("date"))
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 	event.EventDate = d
 
 	file, header, err := r.FormFile("image")
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 	defer file.Close()
 
 	oldEvent, err := s.db.GetEvent(id)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot get event"+strconv.Itoa(id))
 	}
 
 	event.ImageName = oldEvent.ImageName
@@ -81,12 +86,12 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	if header.Size > 0 {
 		err = os.Remove(filepath.Join(s.thumbPath, oldEvent.ImageName))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		err = os.Remove(filepath.Join(s.imgPath, oldEvent.ImageName))
 		if err != nil {
-			return err
+			return errors.WithStack(err)
 		}
 
 		filename := getUniqueFileName()
@@ -100,7 +105,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 
 	err = s.db.UpdateEvent(event)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "cannot update event "+strconv.Itoa(id))
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
@@ -110,13 +115,13 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 func (s *Server) getEventImageName(id int) (string, error) {
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
 	}
 
 	return ev.ImageName, nil
 }
 
-func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) tmplEditEvent {
+func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) (tmplEditEvent, error) {
 	var authenticated bool
 	if auth, ok := sess.Values[cookieAuth].(bool); ok {
 		authenticated = auth
@@ -124,10 +129,10 @@ func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) tmplEditEve
 
 	event, err := s.db.GetEvent(id)
 	if err != nil {
-		panic(err)
+		return tmplEditEvent{}, errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
 	}
 
-	return tmplEditEvent{Authenticated: authenticated, PageLocation: "edit-event", Event: event}
+	return tmplEditEvent{Authenticated: authenticated, PageLocation: "edit-event", Event: event}, nil
 }
 
 type tmplEditEvent struct {

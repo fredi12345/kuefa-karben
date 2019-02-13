@@ -3,6 +3,8 @@ package web
 import (
 	"net/http"
 
+	"github.com/pkg/errors"
+
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/sessions"
 )
@@ -15,13 +17,13 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request, sess *sessions.Se
 
 	err = sess.Save(r, w)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	t := s.tmpl.Lookup("index.html")
 	err = t.Execute(w, templ)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -35,7 +37,7 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 
 	events, err := s.db.GetEventList(1)
 	if err != nil {
-		panic(err)
+		return tmplIndex{}, errors.Wrap(err, "cannot get event list")
 	}
 
 	length := len(events)

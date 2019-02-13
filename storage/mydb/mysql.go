@@ -8,6 +8,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"strings"
 
 	"github.com/fredi12345/kuefa-karben/random"
@@ -55,27 +57,30 @@ type connection struct {
 func (c *connection) DeleteImage(id int) (string, error) {
 	var name string
 	err := c.db.QueryRow(dbGetSingleImage, id).Scan(&name)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
 
 	tmp := strings.Split(name, "/")
 	filename := tmp[len(tmp)-1]
 
 	_, err = c.db.Exec(dbDeleteImage, id)
-	return filename, err
+	return filename, errors.WithStack(err)
 }
 
 func (c *connection) DeleteComment(id int) error {
 	_, err := c.db.Exec(dbDeleteComment, id)
-	return err
+	return errors.WithStack(err)
 }
 
 func (c *connection) DeleteParticipant(id int) error {
 	_, err := c.db.Exec(dbDeleteParticipant, id)
-	return err
+	return errors.WithStack(err)
 }
 
 func (c *connection) DeleteEvent(id int) error {
 	_, err := c.db.Exec(dbDeleteEvent, id)
-	return err
+	return errors.WithStack(err)
 }
 
 func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
@@ -83,7 +88,7 @@ func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
 	var offset = (page - 1) * 9
 	rows, err := c.db.Query(dbGetEventList, offset)
 	if err != nil {
-		return nil, fmt.Errorf("cannot execute query: %v", err)
+		return nil, errors.WithStack(err)
 	}
 	defer rows.Close()
 
@@ -91,12 +96,12 @@ func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
 		var resultItem storage.Event
 		err := rows.Scan(&resultItem.Id, &resultItem.Theme, &resultItem.EventDate, &resultItem.ImageName)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning row: %v", err)
+			return nil, errors.WithStack(err)
 		}
 		events = append(events, &resultItem)
 	}
 
-	return events, err
+	return events, nil
 }
 
 //Event count to hide 'next page button' on last page
@@ -104,13 +109,13 @@ func (c *connection) GetEventCount() (int, error) {
 	var count int
 	row := c.db.QueryRow(dbGetEventCount)
 	err := row.Scan(&count)
-	return count, err
+	return count, errors.WithStack(err)
 }
 
 func (c *connection) GetLatestEventId() (int, error) {
 	var id int
 	err := c.db.QueryRow(dbGetLatestEventId).Scan(&id)
-	return id, err
+	return id, errors.WithStack(err)
 }
 
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
@@ -118,10 +123,7 @@ func (c *connection) GetEvent(id int) (*storage.Event, error) {
 	event.Id = id
 	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Id, &event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageName)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, err
-		}
-		return nil, fmt.Errorf("mysql.go|GetEvent: error scanning row: %v", err)
+		return nil, errors.WithStack(err)
 	}
 	return &event, nil
 }
@@ -130,7 +132,7 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 	var comments []*storage.Comment
 	rows, err := c.db.Query(dbGetComments, eventId)
 	if err != nil {
-		return nil, fmt.Errorf("cannot execute query: %v", err)
+		return nil, errors.WithStack(err)
 	}
 	defer rows.Close()
 
@@ -138,7 +140,7 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 		var resultItem storage.Comment
 		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Content, &resultItem.Created)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning row: %v", err)
+			return nil, errors.WithStack(err)
 		}
 		comments = append(comments, &resultItem)
 	}
@@ -150,7 +152,7 @@ func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 	var images []*storage.Image
 	rows, err := c.db.Query(dbGetImages, eventId)
 	if err != nil {
-		return nil, fmt.Errorf("cannot execute query: %v", err)
+		return nil, errors.WithStack(err)
 	}
 	defer rows.Close()
 
@@ -158,7 +160,7 @@ func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 		var resultItem storage.Image
 		err := rows.Scan(&resultItem.Id, &resultItem.Name)
 		if err != nil {
-			return nil, fmt.Errorf("error scanning row: %v", err)
+			return nil, errors.WithStack(err)
 		}
 		images = append(images, &resultItem)
 	}
@@ -170,7 +172,7 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 	var participants []*storage.Participant
 	rows, err := c.db.Query(dbGetParticipants, eventId)
 	if err != nil {
-		return nil, fmt.Errorf("cannot execute query: %v", err)
+		return nil, errors.WithStack(err)
 	}
 	defer rows.Close()
 
@@ -178,7 +180,7 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 		var resultItem storage.Participant
 		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
-			return nil, fmt.Errorf("mysql.go|GetParticipants: error scanning row: %v", err)
+			return nil, errors.WithStack(err)
 		}
 		participants = append(participants, &resultItem)
 	}
@@ -189,12 +191,12 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 func New(cfg *mysql.Config) (storage.Service, error) {
 	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
-		return nil, fmt.Errorf("cannot open connection: %v", err)
+		return nil, errors.WithStack(err)
 	}
 
 	err = db.Ping()
 	if err != nil {
-		return nil, fmt.Errorf("cannot ping database: %v", err)
+		return nil, errors.WithStack(err)
 	}
 
 	return &connection{db: db, rnd: random.New(time.Now().Unix())}, nil
@@ -204,14 +206,14 @@ func (c *connection) CreateEvent(event storage.Event) (int, error) {
 	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageName)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
-			return -1, ErrInputToLong
+			return -1, errors.WithStack(ErrInputToLong)
 		}
-		return -1, fmt.Errorf("cannot execute statement: %v", err)
+		return -1, errors.WithStack(err)
 	}
 
 	id, err := res.LastInsertId()
 	if err != nil {
-		return -1, fmt.Errorf("cannot fetch row id: %v", err)
+		return -1, errors.WithStack(err)
 	}
 	return int(id), nil
 }
@@ -220,9 +222,9 @@ func (c *connection) CreateParticipant(participant storage.Participant) error {
 	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu, participant.Message, participant.EventId)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
-			return ErrInputToLong
+			return errors.WithStack(ErrInputToLong)
 		}
-		return fmt.Errorf("cannot execute statement: %v", err)
+		return errors.WithStack(err)
 	}
 	return err
 }
@@ -231,9 +233,9 @@ func (c *connection) CreateComment(comment storage.Comment) error {
 	_, err := c.db.Exec(dbCreateComment, comment.Content, comment.Name, comment.EventId)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
-			return ErrInputToLong
+			return errors.WithStack(ErrInputToLong)
 		}
-		return fmt.Errorf("cannot execute statement: %v", err)
+		return errors.WithStack(err)
 	}
 	return err
 }
@@ -242,9 +244,9 @@ func (c *connection) CreateImage(name string, event int) error {
 	_, err := c.db.Exec(dbCreateImage, event, name)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
-			return ErrInputToLong
+			return errors.WithStack(ErrInputToLong)
 		}
-		return fmt.Errorf("cannot execute statement: %v", err)
+		return errors.WithStack(err)
 	}
 	return err
 }
@@ -254,12 +256,12 @@ func (c *connection) CreateUser(name, password string) error {
 	_, err := c.db.Exec(dbCreateUser, name, salt, hash(password, salt))
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1062 {
-			return ErrUserAlreadyAssigned
+			return errors.WithStack(ErrUserAlreadyAssigned)
 		}
 		if msqlErr.Number == 1406 {
-			return ErrUserToLong
+			return errors.WithStack(ErrUserToLong)
 		}
-		return fmt.Errorf("cannot execute statement: %v", err)
+		return errors.WithStack(err)
 	}
 	return err
 }
@@ -271,7 +273,7 @@ func (c *connection) CheckCredentials(name, attemptedPassword string) (bool, err
 		if err == sql.ErrNoRows {
 			return false, nil
 		}
-		return false, fmt.Errorf("error scanning row: %v", err)
+		return false, errors.WithStack(err)
 	}
 
 	hashedAttempt := hash(attemptedPassword, salt)
@@ -280,7 +282,7 @@ func (c *connection) CheckCredentials(name, attemptedPassword string) (bool, err
 
 func (c *connection) UpdateEvent(e storage.Event) error {
 	_, err := c.db.Exec(dbUpdateEvent, e.Theme, e.EventDate, e.Starter, e.MainDish, e.Dessert, e.InfoText, e.ImageName, e.Id)
-	return err
+	return errors.WithStack(err)
 }
 
 func hash(password string, salt string) string {
