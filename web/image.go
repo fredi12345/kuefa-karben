@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strconv"
 	"time"
@@ -95,17 +94,39 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithStack(err)
 	}
 
-	filename, err := s.db.DeleteImage(imageId)
+	err = s.deleteImageById(imageId)
 	if err != nil {
-		return errors.Wrap(err, "cannot delete image "+strconv.Itoa(imageId))
+		return errors.Wrap(err, "cannot remove image "+strconv.Itoa(imageId))
 	}
 
-	err = os.Remove(path.Join(s.imgPath, filename))
+	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	return nil
+}
+
+func (s *Server) deleteImageById(id int) error {
+	filename, err := s.db.DeleteImage(id)
+	if err != nil {
+		return errors.Wrap(err, "cannot delete image "+strconv.Itoa(id))
+	}
+
+	err = s.removeImageFileByFilename(filename)
+	if err != nil {
+		return errors.Wrap(err, "cannot remove image "+strconv.Itoa(id))
+	}
+
+	return nil
+}
+
+func (s *Server) removeImageFileByFilename(filename string) error {
+	err := os.Remove(filepath.Join(s.thumbPath, filename))
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	err = os.Remove(filepath.Join(s.imgPath, filename))
+	if err != nil {
+		return errors.WithStack(err)
+	}
 	return nil
 }
 

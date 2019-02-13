@@ -61,6 +61,7 @@ func (c *connection) DeleteImage(id int) (string, error) {
 		return "", errors.WithStack(err)
 	}
 
+	//TODO das hier wurde gemacht weil wir früher den ganzen Pfad in der DB hatten? Dann kann das jetzt weg
 	tmp := strings.Split(name, "/")
 	filename := tmp[len(tmp)-1]
 

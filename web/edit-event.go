@@ -3,8 +3,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/pkg/errors"
@@ -84,16 +82,10 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	event.ImageName = oldEvent.ImageName
 
 	if header.Size > 0 {
-		err = os.Remove(filepath.Join(s.thumbPath, oldEvent.ImageName))
+		err = s.removeImageFileByFilename(oldEvent.ImageName)
 		if err != nil {
-			return errors.WithStack(err)
+			return err
 		}
-
-		err = os.Remove(filepath.Join(s.imgPath, oldEvent.ImageName))
-		if err != nil {
-			return errors.WithStack(err)
-		}
-
 		filename := getUniqueFileName()
 		err = s.createAndSaveThumbAndFullImage(filename, file)
 		if err != nil {
@@ -107,7 +99,8 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	if err != nil {
 		return errors.Wrap(err, "cannot update event "+strconv.Itoa(id))
 	}
-
+	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
+	_ = sess.Save(r, w)
 	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
 	return nil
 }
@@ -138,5 +131,6 @@ func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) (tmplEditEv
 type tmplEditEvent struct {
 	Authenticated bool
 	PageLocation  string
+	Message       *message
 	Event         *storage.Event
 }
