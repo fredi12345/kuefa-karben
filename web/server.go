@@ -7,7 +7,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/SchiffFlieger/go-random"
+	"github.com/fredi12345/kuefa-karben/random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"

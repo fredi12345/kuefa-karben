@@ -10,7 +10,7 @@ import (
 
 	"strings"
 
-	"github.com/SchiffFlieger/go-random"
+	"github.com/fredi12345/kuefa-karben/random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/go-sql-driver/mysql"
 )
