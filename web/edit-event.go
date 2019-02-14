@@ -69,10 +69,12 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	event.EventDate = d
 
 	file, header, err := r.FormFile("image")
-	if err != nil {
+	if err != nil && err != http.ErrMissingFile {
 		return errors.WithStack(err)
 	}
-	defer file.Close()
+	if file != nil {
+		defer file.Close()
+	}
 
 	oldEvent, err := s.db.GetEvent(id)
 	if err != nil {
@@ -81,7 +83,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 
 	event.ImageName = oldEvent.ImageName
 
-	if header.Size > 0 {
+	if header != nil && header.Size > 0 {
 		err = s.removeImageFileByFilename(oldEvent.ImageName)
 		if err != nil {
 			return err
