@@ -27,7 +27,7 @@ func main() {
 	imgPath := path.Join("resources", "public", "images")
 	thumbPath := path.Join("resources", "public", "thumbs")
 
-	server, err := web.NewServer(db, imgPath, thumbPath)
+	server, err := web.NewServer(db, imgPath, thumbPath, "cookies.key")
 	if err != nil {
 		log.Fatal("could not create server: %v", err)
 	}

@@ -2,5 +2,6 @@
 out
 config.xml
 *.iml
+*.key
 resources/public/images
 resources/public/thumbs
