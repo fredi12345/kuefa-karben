@@ -13,20 +13,20 @@ import (
 func (s *Server) NotFound(w http.ResponseWriter, r *http.Request) {
 	sess, err := s.cs.Get(r, cookieName)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %+v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 	}
 
 	templ := s.createNotFoundTmpl(sess)
 
 	err = sess.Save(r, w)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %+v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 	}
 
 	t := s.tmpl.Lookup("not-found.html")
 	err = t.Execute(w, templ)
 	if err != nil {
-		_, _ = fmt.Fprintf(os.Stderr, "error: %+v", err)
+		_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 		w.WriteHeader(500)
 	}
 }
@@ -59,7 +59,7 @@ func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
 			if err == ErrWrongPassword || err == ErrNoAuthentication {
 				redirectToIndex(sess, err, r, w)
 			} else {
-				_, _ = fmt.Fprintf(os.Stderr, "error: %+v", err)
+				_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 				redirectToIndex(sess, errors.New("Es ist ein unbekannter Fehler aufgetreten."), r, w)
 			}
 		}
