@@ -50,7 +50,7 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 
 	id, err := s.db.CreateEvent(event)
 	if err != nil {
-		return errors.Wrap(err, "cannot create new event")
+		return errors.WithMessage(err, "cannot create new event")
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
@@ -81,7 +81,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	err = s.db.DeleteEvent(id)
 	if err != nil {
-		return errors.Wrap(err, "cannot delete event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot delete event "+strconv.Itoa(id))
 	}
 	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung '" + event.Theme + "' erfolgreich gelöscht"})
 	_ = sess.Save(r, w)
@@ -168,13 +168,13 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	ev, err := s.db.GetEvent(id)
 	if err != nil { //TODO 404 statt unbekannter Fehler
-		return nil, errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
+		return nil, errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
 	}
 	templ.Event = ev
 
 	part, err := s.db.GetParticipants(id)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot get participants of event "+strconv.Itoa(id))
+		return nil, errors.WithMessage(err, "cannot get participants of event "+strconv.Itoa(id))
 	}
 	templ.Participants = part
 	classic, vegetarian, vegan := 0, 0, 0
@@ -197,19 +197,19 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 
 	imagesFileNames, err := s.db.GetImages(id)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot get images of event "+strconv.Itoa(id))
+		return nil, errors.WithMessage(err, "cannot get images of event "+strconv.Itoa(id))
 	}
 	templ.ImageNames = imagesFileNames
 
 	comments, err := s.db.GetComments(id)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot get comments of event "+strconv.Itoa(id))
+		return nil, errors.WithMessage(err, "cannot get comments of event "+strconv.Itoa(id))
 	}
 	templ.Comments = comments
 
 	events, err := s.db.GetEventList(1)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot get event list")
+		return nil, errors.WithMessage(err, "cannot get event list")
 	}
 
 	length := len(events)
@@ -253,7 +253,7 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 
 	events, err := s.db.GetEventList(page)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot get event list")
+		return nil, errors.WithMessage(err, "cannot get event list")
 	}
 
 	tmpl := tmplEventList{EventList: events, PageLocation: "eventList"}
@@ -270,7 +270,7 @@ func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*
 
 	eventCount, err := s.db.GetEventCount()
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot get event count")
+		return nil, errors.WithMessage(err, "cannot get event count")
 	}
 
 	if eventCount > page*9 {

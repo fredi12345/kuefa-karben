@@ -76,7 +76,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 
 	oldEvent, err := s.db.GetEvent(id)
 	if err != nil {
-		return errors.Wrap(err, "cannot get event"+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot get event"+strconv.Itoa(id))
 	}
 
 	event.ImageName = oldEvent.ImageName
@@ -97,7 +97,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 
 	err = s.db.UpdateEvent(event)
 	if err != nil {
-		return errors.Wrap(err, "cannot update event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot update event "+strconv.Itoa(id))
 	}
 	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
 	_ = sess.Save(r, w)
@@ -108,7 +108,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 func (s *Server) getEventImageName(id int) (string, error) {
 	ev, err := s.db.GetEvent(id)
 	if err != nil {
-		return "", errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
+		return "", errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
 	}
 
 	return ev.ImageName, nil
@@ -122,7 +122,7 @@ func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) (tmplEditEv
 
 	event, err := s.db.GetEvent(id)
 	if err != nil {
-		return tmplEditEvent{}, errors.Wrap(err, "cannot get event "+strconv.Itoa(id))
+		return tmplEditEvent{}, errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
 	}
 
 	return tmplEditEvent{Authenticated: authenticated, PageLocation: "edit-event", Event: event}, nil

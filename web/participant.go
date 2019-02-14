@@ -24,7 +24,7 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request, sess 
 
 	err = s.db.DeleteParticipant(participantId)
 	if err != nil {
-		return errors.Wrap(err, "cannot delete participant "+strconv.Itoa(participantId))
+		return errors.WithMessage(err, "cannot delete participant "+strconv.Itoa(participantId))
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
@@ -56,7 +56,7 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 
 	err = s.db.CreateParticipant(part)
 	if err != nil {
-		return errors.Wrap(err, "cannot create new participant")
+		return errors.WithMessage(err, "cannot create new participant")
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)

@@ -37,7 +37,7 @@ func (s *Server) createIndexTmpl(sess *sessions.Session) (tmplIndex, error) {
 
 	events, err := s.db.GetEventList(1)
 	if err != nil {
-		return tmplIndex{}, errors.Wrap(err, "cannot get event list")
+		return tmplIndex{}, errors.WithMessage(err, "cannot get event list")
 	}
 
 	length := len(events)

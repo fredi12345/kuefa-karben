@@ -51,7 +51,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 
 		err = s.db.CreateImage(filename, eventId)
 		if err != nil {
-			return errors.Wrap(err, "cannot create image")
+			return errors.WithMessage(err, "cannot create image")
 		}
 	}
 
@@ -96,7 +96,7 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	err = s.deleteImageById(imageId)
 	if err != nil {
-		return errors.Wrap(err, "cannot remove image "+strconv.Itoa(imageId))
+		return errors.WithMessage(err, "cannot remove image "+strconv.Itoa(imageId))
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
@@ -106,12 +106,12 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 func (s *Server) deleteImageById(id int) error {
 	filename, err := s.db.DeleteImage(id)
 	if err != nil {
-		return errors.Wrap(err, "cannot delete image "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot delete image "+strconv.Itoa(id))
 	}
 
 	err = s.removeImageFileByFilename(filename)
 	if err != nil {
-		return errors.Wrap(err, "cannot remove image "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot remove image "+strconv.Itoa(id))
 	}
 
 	return nil

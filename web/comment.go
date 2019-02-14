@@ -28,7 +28,7 @@ func (s *Server) AddComment(w http.ResponseWriter, r *http.Request, sess *sessio
 
 	err = s.db.CreateComment(c)
 	if err != nil {
-		return errors.Wrap(err, "cannot create new comment")
+		return errors.WithMessage(err, "cannot create new comment")
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
@@ -48,7 +48,7 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request, sess *ses
 
 	err = s.db.DeleteComment(commentId)
 	if err != nil {
-		return errors.Wrap(err, "cannot delete comment "+strconv.Itoa(commentId))
+		return errors.WithMessage(err, "cannot delete comment "+strconv.Itoa(commentId))
 	}
 
 	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
