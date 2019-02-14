@@ -119,12 +119,12 @@ func (s *Server) deleteImageById(id int) error {
 
 func (s *Server) removeImageFileByFilename(filename string) error {
 	err := os.Remove(filepath.Join(s.thumbPath, filename))
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return errors.WithStack(err)
 	}
 
 	err = os.Remove(filepath.Join(s.imgPath, filename))
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return errors.WithStack(err)
 	}
 	return nil
