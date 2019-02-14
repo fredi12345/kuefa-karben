@@ -1,0 +1,22 @@
+{{define "imageGallery"}}
+    {{ if .ImageNames }}
+        <section id="images">
+            <h4>Bilder</h4>
+            <div id="gallery">
+                {{ range .ImageNames }}
+                    <div class="imageBox">
+                        <a href="/public/images/{{.Name}}"><img src="/public/thumbs/{{.Name}}"/></a>
+                    </div>
+                {{end}}
+            </div>
+            <div id="paging">
+                {{if gt .PreviousPage 0}}
+                    <a id="newer" class="button" href="/gallery/{{.PreviousPage}}">Zurück</a>
+                {{end}}
+                {{if gt .NextPage 0}}
+                    <a id="older" class="button" href="/gallery/{{.NextPage}}">Weiter</a>
+                {{end}}
+            </div>
+        </section>
+    {{end}}
+{{end}}

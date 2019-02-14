@@ -28,6 +28,8 @@ const (
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
+	dbGetAllImages     = `SELECT images.id, image_name FROM images ORDER BY id DESC LIMIT ?,16`
+	dbGetImageCount    = `SELECT COUNT(images.id) FROM images`
 	dbGetSingleImage   = `SELECT image_name FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
@@ -167,6 +169,34 @@ func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 	}
 
 	return images, nil
+}
+
+func (c *connection) GetAllImages(page int) ([]*storage.Image, error) {
+	var images []*storage.Image
+	rows, err := c.db.Query(dbGetAllImages, page)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem storage.Image
+		err := rows.Scan(&resultItem.Id, &resultItem.Name)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		images = append(images, &resultItem)
+	}
+
+	return images, nil
+}
+
+//Event count to hide 'next page button' on last page
+func (c *connection) GetImageCount() (int, error) {
+	var count int
+	row := c.db.QueryRow(dbGetImageCount)
+	err := row.Scan(&count)
+	return count, errors.WithStack(err)
 }
 
 func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error) {
