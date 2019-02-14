@@ -220,7 +220,7 @@ func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEve
 	templ.EventList = events
 
 	templ.ParticipationAllowed = time.Now().Before(ev.EventDate)
-	templ.CommentsAllowed = time.Now().After(ev.EventDate)
+	templ.CommentsAllowed = true
 	templ.PageLocation = "event"
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
