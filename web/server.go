@@ -43,7 +43,7 @@ func NewServer(db storage.Service, imagePath string, thumbPath string, cookieKey
 
 	return &Server{
 		db:        db,
-		cs:        sessions.NewCookieStore(getCookieKeys(cookieKeyFile)...),
+		cs:        sessions.NewFilesystemStore("", getCookieKeys(cookieKeyFile)...),
 		tmpl:      t,
 		imgPath:   imagePath,
 		thumbPath: thumbPath,
