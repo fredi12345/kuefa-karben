@@ -173,7 +173,8 @@ func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 
 func (c *connection) GetAllImages(page int) ([]*storage.Image, error) {
 	var images []*storage.Image
-	rows, err := c.db.Query(dbGetAllImages, page)
+	var offset = (page - 1) * 9
+	rows, err := c.db.Query(dbGetAllImages, offset)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
