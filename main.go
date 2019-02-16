@@ -45,12 +45,19 @@ func createHandler(server *web.Server) http.Handler {
 	fs := http.FileServer(http.Dir("resources/public"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 
+	// redirect from incomplete urls
+	r.Handle("/event", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
+	r.Handle("/event/", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
+	r.Handle("/event/all", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
+	r.Handle("/event/all/", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
+	r.Handle("/event/all/0", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
+
 	// http get methods
 	r.HandleFunc("/", server.WithSession(server.HandleError(server.Index))).Methods(http.MethodGet)
 	r.HandleFunc("/event/create", server.WithSession(server.HandleError(server.NeedsAuthentication(server.CreateEventPage)))).Methods(http.MethodGet)
 	r.HandleFunc("/event/edit", server.WithSession(server.HandleError(server.NeedsAuthentication(server.EditEventPage)))).Methods(http.MethodGet)
 	r.HandleFunc("/event/{id:[0-9]+}", server.WithSession(server.HandleError(server.EventDetail))).Methods(http.MethodGet)
-	r.HandleFunc("/event/all/{page:[0-9]*}", server.WithSession(server.HandleError(server.AllEvents))).Methods(http.MethodGet)
+	r.HandleFunc("/event/all/{page:[0-9]+}", server.WithSession(server.HandleError(server.AllEvents))).Methods(http.MethodGet)
 	r.HandleFunc("/impressum", server.WithSession(server.HandleError(server.Impressum))).Methods(http.MethodGet)
 
 	// http post methods
