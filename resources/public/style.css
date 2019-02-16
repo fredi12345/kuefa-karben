@@ -283,6 +283,10 @@ section h4 {
     float: right;
 }
 
+#paging {
+    margin-top: 20px;
+}
+
 #older {
     float: right;
     display: inline-block;
@@ -395,7 +399,7 @@ input.editButton:hover {
 .imageBox {
     position: relative;
     max-width: 230px;
-    margin: 10px 10px 10px 10px;
+    margin: 20px 10px 20px 10px;
     max-height: 216px;
 }
 
@@ -432,6 +436,7 @@ input.editButton:hover {
     white-space: nowrap;
     text-decoration: none;
     text-overflow: ellipsis;
+    margin-top: 5px;
     overflow: hidden;
 }
 
