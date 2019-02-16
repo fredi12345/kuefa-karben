@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS user (
 
 # TODO Remove after Testing is done:
 INSERT INTO user (name, salt, password)
-VALUES ('test', '1Y6LMQth5V', '0d16233affc52371347cbb20123ff8157158e8589bcfeabff2e44d30891fc32a');
+VALUES ('test', '2S5RCQth1R', '2413F1F4247D910AE6106DCC91A95D23304BCBDD2F7EC811AC5C9AAFE7935B57');
 INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
 VALUES ('testtheme',
         Now(),

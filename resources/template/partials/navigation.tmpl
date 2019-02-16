@@ -1,7 +1,7 @@
 {{define "navigation"}}
     <nav>
         <a href="/" {{if eq .PageLocation "index"}} class="active"{{end}}>Startseite</a>
-        <a href="/event/all/1" {{if eq .PageLocation "eventList"}}class="active"{{end}}>Veranstaltungen</a>
+        <a href="/event/all/1" {{if eq .PageLocation "event-list"}}class="active"{{end}}>Veranstaltungen</a>
         <a href="/gallery/1" {{if eq .PageLocation "gallery"}}class="active"{{end}}>Galerie</a>
         {{if .Authenticated}}
             <a href="/event/create" {{if eq .PageLocation "create-event"}}class="active"{{end}}>Neue Veranstaltung</a>

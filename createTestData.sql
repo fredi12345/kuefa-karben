@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS user (
 
 #User
 INSERT INTO user (name, salt, password)
-VALUES ('test', '1Y6LMQth5V', '0d16233affc52371347cbb20123ff8157158e8589bcfeabff2e44d30891fc32a');
+VALUES ('test', '2s5rcqth1r', '870ba668965e5b822160c1b4d044c43edded546e7c9538e2339b7e6cf9374612');
 
 #Events
 INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)

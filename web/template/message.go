@@ -1,12 +1,12 @@
-package web
+package template
 
 import "encoding/gob"
 
 func init() {
-	gob.Register(&message{})
+	gob.Register(&Message{})
 }
 
-type message struct {
+type Message struct {
 	Type string
 	Text string
 }

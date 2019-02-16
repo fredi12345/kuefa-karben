@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/fredi12345/kuefa-karben/web/template"
+
 	"github.com/pkg/errors"
 
 	"strconv"
@@ -24,7 +26,7 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 		return errors.WithStack(err)
 	}
 
-	templ, err := s.createEditEventTmpl(id, sess)
+	tmpl, err := template.EditEventTemplate(id, sess, s.db)
 	if err != nil {
 		return err
 	}
@@ -35,7 +37,7 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 	}
 
 	t := s.tmpl.Lookup("edit-event.html")
-	err = t.Execute(w, templ)
+	err = t.Execute(w, tmpl)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -101,7 +103,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	if err != nil {
 		return errors.WithMessage(err, "cannot update event "+strconv.Itoa(id))
 	}
-	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
+	sess.AddFlash(&template.Message{Type: template.TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
 	_ = sess.Save(r, w)
 	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
 	return nil
@@ -114,25 +116,4 @@ func (s *Server) getEventImageName(id int) (string, error) {
 	}
 
 	return ev.ImageName, nil
-}
-
-func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) (tmplEditEvent, error) {
-	var authenticated bool
-	if auth, ok := sess.Values[cookieAuth].(bool); ok {
-		authenticated = auth
-	}
-
-	event, err := s.db.GetEvent(id)
-	if err != nil {
-		return tmplEditEvent{}, errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
-	}
-
-	return tmplEditEvent{Authenticated: authenticated, PageLocation: "edit-event", Event: event}, nil
-}
-
-type tmplEditEvent struct {
-	Authenticated bool
-	PageLocation  string
-	Message       *message
-	Event         *storage.Event
 }
