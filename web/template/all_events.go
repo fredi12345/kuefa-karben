@@ -23,7 +23,7 @@ func AllEventsTemplate(page int, sess *sessions.Session, service storage.Service
 }
 
 func (t *tmplAllEvents) initTemplate(page int, sess *sessions.Session, service storage.Service) error {
-	t.initBase(sess, "eventList")
+	t.initBase(sess, "event-list")
 
 	err := t.initEventList(page, 9, service)
 	if err != nil {
