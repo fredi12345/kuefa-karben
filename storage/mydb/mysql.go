@@ -10,8 +10,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"strings"
-
 	"github.com/fredi12345/kuefa-karben/random"
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/go-sql-driver/mysql"
@@ -63,12 +61,8 @@ func (c *connection) DeleteImage(id int) (string, error) {
 		return "", errors.WithStack(err)
 	}
 
-	//TODO das hier wurde gemacht weil wir früher den ganzen Pfad in der DB hatten? Dann kann das jetzt weg
-	tmp := strings.Split(name, "/")
-	filename := tmp[len(tmp)-1]
-
 	_, err = c.db.Exec(dbDeleteImage, id)
-	return filename, errors.WithStack(err)
+	return name, errors.WithStack(err)
 }
 
 func (c *connection) DeleteComment(id int) error {
