@@ -75,6 +75,9 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 	}
 
 	event, err := s.db.GetEvent(id)
+	if err != nil {
+		return errors.WithMessage(err, "cannot get event to delete")
+	}
 	err = s.removeImageFileByFilename(event.ImageName)
 	if err != nil {
 		return err
