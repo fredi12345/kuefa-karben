@@ -11,6 +11,7 @@ import (
 	"fmt"
 
 	"github.com/fredi12345/kuefa-karben/storage"
+	"github.com/fredi12345/kuefa-karben/web/template"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 )
@@ -83,7 +84,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 	if err != nil {
 		return errors.WithMessage(err, "cannot delete event "+strconv.Itoa(id))
 	}
-	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung '" + event.Theme + "' erfolgreich gelöscht"})
+	sess.AddFlash(&template.Message{Type: template.TypeHint, Text: "Veranstaltung '" + event.Theme + "' erfolgreich gelöscht"})
 	_ = sess.Save(r, w)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 	return nil
@@ -95,7 +96,7 @@ func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *session
 		return errors.WithStack(err)
 	}
 
-	tmpl, err := AllEventsTemplate(page, sess, s.db)
+	tmpl, err := template.AllEventsTemplate(page, sess, s.db)
 	if err != nil {
 		return err
 	}
@@ -120,7 +121,7 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithStack(err)
 	}
 
-	tmpl, err := EventDetailTemplate(id, sess, s.db)
+	tmpl, err := template.EventDetailTemplate(id, sess, s.db)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			s.NotFound(w, r) // TODO KUF-61

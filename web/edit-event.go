@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/fredi12345/kuefa-karben/web/template"
+
 	"github.com/pkg/errors"
 
 	"strconv"
@@ -24,7 +26,7 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 		return errors.WithStack(err)
 	}
 
-	tmpl, err := EditEventTemplate(id, sess, s.db)
+	tmpl, err := template.EditEventTemplate(id, sess, s.db)
 	if err != nil {
 		return err
 	}
@@ -101,7 +103,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	if err != nil {
 		return errors.WithMessage(err, "cannot update event "+strconv.Itoa(id))
 	}
-	sess.AddFlash(&message{Type: TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
+	sess.AddFlash(&template.Message{Type: template.TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
 	_ = sess.Save(r, w)
 	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
 	return nil

@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/fredi12345/kuefa-karben/web/template"
+
 	"github.com/pkg/errors"
 
 	"github.com/gorilla/sessions"
@@ -16,7 +18,7 @@ func (s *Server) NotFound(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 	}
 
-	tmpl := BaseTemplate(sess, "notFound")
+	tmpl := template.BaseTemplate(sess, "notFound")
 
 	err = sess.Save(r, w)
 	if err != nil {
@@ -47,7 +49,7 @@ func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
 }
 
 func redirectToIndex(sess *sessions.Session, err error, r *http.Request, w http.ResponseWriter) {
-	sess.AddFlash(&message{Type: TypeError, Text: err.Error()})
+	sess.AddFlash(&template.Message{Type: template.TypeError, Text: err.Error()})
 
 	_ = sess.Save(r, w)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
