@@ -2,6 +2,8 @@ package web
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/fredi12345/kuefa-karben/web/template"
 	"image"
 	"image/jpeg"
 	_ "image/png"
@@ -46,7 +48,13 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 
 		err = s.createAndSaveThumbAndFullImage(filename, file)
 		if err != nil {
-			return err
+			if err.Error() == "image: unknown format" {
+				sess.AddFlash(&template.Message{Type: template.TypeError, Text: "Hinzufügen von Bildern fehlgeschlagen. Mindestens eine Datei hatte ein unbekanntes Format. Unterstützte Bildformate sind .jpg und .png."})
+				_ = sess.Save(r, w)
+				http.Redirect(w, r, fmt.Sprintf("/event/%d", eventId), http.StatusSeeOther)
+			} else {
+				return err
+			}
 		}
 
 		err = s.db.CreateImage(filename, eventId)
