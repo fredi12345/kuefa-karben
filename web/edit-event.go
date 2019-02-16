@@ -24,7 +24,7 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 		return errors.WithStack(err)
 	}
 
-	templ, err := s.createEditEventTmpl(id, sess)
+	tmpl, err := EditEventTemplate(id, sess, s.db)
 	if err != nil {
 		return err
 	}
@@ -35,7 +35,7 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 	}
 
 	t := s.tmpl.Lookup("edit-event.html")
-	err = t.Execute(w, templ)
+	err = t.Execute(w, tmpl)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -114,25 +114,4 @@ func (s *Server) getEventImageName(id int) (string, error) {
 	}
 
 	return ev.ImageName, nil
-}
-
-func (s *Server) createEditEventTmpl(id int, sess *sessions.Session) (tmplEditEvent, error) {
-	var authenticated bool
-	if auth, ok := sess.Values[cookieAuth].(bool); ok {
-		authenticated = auth
-	}
-
-	event, err := s.db.GetEvent(id)
-	if err != nil {
-		return tmplEditEvent{}, errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
-	}
-
-	return tmplEditEvent{Authenticated: authenticated, PageLocation: "edit-event", Event: event}, nil
-}
-
-type tmplEditEvent struct {
-	Authenticated bool
-	PageLocation  string
-	Message       *message
-	Event         *storage.Event
 }

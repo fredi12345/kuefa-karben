@@ -90,7 +90,12 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 }
 
 func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	tmpl, err := s.createTmplEventList(sess, r)
+	page, err := strconv.Atoi(mux.Vars(r)["page"])
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	tmpl, err := AllEventsTemplate(page, sess, s.db)
 	if err != nil {
 		return err
 	}
@@ -115,7 +120,7 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithStack(err)
 	}
 
-	tmpl, err := s.createTmplEventDetail(id, sess)
+	tmpl, err := EventDetailTemplate(id, sess, s.db)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			s.NotFound(w, r) // TODO KUF-61
@@ -145,139 +150,4 @@ func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
 	}
 
 	return strconv.Atoi(keys[0])
-}
-
-type tmplEventDetail struct {
-	Authenticated        bool
-	PageLocation         string
-	Message              *message
-	Event                *storage.Event
-	Participants         []*storage.Participant
-	ImageNames           []*storage.Image
-	EventList            []*storage.Event
-	Comments             []*storage.Comment
-	ParticipationAllowed bool
-	CommentsAllowed      bool
-	Classic              int
-	Vegetarian           int
-	Vegan                int
-}
-
-func (s *Server) createTmplEventDetail(id int, sess *sessions.Session) (*tmplEventDetail, error) {
-	var templ tmplEventDetail
-
-	ev, err := s.db.GetEvent(id)
-	if err != nil { //TODO 404 statt unbekannter Fehler
-		return nil, errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
-	}
-	templ.Event = ev
-
-	part, err := s.db.GetParticipants(id)
-	if err != nil {
-		return nil, errors.WithMessage(err, "cannot get participants of event "+strconv.Itoa(id))
-	}
-	templ.Participants = part
-	classic, vegetarian, vegan := 0, 0, 0
-	for i := 0; i < len(part); i++ {
-		switch part[i].Menu {
-		case 0:
-			classic++
-			break
-		case 1:
-			vegetarian++
-			break
-		case 2:
-			vegan++
-			break
-		}
-	}
-	templ.Classic = classic
-	templ.Vegetarian = vegetarian
-	templ.Vegan = vegan
-
-	imagesFileNames, err := s.db.GetImages(id)
-	if err != nil {
-		return nil, errors.WithMessage(err, "cannot get images of event "+strconv.Itoa(id))
-	}
-	templ.ImageNames = imagesFileNames
-
-	comments, err := s.db.GetComments(id)
-	if err != nil {
-		return nil, errors.WithMessage(err, "cannot get comments of event "+strconv.Itoa(id))
-	}
-	templ.Comments = comments
-
-	events, err := s.db.GetEventList(1)
-	if err != nil {
-		return nil, errors.WithMessage(err, "cannot get event list")
-	}
-
-	length := len(events)
-	if length > 2 {
-		events = []*storage.Event{events[0], events[1]}
-	}
-
-	templ.EventList = events
-
-	templ.ParticipationAllowed = time.Now().Before(ev.EventDate)
-	templ.CommentsAllowed = true
-	templ.PageLocation = "event"
-
-	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
-		templ.Authenticated = auth
-	}
-
-	if flashes := sess.Flashes(); len(flashes) > 0 {
-		if msg, ok := flashes[0].(*message); ok {
-			templ.Message = msg
-		}
-	}
-
-	return &templ, nil
-}
-
-type tmplEventList struct {
-	Authenticated bool
-	PageLocation  string
-	Message       *message
-	EventList     []*storage.Event
-	PreviousPage  int
-	NextPage      int
-}
-
-func (s *Server) createTmplEventList(sess *sessions.Session, r *http.Request) (*tmplEventList, error) {
-	page, err := strconv.Atoi(mux.Vars(r)["page"])
-	if err != nil {
-		return nil, errors.WithStack(err)
-	}
-
-	events, err := s.db.GetEventList(page)
-	if err != nil {
-		return nil, errors.WithMessage(err, "cannot get event list")
-	}
-
-	tmpl := tmplEventList{EventList: events, PageLocation: "eventList"}
-
-	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
-		tmpl.Authenticated = auth
-	}
-
-	if page <= 1 {
-		tmpl.PreviousPage = -1 // Im Template: Wenn <0 werden die Buttons ausgeblendet
-	} else {
-		tmpl.PreviousPage = page - 1
-	}
-
-	eventCount, err := s.db.GetEventCount()
-	if err != nil {
-		return nil, errors.WithMessage(err, "cannot get event count")
-	}
-
-	if eventCount > page*9 {
-		tmpl.NextPage = page + 1
-	} else {
-		tmpl.NextPage = -1
-	}
-
-	return &tmpl, nil
 }

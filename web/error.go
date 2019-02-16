@@ -16,7 +16,7 @@ func (s *Server) NotFound(w http.ResponseWriter, r *http.Request) {
 		_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 	}
 
-	templ := s.createNotFoundTmpl(sess)
+	tmpl := BaseTemplate(sess, "notFound")
 
 	err = sess.Save(r, w)
 	if err != nil {
@@ -24,31 +24,11 @@ func (s *Server) NotFound(w http.ResponseWriter, r *http.Request) {
 	}
 
 	t := s.tmpl.Lookup("not-found.html")
-	err = t.Execute(w, templ)
+	err = t.Execute(w, tmpl)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "error: %+v\n", err)
 		w.WriteHeader(500)
 	}
-}
-
-func (s *Server) createNotFoundTmpl(sess *sessions.Session) tmplNotFound {
-	var authenticated bool
-	if auth, ok := sess.Values[cookieAuth].(bool); ok {
-		authenticated = auth
-	}
-
-	tmpl := tmplNotFound{
-		Authenticated: authenticated,
-		PageLocation:  "notFound",
-	}
-
-	return tmpl
-}
-
-type tmplNotFound struct {
-	Authenticated bool
-	PageLocation  string
-	Message       *message
 }
 
 func (s *Server) HandleError(handler ErrorHandlerFunc) SessionHandlerFunc {
