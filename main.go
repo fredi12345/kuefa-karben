@@ -51,6 +51,9 @@ func createHandler(server *web.Server) http.Handler {
 	r.Handle("/event/all", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
 	r.Handle("/event/all/", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
 	r.Handle("/event/all/0", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
+	r.Handle("/gallery", http.RedirectHandler("/gallery/1", http.StatusSeeOther))
+	r.Handle("/gallery/", http.RedirectHandler("/gallery/1", http.StatusSeeOther))
+	r.Handle("/gallery/0", http.RedirectHandler("/gallery/1", http.StatusSeeOther))
 
 	// http get methods
 	r.HandleFunc("/", server.WithSession(server.HandleError(server.Index))).Methods(http.MethodGet)
