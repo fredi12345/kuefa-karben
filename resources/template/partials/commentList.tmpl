@@ -8,7 +8,7 @@
                         <form action="/comment/delete" method="post" onsubmit="return confirmDeletion('den Kommentar')">
                             <input name="commentId" value="{{.Id}}" hidden>
                             <input name="eventId" value="{{$.Event.Id}}" hidden>
-                            <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
+                            <input class="deleteButton" type="submit" value="Löschen" alt="Löschen">
                         </form>
                     {{end}}
                     <p class="commentMedium">{{.Name}}</p>
