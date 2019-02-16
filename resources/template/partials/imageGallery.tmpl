@@ -6,6 +6,9 @@
                 {{ range .ImageNames }}
                     <div class="imageBox">
                         <a href="/public/images/{{.Name}}"><img src="/public/thumbs/{{.Name}}"/></a>
+                        {{if eq $.PageLocation "gallery"}}
+                            <a href="/event/{{.EventId}}">{{.EventName}}</a>
+                        {{end}}
                     </div>
                 {{end}}
             </div>

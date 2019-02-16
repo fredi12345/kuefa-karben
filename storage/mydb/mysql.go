@@ -28,7 +28,7 @@ const (
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
-	dbGetAllImages     = `SELECT images.id, image_name FROM images ORDER BY id DESC LIMIT ?,16`
+	dbGetAllImages     = `SELECT images.id, images.image_name, e.event_id, theme FROM images INNER JOIN event e on images.event_id = e.event_id ORDER BY images.id DESC LIMIT ?,16`
 	dbGetImageCount    = `SELECT COUNT(images.id) FROM images`
 	dbGetSingleImage   = `SELECT image_name FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
@@ -182,7 +182,7 @@ func (c *connection) GetAllImages(page int) ([]*storage.Image, error) {
 
 	for rows.Next() {
 		var resultItem storage.Image
-		err := rows.Scan(&resultItem.Id, &resultItem.Name)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.EventId, &resultItem.EventName)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}

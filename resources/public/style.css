@@ -388,9 +388,14 @@ input.editButton:hover {
 
 .imageBox {
     position: relative;
+    max-width: 230px;
     margin: 10px 10px 10px 10px;
-    height: 150px;
-    width: 230px;
+    max-height: 216px;
+}
+
+.imageBox a:first-child {
+    display: block;
+    height: calc(100% - 43px);
 }
 
 .imageBox img {
@@ -400,9 +405,9 @@ input.editButton:hover {
     transition: transform 0.15s;
 }
 
-.imageBox:hover img {
+.imageBox img:hover {
     transform: scale(1.05);
-    transition: transform 0.3s;
+    transition: all 0.3s;
 }
 
 .imageBox input.deleteButton {
@@ -410,6 +415,18 @@ input.editButton:hover {
     top: 0;
     right: 0;
     z-index: 5;
+    margin: 0;
+}
+
+.imageBox a + a {
+    background-color: #ff9800;
+    padding: 10px;
+    display: block;
+    color: white;
+    white-space: nowrap;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 footer {

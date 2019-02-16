@@ -9,7 +9,6 @@
                         {{ if $.Authenticated }}
                             <form action="/image/delete" method="post" onsubmit="return confirmDeletion('das Bild')">
                                 <input name="imageId" value="{{.Id}}" hidden>
-                                <input name="eventId" value="{{$.Event.Id}}" hidden>
                                 <input class="deleteButton" type="submit" value="✖ Löschen" alt="Löschen">
                             </form>
                         {{end}}
@@ -19,7 +18,8 @@
             </div>
             {{ if $.Authenticated }}
                 <h4>Bilder hinzufügen</h4>
-                    <p class="info">Es können mehrere Bilder gleichzeitig ausgewählt werden.<br>Unterstützte Bildformate: .jpg, .png</p>
+                <p class="info">Es können mehrere Bilder gleichzeitig ausgewählt werden.<br>Unterstützte Bildformate:
+                    .jpg, .png</p>
                 <form id="imageUpload" name="imageUpload" action="/image/add" enctype="multipart/form-data"
                       method="post">
                     <input name="eventId" value="{{.Event.Id}}" hidden>

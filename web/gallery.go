@@ -39,7 +39,6 @@ type tmplGallery struct {
 
 func (s *Server) createTmplGallery(sess *sessions.Session, page int) (tmplGallery, error) {
 	templ := tmplGallery{PageLocation: "gallery"}
-	templ.PageLocation = "gallery"
 
 	if auth, ok := sess.Values[cookieAuth].(bool); ok && auth {
 		templ.Authenticated = auth

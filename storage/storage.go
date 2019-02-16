@@ -66,6 +66,8 @@ func (p *Participant) MenuString() string {
 }
 
 type Image struct {
-	Id   int
-	Name string
+	Id        int
+	Name      string
+	EventId   int
+	EventName string
 }
