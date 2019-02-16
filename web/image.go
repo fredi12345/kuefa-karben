@@ -70,7 +70,6 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 func (s *Server) createAndSaveThumbAndFullImage(filename string, file io.Reader) error {
 	buffer, err := ioutil.ReadAll(file)
 
-	//TODO: errorhandling wenn datei gar keine Bilddatei ist
 	img, _, err := image.Decode(bytes.NewReader(buffer))
 	if err != nil {
 		return errors.WithStack(err)
