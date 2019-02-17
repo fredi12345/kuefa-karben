@@ -3,7 +3,6 @@ package template
 import (
 	"github.com/fredi12345/kuefa-karben/storage"
 	"github.com/gorilla/sessions"
-	"github.com/pkg/errors"
 )
 
 type tmplAllEvents struct {
@@ -13,16 +12,16 @@ type tmplAllEvents struct {
 	NextPage     int
 }
 
-func AllEventsTemplate(page int, sess *sessions.Session, service storage.Service) (*tmplAllEvents, error) {
+func AllEventsTemplate(page int, maxPage int, cap int, sess *sessions.Session, service storage.Service) (*tmplAllEvents, error) {
 	var t tmplAllEvents
-	err := t.initTemplate(page, sess, service)
+	err := t.initTemplate(page, maxPage, cap, sess, service)
 	if err != nil {
 		return nil, err
 	}
 	return &t, nil
 }
 
-func (t *tmplAllEvents) initTemplate(page int, sess *sessions.Session, service storage.Service) error {
+func (t *tmplAllEvents) initTemplate(page int, maxPage int, cap int, sess *sessions.Session, service storage.Service) error {
 	t.initBase(sess, "event-list")
 
 	err := t.initEventList(page, 9, service)
@@ -36,12 +35,7 @@ func (t *tmplAllEvents) initTemplate(page int, sess *sessions.Session, service s
 		t.PreviousPage = page - 1
 	}
 
-	eventCount, err := service.GetEventCount()
-	if err != nil {
-		return errors.WithMessage(err, "cannot get event count")
-	}
-
-	if eventCount > page*9 {
+	if page < maxPage {
 		t.NextPage = page + 1
 	} else {
 		t.NextPage = -1

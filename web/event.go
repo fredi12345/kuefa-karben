@@ -1,6 +1,7 @@
 package web
 
 import (
+	"math"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -99,7 +100,16 @@ func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *session
 		return errors.WithStack(err)
 	}
 
-	tmpl, err := template.AllEventsTemplate(page, sess, s.db)
+	const eventsPerSite = 9
+	eventCount, err := s.db.GetEventCount()
+	maxPage := int(math.Ceil(float64(eventCount) / eventsPerSite))
+
+	if page > maxPage {
+		http.Redirect(w, r, fmt.Sprintf("/event/all/%d", maxPage), http.StatusSeeOther)
+		return nil
+	}
+
+	tmpl, err := template.AllEventsTemplate(page, maxPage, eventsPerSite, sess, s.db)
 	if err != nil {
 		return err
 	}

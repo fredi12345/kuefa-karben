@@ -28,12 +28,12 @@ const (
 	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants  = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages        = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
-	dbGetAllImages     = `SELECT images.id, images.image_name, e.event_id, theme FROM images INNER JOIN event e on images.event_id = e.event_id ORDER BY images.id DESC LIMIT ?,16`
+	dbGetAllImages     = `SELECT images.id, images.image_name, e.event_id, theme FROM images INNER JOIN event e on images.event_id = e.event_id ORDER BY images.id DESC LIMIT ?,?`
 	dbGetImageCount    = `SELECT COUNT(images.id) FROM images`
 	dbGetSingleImage   = `SELECT image_name FROM images WHERE id=?`
 	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
 	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
-	dbGetEventList     = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,9 `
+	dbGetEventList     = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,? `
 	dbGetEventCount    = `SELECT COUNT(event_id) FROM event`
 
 	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=? WHERE event_id=?`
@@ -82,10 +82,10 @@ func (c *connection) DeleteEvent(id int) error {
 	return errors.WithStack(err)
 }
 
-func (c *connection) GetEventList(page int) ([]*storage.Event, error) {
+func (c *connection) GetEventList(page int, eventsPerSite int) ([]*storage.Event, error) {
 	var events []*storage.Event
-	var offset = (page - 1) * 9
-	rows, err := c.db.Query(dbGetEventList, offset)
+	var offset = (page - 1) * eventsPerSite
+	rows, err := c.db.Query(dbGetEventList, offset, eventsPerSite)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -167,10 +167,10 @@ func (c *connection) GetImages(eventId int) ([]*storage.Image, error) {
 	return images, nil
 }
 
-func (c *connection) GetAllImages(page int) ([]*storage.Image, error) {
+func (c *connection) GetAllImages(page int, imagesPerSite int) ([]*storage.Image, error) {
 	var images []*storage.Image
-	var offset = (page - 1) * 9
-	rows, err := c.db.Query(dbGetAllImages, offset)
+	var offset = (page - 1) * imagesPerSite
+	rows, err := c.db.Query(dbGetAllImages, offset, imagesPerSite)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

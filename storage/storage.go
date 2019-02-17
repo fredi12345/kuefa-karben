@@ -15,10 +15,10 @@ type Service interface {
 	GetLatestEventId() (int, error)
 	GetComments(eventID int) ([]*Comment, error)
 	GetImages(eventId int) ([]*Image, error)
-	GetAllImages(page int) ([]*Image, error)
+	GetAllImages(page int, imagesPerSite int) ([]*Image, error)
 	GetImageCount() (int, error)
 	GetParticipants(eventId int) ([]*Participant, error)
-	GetEventList(page int) ([]*Event, error)
+	GetEventList(page int, eventsPerPage int) ([]*Event, error)
 	GetEventCount() (int, error)
 
 	UpdateEvent(event Event) error

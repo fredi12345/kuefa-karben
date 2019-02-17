@@ -13,16 +13,16 @@ type tmplGallery struct {
 	ImageNames   []*storage.Image
 }
 
-func GalleryTemplate(page int, sess *sessions.Session, service storage.Service) (*tmplGallery, error) {
+func GalleryTemplate(page int, maxPage int, imagesPerSite int, sess *sessions.Session, service storage.Service) (*tmplGallery, error) {
 	var t tmplGallery
-	err := t.initTemplate(page, sess, service)
+	err := t.initTemplate(page, maxPage, imagesPerSite, sess, service)
 	if err != nil {
 		return nil, err
 	}
 	return &t, nil
 }
 
-func (t *tmplGallery) initTemplate(page int, sess *sessions.Session, service storage.Service) error {
+func (t *tmplGallery) initTemplate(page int, maxPage int, imagesPerSite int, sess *sessions.Session, service storage.Service) error {
 	t.initBase(sess, "gallery")
 
 	if page <= 1 {
@@ -31,18 +31,13 @@ func (t *tmplGallery) initTemplate(page int, sess *sessions.Session, service sto
 		t.PreviousPage = page - 1
 	}
 
-	eventCount, err := service.GetEventCount()
-	if err != nil {
-		return errors.WithMessage(err, "cannot get event count")
-	}
-
-	if eventCount > page*9 {
+	if page < maxPage {
 		t.NextPage = page + 1
 	} else {
 		t.NextPage = -1
 	}
 
-	imagesFileNames, err := service.GetAllImages(page)
+	imagesFileNames, err := service.GetAllImages(page, imagesPerSite)
 	if err != nil {
 		return errors.WithMessage(err, "cannot get images for gallery")
 	}
