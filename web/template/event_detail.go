@@ -36,7 +36,7 @@ func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, servic
 	tmpl.initBase(sess, "event")
 
 	err := tmpl.initEvent(id, service)
-	if err != nil { //TODO 404 statt unbekannter Fehler
+	if err != nil {
 		return err
 	}
 

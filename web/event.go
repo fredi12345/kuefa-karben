@@ -136,8 +136,8 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	tmpl, err := template.EventDetailTemplate(id, sess, s.db)
 	if err != nil {
-		if err.Error() == "sql: no rows in result set" {
-			s.NotFound(w, r) // TODO ~KUF-61~ <- hat nichts damit zu tun? dieser fall funktioniert momentan nicht mehr
+		if errors.Cause(err).Error() == "sql: no rows in result set" {
+			s.NotFound(w, r)
 			return nil
 		}
 		return err
