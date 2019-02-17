@@ -63,7 +63,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 		}
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#images"), http.StatusSeeOther)
 	return nil
 }
 
@@ -106,7 +106,7 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithMessage(err, "cannot remove image "+strconv.Itoa(imageId))
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#images"), http.StatusSeeOther)
 	return nil
 }
 

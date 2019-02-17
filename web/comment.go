@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -31,7 +32,7 @@ func (s *Server) AddComment(w http.ResponseWriter, r *http.Request, sess *sessio
 		return errors.WithMessage(err, "cannot create new comment")
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#comments"), http.StatusSeeOther)
 	return nil
 }
 
@@ -51,6 +52,6 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request, sess *ses
 		return errors.WithMessage(err, "cannot delete comment "+strconv.Itoa(commentId))
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#comments"), http.StatusSeeOther)
 	return nil
 }

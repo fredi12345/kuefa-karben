@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -27,7 +28,7 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request, sess 
 		return errors.WithMessage(err, "cannot delete participant "+strconv.Itoa(participantId))
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#participantList"), http.StatusSeeOther)
 	return nil
 }
 
@@ -59,6 +60,6 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 		return errors.WithMessage(err, "cannot create new participant")
 	}
 
-	http.Redirect(w, r, r.Referer(), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#participation"), http.StatusSeeOther)
 	return nil
 }
