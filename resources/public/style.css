@@ -140,7 +140,6 @@ section h2 {
 
 #main {
     text-align: center;
-    background: white;
 }
 
 #main h3 {
@@ -488,11 +487,6 @@ section#findUs > div {
 
 address {
     font-style: normal;
-}
-
-#map {
-    width: 100%;
-    margin-top: 20px;
 }
 
 #findUs a {
