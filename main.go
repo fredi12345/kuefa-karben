@@ -45,18 +45,15 @@ func main() {
 }
 
 func createHandler(server *web.Server) http.Handler {
-	r := mux.NewRouter()
+	r := mux.NewRouter().StrictSlash(true)
 	fs := http.FileServer(http.Dir("resources/public"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
 
 	// redirect from incomplete urls
 	r.Handle("/event", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
-	r.Handle("/event/", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
 	r.Handle("/event/all", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
-	r.Handle("/event/all/", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
 	r.Handle("/event/all/0", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
 	r.Handle("/gallery", http.RedirectHandler("/gallery/1", http.StatusSeeOther))
-	r.Handle("/gallery/", http.RedirectHandler("/gallery/1", http.StatusSeeOther))
 	r.Handle("/gallery/0", http.RedirectHandler("/gallery/1", http.StatusSeeOther))
 
 	// http get methods
