@@ -8,6 +8,8 @@ import (
 	"io"
 	"time"
 
+	"github.com/fredi12345/kuefa-karben/config"
+
 	"github.com/pkg/errors"
 
 	"github.com/fredi12345/kuefa-karben/random"
@@ -214,8 +216,16 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 	return participants, nil
 }
 
-func New(cfg *mysql.Config) (storage.Service, error) {
-	db, err := sql.Open("mysql", cfg.FormatDSN())
+func New(cfg *config.Config) (storage.Service, error) {
+	conf := mysql.NewConfig()
+	conf.User = cfg.Mysql.User
+	conf.Passwd = cfg.Mysql.Password
+	conf.DBName = cfg.Mysql.Db
+	conf.Net = "tcp"
+	conf.Addr = "localhost:" + cfg.Mysql.Port
+	conf.ParseTime = true
+
+	db, err := sql.Open("mysql", conf.FormatDSN())
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

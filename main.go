@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"path"
+	"os"
 
 	"github.com/fredi12345/kuefa-karben/config"
 	"github.com/fredi12345/kuefa-karben/storage/mydb"
@@ -15,27 +15,31 @@ import (
 func main() {
 	cfg, err := config.Read("config.xml")
 	if err != nil {
-		log.Fatalf("could not read config: %v", err)
+		log.Fatalf("could not read config: %v\n", err)
 	}
 
 	db, err := mydb.New(cfg)
 	if err != nil {
-		log.Fatalf("could not create database: %v", err)
+		log.Fatalf("could not create database: %v\n", err)
 	}
 
-	//TODO Ordner erstellen wenn nicht vorhanden
-	imgPath := path.Join("resources", "public", "images")
-	thumbPath := path.Join("resources", "public", "thumbs")
+	if err := os.MkdirAll(cfg.Path.Image, 0666); err != nil {
+		log.Fatalf("could not create folder: %v\n", err)
+	}
 
-	server, err := web.NewServer(db, imgPath, thumbPath, "cookies.key")
+	if err := os.MkdirAll(cfg.Path.Thumbnail, 0666); err != nil {
+		log.Fatalf("could not create folder: %v\n", err)
+	}
+
+	server, err := web.NewServer(db, cfg.Path.Image, cfg.Path.Thumbnail, "cookies.key")
 	if err != nil {
-		log.Fatal("could not create server: %v", err)
+		log.Fatalf("could not create server: %v\n", err)
 	}
 
 	handler := createHandler(server)
-	fmt.Println("http://localhost:63726")
+	fmt.Printf("http://localhost:%s\n", cfg.Port)
 
-	if err := http.ListenAndServe(":63726", handler); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), handler); err != nil {
 		log.Fatal(err)
 	}
 }

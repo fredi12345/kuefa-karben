@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-    <db>kuefa_karben</db>
-    <user>root</user>
-    <password>root</password>
-    <port>3306</port>
+    <mysql>
+        <db>kuefa_karben</db>
+        <user>root</user>
+        <password>root</password>
+        <port>3306</port>
+    </mysql>
+    <path>
+        <image>resources/public/images</image>
+        <thumbnail>resources/public/thumbs</thumbnail>
+    </path>
+    <port>8080</port>
 </config>
