@@ -23,11 +23,11 @@ func main() {
 		log.Fatalf("could not create database: %v\n", err)
 	}
 
-	if err := os.MkdirAll(cfg.Path.Image, 0666); err != nil {
+	if err := os.MkdirAll(cfg.Path.Image, 0750|os.ModeDir); err != nil {
 		log.Fatalf("could not create folder: %v\n", err)
 	}
 
-	if err := os.MkdirAll(cfg.Path.Thumbnail, 0666); err != nil {
+	if err := os.MkdirAll(cfg.Path.Thumbnail, 0750|os.ModeDir); err != nil {
 		log.Fatalf("could not create folder: %v\n", err)
 	}
 
