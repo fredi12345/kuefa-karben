@@ -160,8 +160,8 @@ VALUES ('Herzlich Hessisch Uffgetischt',
         'Wir freuen uns auf euch!',
         'Cover-2018-05-20.png');
 INSERT INTO event (theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name)
-VALUES ('Italenischer Sommer',
-        '2019-06-24T17:30',
+VALUES ('Italienischer Sommer',
+        '2018-06-24T17:30',
         '2018-07-19T22:12',
         'Tomaten-Melonen-Salat',
         'Gnocchi an Pesto Penne Bolognese Spaghetti Aglio e Olio',
