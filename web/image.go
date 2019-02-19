@@ -17,7 +17,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/nfnt/resize"
+	"github.com/disintegration/imaging"
 
 	"github.com/gorilla/sessions"
 )
@@ -70,12 +70,12 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 func (s *Server) createAndSaveThumbAndFullImage(filename string, file io.Reader) error {
 	buffer, err := ioutil.ReadAll(file)
 
-	img, _, err := image.Decode(bytes.NewReader(buffer))
+	img, err := imaging.Decode(bytes.NewReader(buffer), imaging.AutoOrientation(true))
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	thumbnailImage := resize.Thumbnail(400, 400, img, resize.Bilinear)
+	thumbnailImage := imaging.Fit(img, 400, 400, imaging.Lanczos)
 
 	err = s.saveNewThumbnailImage(thumbnailImage, filename)
 	if err != nil {
