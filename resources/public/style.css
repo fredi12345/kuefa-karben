@@ -1,5 +1,5 @@
 html {
-    font-family: sans-serif;
+    font-family: arial, sans-serif;
     color: black;
     font-size: 20px;
 }
@@ -16,7 +16,7 @@ header {
 header img {
     display: block;
     width: 100%;
-    height: 210px;
+    height: 20vh;
     margin-left: auto;
     margin-right: auto;
     object-fit: cover;
@@ -82,10 +82,6 @@ nav a {
     transition: background-color 0.15s;
 }
 
-nav a:last-child {
-    flex: 1;
-}
-
 nav a:hover {
     background-color: rgba(255, 255, 255, 0.2);
     transition: background-color 0.30s;
@@ -148,7 +144,7 @@ section h2 {
 
 #main img {
     max-height: 400px;
-    max-width: 1000px;
+    max-width: 100%;
     box-shadow: inset 0 0 10px #000000;
 }
 
@@ -229,7 +225,10 @@ section h4 {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+}
 
+label {
+    white-space: nowrap;
 }
 
 #participation div {
@@ -263,6 +262,11 @@ section h4 {
     cursor: pointer;
     font-size: initial;
     transition: background 0.15s;
+}
+
+/** iOS fix **/
+input[type="submit"], input[type="text"], button {
+    -webkit-appearance: none;
 }
 
 #showAll:hover, button:hover, input[type="submit"]:hover, .button:hover {
@@ -303,10 +307,10 @@ section h4 {
 
 #comments + #createComment {
     margin-top: 0;
-    padding-top: 0;
+    padding-top: 10px;
     position: relative;
-    top: -2px;
-    border-radius: 0 0 2px 2px;
+    top: -10px;
+    border-radius: 0 0 10px 10px;
 }
 
 #createEvent input {
@@ -404,7 +408,7 @@ input.editButton:hover {
     position: relative;
     max-width: 230px;
     margin: 20px 10px 20px 10px;
-    max-height: 216px;
+    max-height: 300px;
 }
 
 .imageBox a:first-child {
@@ -508,3 +512,18 @@ address {
 }
 
 /*Find-Us End */
+
+/* Mobile */
+@media only screen and (max-width: 600px) {
+    header img {
+
+    }
+
+    section {
+        padding: 20px;
+    }
+
+    .imageBox {
+        max-width: 100%;
+    }
+}
