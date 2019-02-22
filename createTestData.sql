@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS participant (
   menu                INT,
   event_id            INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES event (event_id)
+  FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comment (
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS comment (
   comment_created DATETIME,
   event_id        INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES event (event_id)
+  FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS images (
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS images (
   event_id  INT,
   image_name VARCHAR(256),
   PRIMARY KEY (id),
-  FOREIGN KEY (event_id) REFERENCES event (event_id)
+  FOREIGN KEY (event_id) REFERENCES event (event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS user (
