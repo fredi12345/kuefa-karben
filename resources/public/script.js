@@ -3,7 +3,7 @@ function confirmDeletion(objectToDelete) {
 }
 
 function acceptCookies() {
-    document.cookie = "acceptedCookies=true; expires=Sat, 31 Dec 2050 23:59:59";
+    document.cookie = "acceptedCookies=true; expires=Sat, 31 Dec 2050 23:59:59; path=/";
     document.getElementById("cookieNotice").style.display = "none";
 }
 
