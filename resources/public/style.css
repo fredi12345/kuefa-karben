@@ -119,7 +119,6 @@ body:before {
     display: block;
     background-size: cover;
     background-image: url(background_food.jpg);
-    filter: blur(3px);
 }
 
 section {
