@@ -31,4 +31,9 @@ function previewImage(input) {
     }
 }
 
+function showLogin() {
+    document.getElementById("showLogin").style.display = "none";
+    document.getElementById("login").style.display = "inline-block";
+}
+
 document.addEventListener('DOMContentLoaded', testCookie);

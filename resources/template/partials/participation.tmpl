@@ -1,7 +1,7 @@
 {{define "participation"}}
 
-    <section id="participation">
-        {{ if .ParticipationAllowed}}
+    {{ if .ParticipationAllowed}}
+        <section id="participation">
             <div id="registration">
                 <h4>Anmeldung</h4>
 
@@ -19,10 +19,13 @@
                     <input type="submit" class="buttonRight" value="Teilnehmen">
                 </form>
             </div>
-        {{ end }}
-        <div id="participantList">
-            <h4>Teilnehmer</h4>
-            {{if .Participants}}
+
+        </section>
+    {{ end }}
+    {{if .Participants}}
+        <section id="participantListSection">
+            <div id="participantList">
+                <h4>Teilnehmer</h4>
                 <p id="participantCount" class="info">{{len .Participants}} Insgesamt | {{.Classic}} Klassisch
                     | {{.Vegetarian}} Vegetarisch | {{.Vegan}} Vegan</p>
                 {{ range .Participants}}
@@ -43,10 +46,7 @@
                         {{end}}
                     </div>
                 {{end}}
-
-            {{else}}
-                <p>Es hat sich noch niemand angemeldet.</p>
-            {{end}}
-        </div>
-    </section>
+            </div>
+        </section>
+    {{end}}
 {{end}}

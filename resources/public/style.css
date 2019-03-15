@@ -131,7 +131,7 @@ section {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
-section h2 {
+section h2, section h1 {
     margin-top: 0;
     clear: both;
 }
@@ -238,10 +238,6 @@ label {
     flex-grow: 1;
 }
 
-#participantList {
-    margin-top: 20px;
-}
-
 .participant {
     padding: 10px;
     clear: both;
@@ -308,13 +304,6 @@ input[type="submit"], input[type="text"], button {
     display: inline-block;
 }
 
-#comments + #createComment {
-    margin-top: 0;
-    padding-top: 10px;
-    position: relative;
-    top: -10px;
-    border-radius: 0 0 10px 10px;
-}
 
 #createEvent input {
     min-width: 320px;
@@ -447,6 +436,7 @@ input.editButton:hover {
     white-space: nowrap;
     text-decoration: none;
     text-overflow: ellipsis;
+    text-align: center;
     margin-top: 5px;
     overflow: hidden;
 }
@@ -454,7 +444,6 @@ input.editButton:hover {
 footer {
     border-radius: 10px 10px 0 0;
     background: #404040;
-    padding: 20px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
     margin-top: 20px;
     position: absolute;
@@ -463,8 +452,17 @@ footer {
     bottom: 0;
 }
 
-footer * {
-    margin: 0;
+footer > * {
+    margin: 20px;
+    display: inline-block;
+}
+
+#impressumLink {
+    float: right;
+}
+
+#login {
+    display: none;
 }
 
 .loginSubmit {
@@ -503,16 +501,25 @@ address {
     text-decoration: none;
     color: black;
     border-radius: 2px;
+    background-color: white;
     line-height: 14px;
     padding: 10px;
     margin-top: 10px;
     box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
+/* Maps */
 #findUs a img {
     width: 34px;
     margin: -10px 5px -10px -10px;
 }
+
+/* Social Media */
+#socialMedia a img {
+    width: 26px;
+    padding: 4px;
+}
+
 
 /*Find-Us End */
 

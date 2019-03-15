@@ -1,6 +1,7 @@
 {{define "footer"}}
     <footer>
         {{if not .Authenticated}}
+            <button id="showLogin" onclick="showLogin()">Login</button>
             <form id="login" name="login" action="/user/login" method="post">
                 <input name="user" type="text" placeholder="Benutzername" required>
                 <input name="passwd" type="password" placeholder="Passwort" required>
@@ -11,5 +12,7 @@
                 <input class="loginSubmit" type="submit" value="Logout">
             </form>
         {{end}}
+        <a href="/impressum" class="button" id="impressumLink" {{if eq .PageLocation "impressum"}}class="active"{{end}}>Impressum
+            & Datenschutzerklärung</a>
     </footer>
 {{end}}
