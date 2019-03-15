@@ -49,6 +49,7 @@ func createHandler(server *web.Server) http.Handler {
 	r := mux.NewRouter().StrictSlash(true)
 	fs := http.FileServer(http.Dir("resources/public"))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public", blockDirectoryListing(fs, server)))
+	r.Handle("/robots.txt", fs)
 
 	// redirect from incomplete urls
 	r.Handle("/event", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
