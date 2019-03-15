@@ -24,8 +24,8 @@ function previewImage(input) {
     if (input.files && input.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
-            document.getElementById("imagePreview").src = e.target.result;
-            document.getElementById("imagePreview").style.display = "block"
+            document.getElementById("titleImage").src = e.target.result;
+            //document.getElementById("imagePreview").style.display = "block"
         };
         reader.readAsDataURL(input.files[0]);
     }
@@ -34,6 +34,16 @@ function previewImage(input) {
 function showLogin() {
     document.getElementById("showLogin").style.display = "none";
     document.getElementById("login").style.display = "inline-block";
+}
+
+function preview() {
+    document.getElementById("motto").innerText = document.getElementsByName("theme")[0].value;
+    var inputDate = new Date(document.getElementsByName("date")[0].value);
+    document.getElementById("date").innerText = ('0' + inputDate.getDate()).slice(-2) + "." + ('0' + inputDate.getMonth()).slice(-2) + "." + inputDate.getFullYear() + " - " + ('0' + inputDate.getHours()).slice(-2) + ":" + ('0' + inputDate.getMinutes()).slice(-2);
+    document.getElementById("vorspeiseText").innerText = document.getElementsByName("starter")[0].value;
+    document.getElementById("hauptgangText").innerText = document.getElementsByName("main-dish")[0].value;
+    document.getElementById("nachspeiseText").innerText = document.getElementsByName("dessert")[0].value;
+    document.getElementById("infoText").innerText = document.getElementsByName("info")[0].value;
 }
 
 document.addEventListener('DOMContentLoaded', testCookie);
