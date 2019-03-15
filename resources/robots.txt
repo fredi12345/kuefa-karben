@@ -1,0 +1,5 @@
+# robots.txt für Küfa Karben
+
+User-agent: *
+Disallow:  /impressum
+Disallow: /gallery/
