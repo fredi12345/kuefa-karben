@@ -42,6 +42,9 @@ const (
 	dbDeleteImage       = `DELETE FROM images WHERE id=?`
 	dbDeleteParticipant = `DELETE FROM participant WHERE id=?`
 	dbDeleteEvent       = `DELETE FROM event WHERE event_id=?`
+
+	dbDeleteAllCommentsForEvent     = `DELETE FROM comment WHERE event_id=?`
+	dbDeleteAllParticipantsForEvent = `DELETE FROM participant WHERE event_id=?`
 )
 
 var (
@@ -78,7 +81,9 @@ func (c *connection) DeleteParticipant(id int) error {
 }
 
 func (c *connection) DeleteEvent(id int) error {
-	_, err := c.db.Exec(dbDeleteEvent, id)
+	_, err := c.db.Exec(dbDeleteAllCommentsForEvent, id)
+	_, err = c.db.Exec(dbDeleteAllParticipantsForEvent, id)
+	_, err = c.db.Exec(dbDeleteEvent, id)
 	return errors.WithStack(err)
 }
 
