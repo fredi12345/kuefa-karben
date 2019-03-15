@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/fredi12345/kuefa-karben/config"
 	"github.com/fredi12345/kuefa-karben/storage/mydb"
@@ -47,7 +48,7 @@ func main() {
 func createHandler(server *web.Server) http.Handler {
 	r := mux.NewRouter().StrictSlash(true)
 	fs := http.FileServer(http.Dir("resources/public"))
-	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", fs))
+	r.PathPrefix("/public/").Handler(http.StripPrefix("/public", blockDirectoryListing(fs, server)))
 
 	// redirect from incomplete urls
 	r.Handle("/event", http.RedirectHandler("/event/all/1", http.StatusSeeOther))
@@ -80,4 +81,14 @@ func createHandler(server *web.Server) http.Handler {
 
 	r.NotFoundHandler = http.HandlerFunc(server.NotFound)
 	return r
+}
+
+func blockDirectoryListing(next http.Handler, server *web.Server) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			server.NotFound(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
