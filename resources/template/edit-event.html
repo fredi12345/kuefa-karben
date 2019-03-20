@@ -9,22 +9,40 @@
     <section id="createEvent">
         <h4>Veranstaltung bearbeiten</h4>
 
-        <form id="createEventForm" name="createEvent" enctype="multipart/form-data" action="/event/edit" method="post">
+        <form id="createEventForm" name="createEvent" enctype="multipart/form-data" action="/event/edit" method="post"
+              oninput="preview()">
             <div id="flexcontainer">
                 <input name="theme" type="text" placeholder="Motto" value="{{.Event.Theme}}" required>
-                <input name="date" type="datetime-local" value="{{.Event.EventDate.Format " 2006-01-02T15:04"}}"
+                <input name="date" type="datetime-local" value="{{.Event.EventDate.Format "2006-01-02T15:04"}}"
                 required>
                 <input name="starter" type="text" placeholder="Vorspeiße" value="{{.Event.Starter}}" required>
                 <input name="main-dish" type="text" placeholder="Hauptgericht" value="{{.Event.MainDish}}" required>
                 <input name="dessert" type="text" placeholder="Nachtisch" value="{{.Event.Dessert}}" required>
                 <input name="image" type="file" accept="image/*" onchange="previewImage(this)">
-                <img src="/public/images/{{.Event.ImageName}}" id="imagePreview"/>
-                <textarea name="info" placeholder="Infotext" rows="3" required>{{.Event.InfoText}}</textarea>
+                <textarea name="info" placeholder="Infotext" rows="6" required>{{.Event.InfoText}}</textarea>
                 <input name="event-id" type="hidden" value="{{.Event.Id}}"/>
             </div>
             <input type="submit" class="buttonRight" value="Änderungen übernehmen">
         </form>
     </section>
+    <section id="main">
+        <h1 id="motto"></h1>
+        <h2 id="date"></h2>
+        <img id="titleImage" src="" title="">
+        <br>
+        <h3>Vorspeise</h3>
+        <p id="vorspeiseText"></p>
+        <span class="stars">★★★</span>
+        <h3>Hauptgang</h3>
+        <p id="hauptgangText"></p>
+        <span class="stars">★★★</span>
+        <h3>Nachspeise</h3>
+        <p id="nachspeiseText"></p>
+        <span class="stars">★★★</span>
+        <br>
+        <p id="infoText"></p>
+    </section>
     {{template "footer" .}}
 </body>
+<script>preview()</script>
 </html>
