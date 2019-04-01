@@ -35,8 +35,8 @@ const (
 	dbGetLatestEventId   = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
 	dbGetEventList       = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,? `
 	dbGetEventCount      = `SELECT COUNT(event_id) FROM event`
-	dbGetNewComments     = `SELECT comment.id, name, content, comment_created, event_id FROM comment ORDER BY comment_created LIMIT ?;`
-	dbGetNewParticipants = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant ORDER BY participant_created LIMIT ?;`
+	dbGetNewComments     = `SELECT comment.id, name, content, comment_created, event_id FROM comment ORDER BY comment_created DESC LIMIT ?;`
+	dbGetNewParticipants = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant ORDER BY participant_created DESC LIMIT ?;`
 
 	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=? WHERE event_id=?`
 
