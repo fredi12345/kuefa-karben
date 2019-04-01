@@ -8,6 +8,9 @@
     {{template "header" .}}
     {{template "about" .}}
     {{template "eventPreview" .}}
+    {{if .Authenticated}}
+    {{template "activities" .}}
+    {{end}}
     {{template "findUs" .}}
     {{template "footer" .}}
 </body>

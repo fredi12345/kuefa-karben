@@ -1,0 +1,35 @@
+{{define "activities"}}
+    <section id="activitieSection">
+        <h2>Neue Aktivitäten</h2>
+        <div id="activities">
+            <div id="newComments">
+                <h4>Kommentare</h4>
+
+                {{ range .Comments }}
+                    <div class="comment">
+                        <a class="commentMedium" href="/event/{{.EventId}}">Zur Veranstaltung</a>
+                        <p class="commentMedium">{{.Name}}</p>
+                        <p class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</p>
+                        <p class="commentText">{{.Content}}</p>
+
+                    </div>
+                {{end}}
+
+            </div>
+            <div id="newParticipants">
+                <h4>Anmeldungen</h4>
+                {{ range .Participants}}
+                    <div class="participant">
+                        <a class="commentMedium" href="/event/{{.EventId}}">Zur Veranstaltung</a>
+                        <span>{{.Name}}</span>
+                        <span class="commentMedium">{{.MenuString}}</span>
+                        <p class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</p>
+                        {{ if .Message}}
+                            <p class="participationMessage">{{.Message}}</p>
+                        {{end}}
+                    </div>
+                {{end}}
+            </div>
+        </div>
+    </section>
+{{end}}

@@ -246,6 +246,10 @@ label {
     background-color: #eee;
 }
 
+.participant:nth-child(2n) {
+    background-color: #fff;
+}
+
 #showAll, button, .button, input[type="submit"] {
     background: darkred;
     border: none;
@@ -354,8 +358,12 @@ input:focus, textarea:focus {
     padding: 10px;
 }
 
-.comment:nth-child(2n) {
+.comment:nth-child(2n-1) {
     background-color: #eee;
+}
+
+.comment:nth-child(2n) {
+    background-color: #fff;
 }
 
 .commentSmall {
@@ -438,6 +446,15 @@ input.editButton:hover {
     text-align: center;
     margin-top: 5px;
     overflow: hidden;
+}
+
+#activities {
+    display: flex;
+}
+
+#activities > div {
+    flex: 1;
+    margin: 10px;
 }
 
 footer {

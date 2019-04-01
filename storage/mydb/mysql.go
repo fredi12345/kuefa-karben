@@ -24,17 +24,19 @@ const (
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
 	dbCreateImage       = `INSERT INTO images (event_id, image_name) VALUES (?, ?)`
 
-	dbGetEvent         = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name FROM event WHERE event_id=?;`
-	dbGetComments      = `SELECT comment.id, name, content, comment_created FROM comment WHERE event_id=? ORDER BY comment_created;`
-	dbGetParticipants  = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
-	dbGetImages        = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
-	dbGetAllImages     = `SELECT images.id, images.image_name, e.event_id, theme FROM images INNER JOIN event e on images.event_id = e.event_id ORDER BY images.id DESC LIMIT ?,?`
-	dbGetImageCount    = `SELECT COUNT(images.id) FROM images`
-	dbGetSingleImage   = `SELECT image_name FROM images WHERE id=?`
-	dbGetCredentials   = `SELECT salt, password FROM user WHERE name=?`
-	dbGetLatestEventId = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
-	dbGetEventList     = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,? `
-	dbGetEventCount    = `SELECT COUNT(event_id) FROM event`
+	dbGetEvent           = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name FROM event WHERE event_id=?;`
+	dbGetComments        = `SELECT comment.id, name, content, comment_created, event_id FROM comment WHERE event_id=? ORDER BY comment_created;`
+	dbGetParticipants    = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
+	dbGetImages          = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
+	dbGetAllImages       = `SELECT images.id, images.image_name, e.event_id, theme FROM images INNER JOIN event e on images.event_id = e.event_id ORDER BY images.id DESC LIMIT ?,?`
+	dbGetImageCount      = `SELECT COUNT(images.id) FROM images`
+	dbGetSingleImage     = `SELECT image_name FROM images WHERE id=?`
+	dbGetCredentials     = `SELECT salt, password FROM user WHERE name=?`
+	dbGetLatestEventId   = `SELECT event_id FROM event ORDER BY event_date DESC LIMIT 1`
+	dbGetEventList       = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,? `
+	dbGetEventCount      = `SELECT COUNT(event_id) FROM event`
+	dbGetNewComments     = `SELECT comment.id, name, content, comment_created, event_id FROM comment ORDER BY comment_created LIMIT ?;`
+	dbGetNewParticipants = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant ORDER BY participant_created LIMIT ?;`
 
 	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=? WHERE event_id=?`
 
@@ -142,7 +144,27 @@ func (c *connection) GetComments(eventId int) ([]*storage.Comment, error) {
 
 	for rows.Next() {
 		var resultItem storage.Comment
-		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Content, &resultItem.Created)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Content, &resultItem.Created, &resultItem.EventId)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		comments = append(comments, &resultItem)
+	}
+
+	return comments, nil
+}
+
+func (c *connection) GetNewComments(limit int) ([]*storage.Comment, error) {
+	var comments []*storage.Comment
+	rows, err := c.db.Query(dbGetNewComments, limit)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem storage.Comment
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Content, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
@@ -193,7 +215,7 @@ func (c *connection) GetAllImages(page int, imagesPerSite int) ([]*storage.Image
 	return images, nil
 }
 
-//Event count to hide 'next page button' on last page
+//Image count to hide 'next page button' on last page in gallery
 func (c *connection) GetImageCount() (int, error) {
 	var count int
 	row := c.db.QueryRow(dbGetImageCount)
@@ -204,6 +226,26 @@ func (c *connection) GetImageCount() (int, error) {
 func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error) {
 	var participants []*storage.Participant
 	rows, err := c.db.Query(dbGetParticipants, eventId)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var resultItem storage.Participant
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+		participants = append(participants, &resultItem)
+	}
+
+	return participants, nil
+}
+
+func (c *connection) GetNewParticipants(limit int) ([]*storage.Participant, error) {
+	var participants []*storage.Participant
+	rows, err := c.db.Query(dbGetNewParticipants, limit)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

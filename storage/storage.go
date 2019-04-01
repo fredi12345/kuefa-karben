@@ -20,6 +20,8 @@ type Service interface {
 	GetParticipants(eventId int) ([]*Participant, error)
 	GetEventList(page int, eventsPerPage int) ([]*Event, error)
 	GetEventCount() (int, error)
+	GetNewComments(limit int) ([]*Comment, error)
+	GetNewParticipants(limit int) ([]*Participant, error)
 
 	UpdateEvent(event Event) error
 
