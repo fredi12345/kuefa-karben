@@ -450,11 +450,13 @@ input.editButton:hover {
 
 #activities {
     display: flex;
+    flex-wrap: wrap;
 }
 
 #activities > div {
     flex: 1;
     margin: 10px;
+    min-width: 350px;
 }
 
 footer {
