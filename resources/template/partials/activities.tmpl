@@ -4,30 +4,26 @@
         <div id="activities">
             <div id="newComments">
                 <h4>Kommentare</h4>
-
                 {{ range .Comments }}
-                    <div class="comment">
-                        <a class="commentMedium" href="/event/{{.EventId}}">Zur Veranstaltung</a>
-                        <p class="commentMedium">{{.Name}}</p>
-                        <p class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</p>
+                    <a href="/event/{{.EventId}}" class="comment">
+                        <span class="commentMedium">{{.Name}}</span>
+                        <span class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</span>
                         <p class="commentText">{{.Content}}</p>
-
-                    </div>
+                    </a>
                 {{end}}
 
             </div>
             <div id="newParticipants">
                 <h4>Anmeldungen</h4>
                 {{ range .Participants}}
-                    <div class="participant">
-                        <a class="commentMedium" href="/event/{{.EventId}}">Zur Veranstaltung</a>
-                        <span>{{.Name}}</span>
+                    <a href="/event/{{.EventId}}" class="participant">
+                        <span class="commentMedium">{{.Name}}</span>
                         <span class="commentMedium">{{.MenuString}}</span>
-                        <p class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</p>
+                        <span class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</span>
                         {{ if .Message}}
                             <p class="participationMessage">{{.Message}}</p>
                         {{end}}
-                    </div>
+                    </a>
                 {{end}}
             </div>
         </div>
