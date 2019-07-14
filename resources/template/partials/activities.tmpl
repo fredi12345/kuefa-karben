@@ -18,7 +18,9 @@
                 {{ range .Participants}}
                     <a href="/event/{{.EventId}}" class="participant">
                         <span class="commentMedium">{{.Name}}</span>
-                        <span class="commentMedium">{{.MenuString}}</span>
+                        {{if gt .ClassicCount 0}}<span class="commentMedium">{{.ClassicCount}} Klassisch</span>{{end}}
+                        {{if gt .VegetarianCount 0}}<span class="commentMedium">{{.VegetarianCount}} Vegetarisch</span>{{end}}
+                        {{if gt .VeganCount 0}}<span class="commentMedium">{{.VeganCount}} Vegan</span>{{end}}
                         <span class="commentSmall">{{.Created.Format "02.01.2006 - 15:04"}}</span>
                         {{ if .Message}}
                             <p class="participationMessage">{{.Message}}</p>

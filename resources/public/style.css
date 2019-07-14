@@ -291,7 +291,7 @@ input[type="submit"], input[type="text"], button {
     display: block;
 }
 
-#eventDescription{
+#eventDescription {
     white-space: pre-wrap;
 }
 
@@ -340,6 +340,18 @@ input, textarea {
     border: 2px solid lightgray;
     outline: none;
     transition: border 0.3s ease;
+}
+
+input[type=number] {
+    width: 30px;
+}
+
+input[type=number]::-webkit-inner-spin-button {
+    opacity: 1;
+}
+
+#participate label {
+    margin-right: 34px;
 }
 
 textarea {
@@ -393,6 +405,10 @@ input:focus, textarea:focus {
     font-size: large;
     display: inline-block;
     color: gray;
+}
+
+.commentMedium + .commentMedium:before {
+    content: "| ";
 }
 
 input.deleteButton {
@@ -563,7 +579,7 @@ address {
 
     }
 
-    nav a{
+    nav a {
         flex-basis: 100%;
     }
 

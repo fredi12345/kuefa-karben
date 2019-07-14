@@ -10,9 +10,9 @@
                     <textarea rows="2" name="message" id="participationMessage" type="text"
                               placeholder="Bemerkung/Nachricht (Optional)"
                               maxlength="1000"></textarea>
-                    <label><input type="radio" name="menu" value="0" checked>Klassisch</label>
-                    <label><input type="radio" name="menu" value="1">Vegetarisch</label>
-                    <label><input type="radio" name="menu" value="2">Vegan</label>
+                    <label><input type="number" name="classic_count" value="1" min="0">x Klassisch</label>
+                    <label><input type="number" name="vegetarian_count" value="0" min="0">x Vegetarisch</label>
+                    <label><input type="number" name="vegan_count" value="0" min="0">x Vegan</label>
                     <input name="eventId" value="{{.Event.Id}}" hidden>
                     <p class="info">Dein Name erscheint öffentlich auf dieser Seite. Benutze gegebenenfalls einen
                         Spitznamen, um anonym zu bleiben.</p>
@@ -26,7 +26,7 @@
         <section id="participantListSection">
             <div id="participantList">
                 <h4>Teilnehmer</h4>
-                <p id="participantCount" class="info">{{len .Participants}} Insgesamt | {{.Classic}} Klassisch
+                <p id="participantCount" class="info">{{.SumParticipants}} Insgesamt | {{.Classic}} Klassisch
                     | {{.Vegetarian}} Vegetarisch | {{.Vegan}} Vegan</p>
                 {{ range .Participants}}
                     <div class="participant">
@@ -39,8 +39,10 @@
                             </form>
                         {{end}}
                         <span>{{.Name}}</span>
-                        <span class="commentMedium">{{.MenuString}}</span>
-
+                        {{if gt .ClassicCount 0}}<span class="commentMedium">{{.ClassicCount}} Klassisch</span>{{end}}
+                        {{if gt .VegetarianCount 0}}<span
+                                class="commentMedium">{{.VegetarianCount}} Vegetarisch</span>{{end}}
+                        {{if gt .VeganCount 0}}<span class="commentMedium">{{.VeganCount}} Vegan</span>{{end}}
                         {{ if and $.Authenticated .Message}}
                             <p class="participationMessage">{{.Message}}</p>
                         {{end}}

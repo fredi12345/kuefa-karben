@@ -20,13 +20,13 @@ import (
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
 	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_name, created_date) VALUES (?,?,?,?,?,?,?, NOW())`
-	dbCreateParticipant = `INSERT INTO participant (name, menu, message, event_id, participant_created) VALUES (?, ?, ?, ?, Now()) `
+	dbCreateParticipant = `INSERT INTO participant (name, classic_count, vegetarian_count, vegan_count, message, event_id, participant_created) VALUES (?, ?, ?, ?, ?, ?, Now()) `
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
 	dbCreateImage       = `INSERT INTO images (event_id, image_name) VALUES (?, ?)`
 
 	dbGetEvent           = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name FROM event WHERE event_id=?;`
 	dbGetComments        = `SELECT comment.id, name, content, comment_created, event_id FROM comment WHERE event_id=? ORDER BY comment_created;`
-	dbGetParticipants    = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
+	dbGetParticipants    = `SELECT participant.id, name, classic_count, vegetarian_count, vegan_count, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages          = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
 	dbGetAllImages       = `SELECT images.id, images.image_name, e.event_id, theme FROM images INNER JOIN event e on images.event_id = e.event_id ORDER BY images.id DESC LIMIT ?,?`
 	dbGetImageCount      = `SELECT COUNT(images.id) FROM images`
@@ -36,7 +36,7 @@ const (
 	dbGetEventList       = `SELECT event_id,theme,event_date,image_name FROM event ORDER BY event_date DESC LIMIT ?,? `
 	dbGetEventCount      = `SELECT COUNT(event_id) FROM event`
 	dbGetNewComments     = `SELECT comment.id, name, content, comment_created, event_id FROM comment ORDER BY comment_created DESC LIMIT ?;`
-	dbGetNewParticipants = `SELECT participant.id, name, menu, message, participant_created, event_id FROM participant ORDER BY participant_created DESC LIMIT ?;`
+	dbGetNewParticipants = `SELECT participant.id, name, classic_count, vegetarian_count, vegan_count, message, participant_created, event_id FROM participant ORDER BY participant_created DESC LIMIT ?;`
 
 	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=? WHERE event_id=?`
 
@@ -233,7 +233,7 @@ func (c *connection) GetParticipants(eventId int) ([]*storage.Participant, error
 
 	for rows.Next() {
 		var resultItem storage.Participant
-		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.ClassicCount, &resultItem.VegetarianCount, &resultItem.VeganCount, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
@@ -253,7 +253,7 @@ func (c *connection) GetNewParticipants(limit int) ([]*storage.Participant, erro
 
 	for rows.Next() {
 		var resultItem storage.Participant
-		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.Menu, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
+		err := rows.Scan(&resultItem.Id, &resultItem.Name, &resultItem.ClassicCount, &resultItem.VegetarianCount, &resultItem.VeganCount, &resultItem.Message, &resultItem.Created, &resultItem.EventId)
 		if err != nil {
 			return nil, errors.WithStack(err)
 		}
@@ -302,7 +302,7 @@ func (c *connection) CreateEvent(event storage.Event) (int, error) {
 }
 
 func (c *connection) CreateParticipant(participant storage.Participant) error {
-	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.Menu, participant.Message, participant.EventId)
+	_, err := c.db.Exec(dbCreateParticipant, participant.Name, participant.ClassicCount, participant.VegetarianCount, participant.VeganCount, participant.Message, participant.EventId)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return errors.WithStack(ErrInputToLong)

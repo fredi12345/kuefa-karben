@@ -53,18 +53,14 @@ type Event struct {
 }
 
 type Participant struct {
-	Id      int
-	Name    string
-	Created time.Time
-	Menu    int
-	Message string
-	EventId int
-}
-
-var menuToString = map[int]string{0: "Klassisch", 1: "Vegetarisch", 2: "Vegan"}
-
-func (p *Participant) MenuString() string {
-	return menuToString[p.Menu]
+	Id              int
+	Name            string
+	Created         time.Time
+	Message         string
+	EventId         int
+	ClassicCount    int
+	VegetarianCount int
+	VeganCount      int
 }
 
 type Image struct {

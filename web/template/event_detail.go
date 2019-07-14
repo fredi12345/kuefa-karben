@@ -52,17 +52,9 @@ func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, servic
 	tmpl.Participants = part
 	classic, vegetarian, vegan := 0, 0, 0
 	for i := 0; i < len(part); i++ {
-		switch part[i].Menu {
-		case 0:
-			classic++
-			break
-		case 1:
-			vegetarian++
-			break
-		case 2:
-			vegan++
-			break
-		}
+		classic += part[i].ClassicCount
+		vegetarian += part[i].VegetarianCount
+		vegan += part[i].VeganCount
 	}
 	tmpl.Classic = classic
 	tmpl.Vegetarian = vegetarian
@@ -84,4 +76,8 @@ func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, servic
 	tmpl.CommentsAllowed = true
 
 	return nil
+}
+
+func (tmpl *tmplEventDetail) SumParticipants() int {
+	return tmpl.Classic + tmpl.Vegetarian + tmpl.Vegan
 }

@@ -40,8 +40,9 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 		return errors.WithStack(err)
 	}
 
-	//Klassisch=0, Vegetarisch=1, Vegan=2
-	menu, err := strconv.Atoi(r.Form.Get("menu"))
+	classicCount, err := strconv.Atoi(r.Form.Get("classic_count"))
+	vegetarianCount, err := strconv.Atoi(r.Form.Get("vegetarian_count"))
+	veganCount, err := strconv.Atoi(r.Form.Get("vegan_count"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -49,11 +50,13 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 	message := r.Form.Get("message")
 
 	part := storage.Participant{
-		Name:    name,
-		EventId: eventId,
-		Menu:    menu,
-		Message: message,
-		Created: time.Now()}
+		Name:            name,
+		EventId:         eventId,
+		ClassicCount:    classicCount,
+		VegetarianCount: vegetarianCount,
+		VeganCount:      veganCount,
+		Message:         message,
+		Created:         time.Now()}
 
 	err = s.db.CreateParticipant(part)
 	if err != nil {
