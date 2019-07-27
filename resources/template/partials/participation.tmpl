@@ -1,10 +1,11 @@
 {{define "participation"}}
 
-    {{ if .ParticipationAllowed}}
+    {{ if .IsUpcoming}}
         <section id="participation">
             <div id="registration">
                 <h4>Anmeldung</h4>
-
+                {{ if .ParticipationAllowed}}
+                <p class="info">Anmeldeschluss: {{ .Event.ClosingDate.Format "02.01.2006 - 15:04"}}</p>
                 <form id="participate" name="participate" action="/participant/add" method="post">
                     <input name="name" type="text" placeholder="Name" required><br>
                     <textarea rows="2" name="message" id="participationMessage" type="text"
@@ -18,6 +19,9 @@
                         Spitznamen, um anonym zu bleiben.</p>
                     <input type="submit" class="buttonRight" value="Teilnehmen">
                 </form>
+                {{else}}
+                <p class="info">Der Anmeldeschluss war bereits oder alle Mahlzeiten sind schon vergriffen. Schaue regelmäßig wieder vorbei, um die zukünftigen Veranstaltungen nicht zu verpassen.</p>
+                {{end}}
             </div>
 
         </section>

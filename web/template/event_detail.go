@@ -17,6 +17,7 @@ type tmplEventDetail struct {
 	ImageNames           []*storage.Image
 	Comments             []*storage.Comment
 	ParticipationAllowed bool
+	IsUpcoming           bool
 	CommentsAllowed      bool
 	Classic              int
 	Vegetarian           int
@@ -72,7 +73,9 @@ func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, servic
 	}
 	tmpl.Comments = comments
 
-	tmpl.ParticipationAllowed = time.Now().Before(tmpl.Event.EventDate)
+	_, offset := time.Now().Zone()
+	tmpl.ParticipationAllowed = time.Now().Before(tmpl.Event.ClosingDate.Add(time.Duration(-offset * 1000 * 1000 * 1000)))
+	tmpl.IsUpcoming = time.Now().Before(tmpl.Event.EventDate.Add(time.Duration(-offset * 1000 * 1000 * 1000)))
 	tmpl.CommentsAllowed = true
 
 	return nil

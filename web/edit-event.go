@@ -65,10 +65,12 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	event.InfoText = r.Form.Get("info")
 
 	d, err := time.Parse("2006-01-02T15:04", r.Form.Get("date"))
+	c, err := time.Parse("2006-01-02T15:04", r.Form.Get("closingDate"))
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	event.EventDate = d
+	event.ClosingDate = c
 
 	file, header, err := r.FormFile("image")
 	if err != nil && err != http.ErrMissingFile {

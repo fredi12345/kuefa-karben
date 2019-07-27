@@ -39,11 +39,18 @@ function showLogin() {
 function preview() {
     document.getElementById("motto").innerText = document.getElementsByName("theme")[0].value;
     var inputDate = new Date(document.getElementsByName("date")[0].value);
-    document.getElementById("date").innerText = ('0' + inputDate.getDate()).slice(-2) + "." + ('0' + inputDate.getMonth()).slice(-2) + "." + inputDate.getFullYear() + " - " + ('0' + inputDate.getHours()).slice(-2) + ":" + ('0' + inputDate.getMinutes()).slice(-2);
+    document.getElementById("date").innerText = ('0' + inputDate.getDate()).slice(-2) + "." + ('0' + (inputDate.getMonth() + 1)).slice(-2) + "." + inputDate.getFullYear() + " - " + ('0' + inputDate.getHours()).slice(-2) + ":" + ('0' + inputDate.getMinutes()).slice(-2);
     document.getElementById("vorspeiseText").innerText = document.getElementsByName("starter")[0].value;
     document.getElementById("hauptgangText").innerText = document.getElementsByName("main-dish")[0].value;
     document.getElementById("nachspeiseText").innerText = document.getElementsByName("dessert")[0].value;
     document.getElementById("infoText").innerText = document.getElementsByName("info")[0].value;
+}
+
+function updateClosingDate() {
+    var tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    var inputDate = new Date(document.getElementsByName("date")[0].value);
+    console.log(new Date(inputDate - tzoffset - (24 * 60 * 60 * 1000)).toISOString().slice(0, -8));
+    document.forms.createEventForm.closingDate.value = new Date(inputDate - tzoffset - (24 * 60 * 60 * 1000)).toISOString().slice(0, -8);
 }
 
 document.addEventListener('DOMContentLoaded', testCookie);

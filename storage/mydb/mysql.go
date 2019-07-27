@@ -19,12 +19,12 @@ import (
 
 const (
 	dbCreateUser        = `INSERT INTO user ( name, salt, password) VALUES (?,?,?);`
-	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_name, created_date) VALUES (?,?,?,?,?,?,?, NOW())`
+	dbCreateEvent       = `INSERT INTO event (theme, event_date, starter, main_dish, dessert, infotext, image_name, created_date, closing_date) VALUES (?,?,?,?,?,?,?, NOW(),?)`
 	dbCreateParticipant = `INSERT INTO participant (name, classic_count, vegetarian_count, vegan_count, message, event_id, participant_created) VALUES (?, ?, ?, ?, ?, ?, Now()) `
 	dbCreateComment     = `INSERT INTO comment (content, name, comment_created, event_id) VALUES (?,?, Now(), ?)`
 	dbCreateImage       = `INSERT INTO images (event_id, image_name) VALUES (?, ?)`
 
-	dbGetEvent           = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name FROM event WHERE event_id=?;`
+	dbGetEvent           = `SELECT event_id, theme, event_date, created_date, starter, main_dish, dessert, infotext, image_name, closing_date FROM event WHERE event_id=?;`
 	dbGetComments        = `SELECT comment.id, name, content, comment_created, event_id FROM comment WHERE event_id=? ORDER BY comment_created;`
 	dbGetParticipants    = `SELECT participant.id, name, classic_count, vegetarian_count, vegan_count, message, participant_created, event_id FROM participant WHERE event_id=? ORDER BY participant_created;`
 	dbGetImages          = `SELECT images.id, image_name FROM images WHERE event_id=? ORDER BY id`
@@ -38,7 +38,7 @@ const (
 	dbGetNewComments     = `SELECT comment.id, name, content, comment_created, event_id FROM comment ORDER BY comment_created DESC LIMIT ?;`
 	dbGetNewParticipants = `SELECT participant.id, name, classic_count, vegetarian_count, vegan_count, message, participant_created, event_id FROM participant ORDER BY participant_created DESC LIMIT ?;`
 
-	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=? WHERE event_id=?`
+	dbUpdateEvent = `UPDATE event SET theme=?, event_date=?, starter=?, main_dish=?, dessert=?, infotext=?, image_name=?, closing_date=? WHERE event_id=?`
 
 	dbDeleteComment     = `DELETE FROM comment WHERE id=?`
 	dbDeleteImage       = `DELETE FROM images WHERE id=?`
@@ -127,7 +127,7 @@ func (c *connection) GetLatestEventId() (int, error) {
 func (c *connection) GetEvent(id int) (*storage.Event, error) {
 	event := storage.Event{}
 	event.Id = id
-	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Id, &event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageName)
+	err := c.db.QueryRow(dbGetEvent, id).Scan(&event.Id, &event.Theme, &event.EventDate, &event.Created, &event.Starter, &event.MainDish, &event.Dessert, &event.InfoText, &event.ImageName, &event.ClosingDate)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -286,7 +286,7 @@ func New(cfg *config.Config) (storage.Service, error) {
 }
 
 func (c *connection) CreateEvent(event storage.Event) (int, error) {
-	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageName)
+	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageName, event.ClosingDate)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
 			return -1, errors.WithStack(ErrInputToLong)
@@ -364,7 +364,7 @@ func (c *connection) CheckCredentials(name, attemptedPassword string) (bool, err
 }
 
 func (c *connection) UpdateEvent(e storage.Event) error {
-	_, err := c.db.Exec(dbUpdateEvent, e.Theme, e.EventDate, e.Starter, e.MainDish, e.Dessert, e.InfoText, e.ImageName, e.Id)
+	_, err := c.db.Exec(dbUpdateEvent, e.Theme, e.EventDate, e.Starter, e.MainDish, e.Dessert, e.InfoText, e.ImageName, e.ClosingDate, e.Id)
 	return errors.WithStack(err)
 }
 

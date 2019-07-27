@@ -41,15 +41,16 @@ type Comment struct {
 	EventId int
 }
 type Event struct {
-	Id        int
-	Theme     string
-	EventDate time.Time
-	Created   time.Time
-	Starter   string
-	MainDish  string
-	Dessert   string
-	InfoText  string
-	ImageName string
+	Id          int
+	Theme       string
+	EventDate   time.Time
+	Created     time.Time
+	Starter     string
+	MainDish    string
+	Dessert     string
+	InfoText    string
+	ImageName   string
+	ClosingDate time.Time
 }
 
 type Participant struct {

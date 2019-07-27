@@ -34,7 +34,12 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	c, err := time.Parse("2006-01-02T15:04", r.Form.Get("closingDate"))
+	if err != nil {
+		return errors.WithStack(err)
+	}
 	event.EventDate = d
+	event.ClosingDate = c
 
 	filename := getUniqueFileName()
 	file, _, err := r.FormFile("image")
