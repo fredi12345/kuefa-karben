@@ -1,7 +1,11 @@
+:root{
+    --theme-color: #8B0000FF;
+}
+
 html {
     font-family: arial, sans-serif;
     color: black;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 header {
@@ -60,11 +64,11 @@ header h1 {
 
 nav {
     flex-wrap: wrap;
-    text-shadow: 1px 1px 1px black;
+    text-shadow: 1px 1px 1px rgba(0 0 0 / 0.5);
     text-align: center;
     padding: 6px;
     display: flex;
-    background-color: darkred;
+    background-color: var(--theme-color);
     border-radius: 10px;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
@@ -78,23 +82,22 @@ nav a {
     white-space: nowrap;
     color: white;
     flex: 2;
+    text-transform: uppercase;
     border-radius: 5px;
     margin: 5px 20px;
     padding: 8px;
+    line-height: normal;
     transition: background-color 0.15s;
 }
 
-nav a:hover {
+nav a:hover, nav a.active {
     background-color: rgba(255, 255, 255, 0.2);
     transition: background-color 0.30s;
 }
 
-nav a.active {
-    font-weight: bold;
-}
-
 p {
     margin: 0;
+    line-height: 1.5
 }
 
 body {
@@ -148,6 +151,10 @@ section h2, section h1 {
     border-radius: 4px;
 }
 
+#main p{
+    font-size: 20px;
+}
+
 section h4 {
     margin: 0 0 10px;
     left: 0;
@@ -170,7 +177,7 @@ section h4 {
     margin: 20px 10px 20px 10px;
     background-size: cover;
     background-position: center;
-    background-color: darkred;
+    background-color: var(--theme-color);
     height: 230px;
     min-width: 300px;
     max-width: 500px;
@@ -244,7 +251,7 @@ label {
 }
 
 .participant:nth-child(2n-1) {
-    background-color: #eee;
+    background-color: #f7f7f7;
 }
 
 .participant:nth-child(2n) {
@@ -261,7 +268,7 @@ label {
 }
 
 #showAll, button, .button, input[type="submit"] {
-    background: darkred;
+    background: var(--theme-color);
     border: none;
     padding: 10px;
     text-decoration: none;
@@ -362,7 +369,7 @@ textarea {
 }
 
 input:focus, textarea:focus {
-    border-color: darkred;
+    border-color: var(--theme-color);
 }
 
 
@@ -370,7 +377,7 @@ input:focus, textarea:focus {
     background-color: #eee;
     padding: 10px;
     border-radius: 5px;
-    font-size: medium;
+    font-size: 14px;
     margin: 10px 0;
 }
 
@@ -388,7 +395,7 @@ input:focus, textarea:focus {
 }
 
 .comment:nth-child(2n-1) {
-    background-color: #eee;
+    background-color: #f7f7f7;
 }
 
 .comment:nth-child(2n) {
@@ -398,11 +405,11 @@ input:focus, textarea:focus {
 .commentSmall {
     display: inline-block;
     color: gray;
-    font-size: small;
+    font-size: 14px;
 }
 
 .commentMedium {
-    font-size: large;
+    font-size: 16px;
     display: inline-block;
     color: gray;
 }
@@ -450,8 +457,9 @@ input.editButton:hover {
 
 .imageBox img {
     width: 100%;
-    object-fit: contain;
-    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+    aspect-ratio: 1 / 1;
     transition: transform 0.15s;
 }
 
@@ -469,7 +477,7 @@ input.editButton:hover {
 }
 
 .imageBox a + a {
-    background-color: darkred;
+    background-color: var(--theme-color);
     padding: 10px;
     display: block;
     color: white;
@@ -477,7 +485,7 @@ input.editButton:hover {
     text-decoration: none;
     text-overflow: ellipsis;
     text-align: center;
-    margin-top: 5px;
+    margin-top: 2px;
     overflow: hidden;
 }
 
@@ -508,7 +516,7 @@ footer > * {
 
 #impressumLink {
     white-space: nowrap;
-    margin-top: 0px;
+    margin-top: 0;
 }
 
 #login {
@@ -525,7 +533,7 @@ footer > * {
 }
 
 .message-hint {
-    background-color: darkred;
+    background-color: var(--theme-color);
 }
 
 /* Find-Us Begin */
@@ -550,12 +558,13 @@ address {
     white-space: nowrap;
     text-decoration: none;
     color: black;
-    border-radius: 2px;
+    border-radius: 1000px;
     background-color: white;
     line-height: 14px;
     padding: 10px;
+    padding-inline: 20px;
     margin-top: 10px;
-    box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.4);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 /* Maps */

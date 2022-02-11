@@ -16,10 +16,10 @@
             </div>
             <div id="paging">
                 {{if gt .PreviousPage 0}}
-                    <a id="newer" class="button" href="/event/all/{{.PreviousPage}}">Neuere</a>
+                    <a id="newer" class="button" href="/event/all/{{.PreviousPage}}">< Neuere</a>
                 {{end}}
                 {{if gt .NextPage 0}}
-                    <a id="older" class="button" href="/event/all/{{.NextPage}}">Ältere</a>
+                    <a id="older" class="button" href="/event/all/{{.NextPage}}">Ältere ></a>
                 {{end}}
             </div>
         {{else}}
