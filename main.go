@@ -5,15 +5,28 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/config"
 	"github.com/fredi12345/kuefa-karben/src/storage/mydb"
 	"github.com/fredi12345/kuefa-karben/src/web"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	viper.SetConfigFile(path.Join("config", "config.yaml"))
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatalf("could not read config file: %v", err)
+	}
+
+	viper.SetEnvPrefix("KUEFA")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+
+	// TODO remove
 	cfg, err := config.Read("config.xml")
 	if err != nil {
 		log.Fatalf("could not read config: %v\n", err)

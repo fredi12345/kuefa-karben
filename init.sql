@@ -1,10 +1,3 @@
-#TODO Remove Drop Table after testing
-DROP TABLE IF EXISTS kuefa_karben.participant;
-DROP TABLE IF EXISTS kuefa_karben.comment;
-DROP TABLE IF EXISTS kuefa_karben.images;
-DROP TABLE IF EXISTS kuefa_karben.user;
-DROP TABLE IF EXISTS kuefa_karben.event;
-
 CREATE TABLE IF NOT EXISTS event (
   event_id     INT NOT NULL AUTO_INCREMENT,
   theme        VARCHAR(256),

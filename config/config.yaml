@@ -1,0 +1,14 @@
+# Configuration can be overwritten by environment variables.
+# Use uppercase values delimited by _ and prefixed with KUEFA.
+# e.g. KUEFA_POSTGRES_HOST
+
+postgres:
+  host: localhost
+  port: 5432
+  user: kuefa
+  password: kuefa
+  database: kuefa
+  sslmode: disable
+
+web:
+  port: 3001
