@@ -76,14 +76,6 @@ func (ec *EventCreate) SetClosingTime(t time.Time) *EventCreate {
 	return ec
 }
 
-// SetNillableClosingTime sets the "closing_time" field if the given value is not nil.
-func (ec *EventCreate) SetNillableClosingTime(t *time.Time) *EventCreate {
-	if t != nil {
-		ec.SetClosingTime(*t)
-	}
-	return ec
-}
-
 // SetStarter sets the "starter" field.
 func (ec *EventCreate) SetStarter(s string) *EventCreate {
 	ec.mutation.SetStarter(s)
@@ -274,6 +266,9 @@ func (ec *EventCreate) check() error {
 	if _, ok := ec.mutation.StartingTime(); !ok {
 		return &ValidationError{Name: "starting_time", err: errors.New(`ent: missing required field "Event.starting_time"`)}
 	}
+	if _, ok := ec.mutation.ClosingTime(); !ok {
+		return &ValidationError{Name: "closing_time", err: errors.New(`ent: missing required field "Event.closing_time"`)}
+	}
 	if _, ok := ec.mutation.Starter(); !ok {
 		return &ValidationError{Name: "starter", err: errors.New(`ent: missing required field "Event.starter"`)}
 	}
@@ -388,7 +383,7 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: event.FieldClosingTime,
 		})
-		_node.ClosingTime = &value
+		_node.ClosingTime = value
 	}
 	if value, ok := ec.mutation.Starter(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

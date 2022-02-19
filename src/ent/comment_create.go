@@ -48,12 +48,6 @@ func (cc *CommentCreate) SetMessage(s string) *CommentCreate {
 	return cc
 }
 
-// SetMenu sets the "menu" field.
-func (cc *CommentCreate) SetMenu(c comment.Menu) *CommentCreate {
-	cc.mutation.SetMenu(c)
-	return cc
-}
-
 // SetID sets the "id" field.
 func (cc *CommentCreate) SetID(u uuid.UUID) *CommentCreate {
 	cc.mutation.SetID(u)
@@ -189,14 +183,6 @@ func (cc *CommentCreate) check() error {
 			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Comment.message": %w`, err)}
 		}
 	}
-	if _, ok := cc.mutation.Menu(); !ok {
-		return &ValidationError{Name: "menu", err: errors.New(`ent: missing required field "Comment.menu"`)}
-	}
-	if v, ok := cc.mutation.Menu(); ok {
-		if err := comment.MenuValidator(v); err != nil {
-			return &ValidationError{Name: "menu", err: fmt.Errorf(`ent: validator failed for field "Comment.menu": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -256,14 +242,6 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 			Column: comment.FieldMessage,
 		})
 		_node.Message = value
-	}
-	if value, ok := cc.mutation.Menu(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: comment.FieldMenu,
-		})
-		_node.Menu = value
 	}
 	if nodes := cc.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

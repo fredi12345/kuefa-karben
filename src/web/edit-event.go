@@ -2,14 +2,14 @@ package web
 
 import (
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/src/storage"
-	template2 "github.com/fredi12345/kuefa-karben/src/web/template"
 	"net/http"
+	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/fredi12345/kuefa-karben/src/storage"
+	template2 "github.com/fredi12345/kuefa-karben/src/web/template"
 
-	"strconv"
+	"github.com/pkg/errors"
 
 	"github.com/gorilla/sessions"
 )
@@ -51,12 +51,7 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 	}
 
 	var event storage.Event
-	id, err := strconv.Atoi(r.Form.Get("event-id"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
-	event.Id = id
+	event.ID = r.Form.Get("event-id")
 	event.Theme = r.Form.Get("theme")
 	event.Starter = r.Form.Get("starter")
 	event.MainDish = r.Form.Get("main-dish")
@@ -79,9 +74,9 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 		defer file.Close()
 	}
 
-	oldEvent, err := s.db.GetEvent(id)
+	oldEvent, err := s.db.GetEvent(event.ID)
 	if err != nil {
-		return errors.WithMessage(err, "cannot get event"+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot get event "+event.ID)
 	}
 
 	event.ImageName = oldEvent.ImageName
@@ -102,19 +97,10 @@ func (s *Server) EditEvent(w http.ResponseWriter, r *http.Request, sess *session
 
 	err = s.db.UpdateEvent(event)
 	if err != nil {
-		return errors.WithMessage(err, "cannot update event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot update event "+event.ID)
 	}
 	sess.AddFlash(&template2.Message{Type: template2.TypeHint, Text: "Veranstaltung erfolgreich bearbeitet"})
 	_ = sess.Save(r, w)
-	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/event/%s", event.ID), http.StatusSeeOther)
 	return nil
-}
-
-func (s *Server) getEventImageName(id int) (string, error) {
-	ev, err := s.db.GetEvent(id)
-	if err != nil {
-		return "", errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
-	}
-
-	return ev.ImageName, nil
 }

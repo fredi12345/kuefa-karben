@@ -45,7 +45,6 @@ type CommentMutation struct {
 	created       *time.Time
 	name          *string
 	message       *string
-	menu          *comment.Menu
 	clearedFields map[string]struct{}
 	event         *uuid.UUID
 	clearedevent  bool
@@ -266,42 +265,6 @@ func (m *CommentMutation) ResetMessage() {
 	m.message = nil
 }
 
-// SetMenu sets the "menu" field.
-func (m *CommentMutation) SetMenu(c comment.Menu) {
-	m.menu = &c
-}
-
-// Menu returns the value of the "menu" field in the mutation.
-func (m *CommentMutation) Menu() (r comment.Menu, exists bool) {
-	v := m.menu
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMenu returns the old "menu" field's value of the Comment entity.
-// If the Comment object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CommentMutation) OldMenu(ctx context.Context) (v comment.Menu, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMenu is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMenu requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMenu: %w", err)
-	}
-	return oldValue.Menu, nil
-}
-
-// ResetMenu resets all changes to the "menu" field.
-func (m *CommentMutation) ResetMenu() {
-	m.menu = nil
-}
-
 // SetEventID sets the "event" edge to the Event entity by id.
 func (m *CommentMutation) SetEventID(id uuid.UUID) {
 	m.event = &id
@@ -360,7 +323,7 @@ func (m *CommentMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CommentMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 3)
 	if m.created != nil {
 		fields = append(fields, comment.FieldCreated)
 	}
@@ -369,9 +332,6 @@ func (m *CommentMutation) Fields() []string {
 	}
 	if m.message != nil {
 		fields = append(fields, comment.FieldMessage)
-	}
-	if m.menu != nil {
-		fields = append(fields, comment.FieldMenu)
 	}
 	return fields
 }
@@ -387,8 +347,6 @@ func (m *CommentMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case comment.FieldMessage:
 		return m.Message()
-	case comment.FieldMenu:
-		return m.Menu()
 	}
 	return nil, false
 }
@@ -404,8 +362,6 @@ func (m *CommentMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldName(ctx)
 	case comment.FieldMessage:
 		return m.OldMessage(ctx)
-	case comment.FieldMenu:
-		return m.OldMenu(ctx)
 	}
 	return nil, fmt.Errorf("unknown Comment field %s", name)
 }
@@ -435,13 +391,6 @@ func (m *CommentMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMessage(v)
-		return nil
-	case comment.FieldMenu:
-		v, ok := value.(comment.Menu)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMenu(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Comment field %s", name)
@@ -500,9 +449,6 @@ func (m *CommentMutation) ResetField(name string) error {
 		return nil
 	case comment.FieldMessage:
 		m.ResetMessage()
-		return nil
-	case comment.FieldMenu:
-		m.ResetMenu()
 		return nil
 	}
 	return fmt.Errorf("unknown Comment field %s", name)
@@ -916,7 +862,7 @@ func (m *EventMutation) ClosingTime() (r time.Time, exists bool) {
 // OldClosingTime returns the old "closing_time" field's value of the Event entity.
 // If the Event object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldClosingTime(ctx context.Context) (v *time.Time, err error) {
+func (m *EventMutation) OldClosingTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldClosingTime is only allowed on UpdateOne operations")
 	}
@@ -930,22 +876,9 @@ func (m *EventMutation) OldClosingTime(ctx context.Context) (v *time.Time, err e
 	return oldValue.ClosingTime, nil
 }
 
-// ClearClosingTime clears the value of the "closing_time" field.
-func (m *EventMutation) ClearClosingTime() {
-	m.closing_time = nil
-	m.clearedFields[event.FieldClosingTime] = struct{}{}
-}
-
-// ClosingTimeCleared returns if the "closing_time" field was cleared in this mutation.
-func (m *EventMutation) ClosingTimeCleared() bool {
-	_, ok := m.clearedFields[event.FieldClosingTime]
-	return ok
-}
-
 // ResetClosingTime resets all changes to the "closing_time" field.
 func (m *EventMutation) ResetClosingTime() {
 	m.closing_time = nil
-	delete(m.clearedFields, event.FieldClosingTime)
 }
 
 // SetStarter sets the "starter" field.
@@ -1469,11 +1402,7 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *EventMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(event.FieldClosingTime) {
-		fields = append(fields, event.FieldClosingTime)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1486,11 +1415,6 @@ func (m *EventMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *EventMutation) ClearField(name string) error {
-	switch name {
-	case event.FieldClosingTime:
-		m.ClearClosingTime()
-		return nil
-	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
 }
 

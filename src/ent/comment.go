@@ -24,8 +24,6 @@ type Comment struct {
 	Name string `json:"name,omitempty"`
 	// Message holds the value of the "message" field.
 	Message string `json:"message,omitempty"`
-	// Menu holds the value of the "menu" field.
-	Menu comment.Menu `json:"menu,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommentQuery when eager-loading is set.
 	Edges          CommentEdges `json:"edges"`
@@ -60,7 +58,7 @@ func (*Comment) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case comment.FieldName, comment.FieldMessage, comment.FieldMenu:
+		case comment.FieldName, comment.FieldMessage:
 			values[i] = new(sql.NullString)
 		case comment.FieldCreated:
 			values[i] = new(sql.NullTime)
@@ -106,12 +104,6 @@ func (c *Comment) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field message", values[i])
 			} else if value.Valid {
 				c.Message = value.String
-			}
-		case comment.FieldMenu:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field menu", values[i])
-			} else if value.Valid {
-				c.Menu = comment.Menu(value.String)
 			}
 		case comment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -159,8 +151,6 @@ func (c *Comment) String() string {
 	builder.WriteString(c.Name)
 	builder.WriteString(", message=")
 	builder.WriteString(c.Message)
-	builder.WriteString(", menu=")
-	builder.WriteString(fmt.Sprintf("%v", c.Menu))
 	builder.WriteByte(')')
 	return builder.String()
 }

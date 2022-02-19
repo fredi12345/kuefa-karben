@@ -1,17 +1,17 @@
 package web
 
 import (
-	"github.com/fredi12345/kuefa-karben/src/storage"
-	template2 "github.com/fredi12345/kuefa-karben/src/web/template"
+	"fmt"
 	"math"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
-	"github.com/pkg/errors"
+	"github.com/fredi12345/kuefa-karben/src/storage"
+	template2 "github.com/fredi12345/kuefa-karben/src/web/template"
 
-	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -77,7 +77,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	images, err := s.db.GetImages(id)
 	for _, image := range images {
-		err = s.deleteImageById(image.Id)
+		err = s.deleteImageById(image.ID)
 	}
 
 	event, err := s.db.GetEvent(id)

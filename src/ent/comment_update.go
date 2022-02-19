@@ -29,12 +29,6 @@ func (cu *CommentUpdate) Where(ps ...predicate.Comment) *CommentUpdate {
 	return cu
 }
 
-// SetMenu sets the "menu" field.
-func (cu *CommentUpdate) SetMenu(c comment.Menu) *CommentUpdate {
-	cu.mutation.SetMenu(c)
-	return cu
-}
-
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (cu *CommentUpdate) SetEventID(id uuid.UUID) *CommentUpdate {
 	cu.mutation.SetEventID(id)
@@ -72,18 +66,12 @@ func (cu *CommentUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(cu.hooks) == 0 {
-		if err = cu.check(); err != nil {
-			return 0, err
-		}
 		affected, err = cu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CommentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cu.check(); err != nil {
-				return 0, err
 			}
 			cu.mutation = mutation
 			affected, err = cu.sqlSave(ctx)
@@ -125,16 +113,6 @@ func (cu *CommentUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (cu *CommentUpdate) check() error {
-	if v, ok := cu.mutation.Menu(); ok {
-		if err := comment.MenuValidator(v); err != nil {
-			return &ValidationError{Name: "menu", err: fmt.Errorf(`ent: validator failed for field "Comment.menu": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -152,13 +130,6 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := cu.mutation.Menu(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: comment.FieldMenu,
-		})
 	}
 	if cu.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -214,12 +185,6 @@ type CommentUpdateOne struct {
 	mutation *CommentMutation
 }
 
-// SetMenu sets the "menu" field.
-func (cuo *CommentUpdateOne) SetMenu(c comment.Menu) *CommentUpdateOne {
-	cuo.mutation.SetMenu(c)
-	return cuo
-}
-
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (cuo *CommentUpdateOne) SetEventID(id uuid.UUID) *CommentUpdateOne {
 	cuo.mutation.SetEventID(id)
@@ -264,18 +229,12 @@ func (cuo *CommentUpdateOne) Save(ctx context.Context) (*Comment, error) {
 		node *Comment
 	)
 	if len(cuo.hooks) == 0 {
-		if err = cuo.check(); err != nil {
-			return nil, err
-		}
 		node, err = cuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CommentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = cuo.check(); err != nil {
-				return nil, err
 			}
 			cuo.mutation = mutation
 			node, err = cuo.sqlSave(ctx)
@@ -317,16 +276,6 @@ func (cuo *CommentUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (cuo *CommentUpdateOne) check() error {
-	if v, ok := cuo.mutation.Menu(); ok {
-		if err := comment.MenuValidator(v); err != nil {
-			return &ValidationError{Name: "menu", err: fmt.Errorf(`ent: validator failed for field "Comment.menu": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -361,13 +310,6 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := cuo.mutation.Menu(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: comment.FieldMenu,
-		})
 	}
 	if cuo.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{

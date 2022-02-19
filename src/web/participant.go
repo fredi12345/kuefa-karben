@@ -2,10 +2,11 @@ package web
 
 import (
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/src/storage"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/fredi12345/kuefa-karben/src/storage"
 
 	"github.com/pkg/errors"
 
@@ -51,7 +52,7 @@ func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *se
 
 	part := storage.Participant{
 		Name:            name,
-		EventId:         eventId,
+		EventID:         eventId,
 		ClassicCount:    classicCount,
 		VegetarianCount: vegetarianCount,
 		VeganCount:      veganCount,

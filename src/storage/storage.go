@@ -9,16 +9,16 @@ type Service interface {
 	CreateEvent(event Event) (string, error)
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
-	CreateImage(fileName string, event int) error
+	CreateImage(fileName string, eventID string) error
 	CreateUser(name, password string) error
 
-	GetEvent(id int) (*Event, error)
-	GetLatestEventId() (int, error)
-	GetComments(eventID int) ([]*Comment, error)
-	GetImages(eventId int) ([]*Image, error)
+	GetEvent(id string) (*Event, error)
+	GetLatestEventId() (string, error)
+	GetComments(eventID string) ([]*Comment, error)
+	GetImages(eventId string) ([]*Image, error)
 	GetAllImages(page int, imagesPerSite int) ([]*Image, error)
 	GetImageCount() (int, error)
-	GetParticipants(eventId int) ([]*Participant, error)
+	GetParticipants(eventId string) ([]*Participant, error)
 	GetEventList(page int, eventsPerPage int) ([]*Event, error)
 	GetEventCount() (int, error)
 	GetNewComments(limit int) ([]*Comment, error)
@@ -26,10 +26,10 @@ type Service interface {
 
 	UpdateEvent(event Event) error
 
-	DeleteComment(id int) error
-	DeleteImage(id int) (string, error)
-	DeleteParticipant(id int) error
-	DeleteEvent(id int) error
+	DeleteComment(id string) error
+	DeleteImage(id string) (string, error)
+	DeleteParticipant(id string) error
+	DeleteEvent(id string) error
 
 	CheckCredentials(name, password string) (bool, error)
 }
@@ -39,40 +39,40 @@ type Migrator interface {
 }
 
 type Comment struct {
-	Id      int
+	ID      string
 	Content string
 	Name    string
 	Created time.Time
-	EventId int
+	EventID string
 }
 
 type Event struct {
-	Id          int
+	ID          string
 	Theme       string
 	EventDate   time.Time
+	ClosingDate time.Time
 	Created     time.Time
 	Starter     string
 	MainDish    string
 	Dessert     string
 	InfoText    string
 	ImageName   string
-	ClosingDate time.Time
 }
 
 type Participant struct {
-	Id              int
+	ID              string
 	Name            string
 	Created         time.Time
 	Message         string
-	EventId         int
+	EventID         string
 	ClassicCount    int
 	VegetarianCount int
 	VeganCount      int
 }
 
 type Image struct {
-	Id        int
+	ID        string
 	Name      string
-	EventId   int
+	EventID   string
 	EventName string
 }

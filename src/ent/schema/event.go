@@ -24,7 +24,7 @@ func (Event) Fields() []ent.Field {
 		field.String("theme").MaxLen(256),
 		field.String("title_image"),
 		field.Time("starting_time"),
-		field.Time("closing_time").Optional().Nillable(),
+		field.Time("closing_time"),
 		field.String("starter").MaxLen(512),
 		field.String("main_dish").MaxLen(512),
 		field.String("dessert").MaxLen(512),

@@ -14,7 +14,6 @@ var (
 		{Name: "created", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Size: 256},
 		{Name: "message", Type: field.TypeString, Size: 1024},
-		{Name: "menu", Type: field.TypeEnum, Enums: []string{"CLASSIC", "VEGETARIAN", "VEGAN"}},
 		{Name: "event_comments", Type: field.TypeUUID, Nullable: true},
 	}
 	// CommentsTable holds the schema information for the "comments" table.
@@ -25,7 +24,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "comments_events_comments",
-				Columns:    []*schema.Column{CommentsColumns[5]},
+				Columns:    []*schema.Column{CommentsColumns[4]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -39,7 +38,7 @@ var (
 		{Name: "theme", Type: field.TypeString, Size: 256},
 		{Name: "title_image", Type: field.TypeString},
 		{Name: "starting_time", Type: field.TypeTime},
-		{Name: "closing_time", Type: field.TypeTime, Nullable: true},
+		{Name: "closing_time", Type: field.TypeTime},
 		{Name: "starter", Type: field.TypeString, Size: 512},
 		{Name: "main_dish", Type: field.TypeString, Size: 512},
 		{Name: "dessert", Type: field.TypeString, Size: 512},

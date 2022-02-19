@@ -2,9 +2,10 @@ package web
 
 import (
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/src/storage"
 	"net/http"
 	"strconv"
+
+	"github.com/fredi12345/kuefa-karben/src/storage"
 
 	"github.com/pkg/errors"
 
@@ -25,7 +26,7 @@ func (s *Server) AddComment(w http.ResponseWriter, r *http.Request, sess *sessio
 	var c storage.Comment
 	c.Name = r.Form.Get("name")
 	c.Content = r.Form.Get("comment")
-	c.EventId = eventId
+	c.EventID = eventId
 
 	err = s.db.CreateComment(c)
 	if err != nil {

@@ -413,54 +413,6 @@ func MessageContainsFold(v string) predicate.Comment {
 	})
 }
 
-// MenuEQ applies the EQ predicate on the "menu" field.
-func MenuEQ(v Menu) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMenu), v))
-	})
-}
-
-// MenuNEQ applies the NEQ predicate on the "menu" field.
-func MenuNEQ(v Menu) predicate.Comment {
-	return predicate.Comment(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMenu), v))
-	})
-}
-
-// MenuIn applies the In predicate on the "menu" field.
-func MenuIn(vs ...Menu) predicate.Comment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Comment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldMenu), v...))
-	})
-}
-
-// MenuNotIn applies the NotIn predicate on the "menu" field.
-func MenuNotIn(vs ...Menu) predicate.Comment {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Comment(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldMenu), v...))
-	})
-}
-
 // HasEvent applies the HasEdge predicate on the "event" edge.
 func HasEvent() predicate.Comment {
 	return predicate.Comment(func(s *sql.Selector) {

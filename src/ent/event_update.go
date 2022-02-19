@@ -62,20 +62,6 @@ func (eu *EventUpdate) SetClosingTime(t time.Time) *EventUpdate {
 	return eu
 }
 
-// SetNillableClosingTime sets the "closing_time" field if the given value is not nil.
-func (eu *EventUpdate) SetNillableClosingTime(t *time.Time) *EventUpdate {
-	if t != nil {
-		eu.SetClosingTime(*t)
-	}
-	return eu
-}
-
-// ClearClosingTime clears the value of the "closing_time" field.
-func (eu *EventUpdate) ClearClosingTime() *EventUpdate {
-	eu.mutation.ClearClosingTime()
-	return eu
-}
-
 // SetStarter sets the "starter" field.
 func (eu *EventUpdate) SetStarter(s string) *EventUpdate {
 	eu.mutation.SetStarter(s)
@@ -365,12 +351,6 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: event.FieldClosingTime,
 		})
 	}
-	if eu.mutation.ClosingTimeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Column: event.FieldClosingTime,
-		})
-	}
 	if value, ok := eu.mutation.Starter(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -607,20 +587,6 @@ func (euo *EventUpdateOne) SetStartingTime(t time.Time) *EventUpdateOne {
 // SetClosingTime sets the "closing_time" field.
 func (euo *EventUpdateOne) SetClosingTime(t time.Time) *EventUpdateOne {
 	euo.mutation.SetClosingTime(t)
-	return euo
-}
-
-// SetNillableClosingTime sets the "closing_time" field if the given value is not nil.
-func (euo *EventUpdateOne) SetNillableClosingTime(t *time.Time) *EventUpdateOne {
-	if t != nil {
-		euo.SetClosingTime(*t)
-	}
-	return euo
-}
-
-// ClearClosingTime clears the value of the "closing_time" field.
-func (euo *EventUpdateOne) ClearClosingTime() *EventUpdateOne {
-	euo.mutation.ClearClosingTime()
 	return euo
 }
 
@@ -934,12 +900,6 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: event.FieldClosingTime,
-		})
-	}
-	if euo.mutation.ClosingTimeCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
 			Column: event.FieldClosingTime,
 		})
 	}

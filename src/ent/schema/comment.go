@@ -1,11 +1,12 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"time"
 )
 
 // Comment holds the schema definition for the Comment entity.
@@ -20,7 +21,6 @@ func (Comment) Fields() []ent.Field {
 		field.Time("created").Default(time.Now).Immutable(),
 		field.String("name").MaxLen(256).Immutable(),
 		field.String("message").MaxLen(1024).Immutable(),
-		field.Enum("menu").Values("CLASSIC", "VEGETARIAN", "VEGAN"),
 	}
 }
 

@@ -3,7 +3,6 @@
 package comment
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,8 +19,6 @@ const (
 	FieldName = "name"
 	// FieldMessage holds the string denoting the message field in the database.
 	FieldMessage = "message"
-	// FieldMenu holds the string denoting the menu field in the database.
-	FieldMenu = "menu"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
 	EdgeEvent = "event"
 	// Table holds the table name of the comment in the database.
@@ -41,7 +38,6 @@ var Columns = []string{
 	FieldCreated,
 	FieldName,
 	FieldMessage,
-	FieldMenu,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "comments"
@@ -75,27 +71,3 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
-
-// Menu defines the type for the "menu" enum field.
-type Menu string
-
-// Menu values.
-const (
-	MenuCLASSIC    Menu = "CLASSIC"
-	MenuVEGETARIAN Menu = "VEGETARIAN"
-	MenuVEGAN      Menu = "VEGAN"
-)
-
-func (m Menu) String() string {
-	return string(m)
-}
-
-// MenuValidator is a validator for the "menu" field enum values. It is called by the builders before save.
-func MenuValidator(m Menu) error {
-	switch m {
-	case MenuCLASSIC, MenuVEGETARIAN, MenuVEGAN:
-		return nil
-	default:
-		return fmt.Errorf("comment: invalid enum value for menu field: %q", m)
-	}
-}

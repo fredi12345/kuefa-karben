@@ -690,20 +690,6 @@ func ClosingTimeLTE(v time.Time) predicate.Event {
 	})
 }
 
-// ClosingTimeIsNil applies the IsNil predicate on the "closing_time" field.
-func ClosingTimeIsNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldClosingTime)))
-	})
-}
-
-// ClosingTimeNotNil applies the NotNil predicate on the "closing_time" field.
-func ClosingTimeNotNil() predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldClosingTime)))
-	})
-}
-
 // StarterEQ applies the EQ predicate on the "starter" field.
 func StarterEQ(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
