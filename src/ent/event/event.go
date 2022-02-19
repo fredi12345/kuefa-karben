@@ -23,6 +23,8 @@ const (
 	FieldTitleImage = "title_image"
 	// FieldStartingTime holds the string denoting the starting_time field in the database.
 	FieldStartingTime = "starting_time"
+	// FieldClosingTime holds the string denoting the closing_time field in the database.
+	FieldClosingTime = "closing_time"
 	// FieldStarter holds the string denoting the starter field in the database.
 	FieldStarter = "starter"
 	// FieldMainDish holds the string denoting the main_dish field in the database.
@@ -70,6 +72,7 @@ var Columns = []string{
 	FieldTheme,
 	FieldTitleImage,
 	FieldStartingTime,
+	FieldClosingTime,
 	FieldStarter,
 	FieldMainDish,
 	FieldDessert,

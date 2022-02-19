@@ -1,11 +1,12 @@
 package storage
 
 import (
+	"context"
 	"time"
 )
 
 type Service interface {
-	CreateEvent(event Event) (int, error)
+	CreateEvent(event Event) (string, error)
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
 	CreateImage(fileName string, event int) error
@@ -33,6 +34,10 @@ type Service interface {
 	CheckCredentials(name, password string) (bool, error)
 }
 
+type Migrator interface {
+	Migrate(ctx context.Context) error
+}
+
 type Comment struct {
 	Id      int
 	Content string
@@ -40,6 +45,7 @@ type Comment struct {
 	Created time.Time
 	EventId int
 }
+
 type Event struct {
 	Id          int
 	Theme       string

@@ -5,11 +5,13 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"io"
+	"strconv"
+	"time"
+
 	"github.com/fredi12345/kuefa-karben/src/config"
 	"github.com/fredi12345/kuefa-karben/src/random"
 	"github.com/fredi12345/kuefa-karben/src/storage"
-	"io"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -284,20 +286,20 @@ func New(cfg *config.Config) (storage.Service, error) {
 	return &connection{db: db, rnd: random.New(time.Now().Unix())}, nil
 }
 
-func (c *connection) CreateEvent(event storage.Event) (int, error) {
+func (c *connection) CreateEvent(event storage.Event) (string, error) {
 	res, err := c.db.Exec(dbCreateEvent, event.Theme, event.EventDate, event.Starter, event.MainDish, event.Dessert, event.InfoText, event.ImageName, event.ClosingDate)
 	if msqlErr, ok := err.(*mysql.MySQLError); ok {
 		if msqlErr.Number == 1406 {
-			return -1, errors.WithStack(ErrInputToLong)
+			return "-1", errors.WithStack(ErrInputToLong)
 		}
-		return -1, errors.WithStack(err)
+		return "-1", errors.WithStack(err)
 	}
 
 	id, err := res.LastInsertId()
 	if err != nil {
-		return -1, errors.WithStack(err)
+		return "-1", errors.WithStack(err)
 	}
-	return int(id), nil
+	return strconv.Itoa(int(id)), nil
 }
 
 func (c *connection) CreateParticipant(participant storage.Participant) error {

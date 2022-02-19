@@ -24,8 +24,12 @@ type Participant struct {
 	Name string `json:"name,omitempty"`
 	// Message holds the value of the "message" field.
 	Message string `json:"message,omitempty"`
-	// Menu holds the value of the "menu" field.
-	Menu participant.Menu `json:"menu,omitempty"`
+	// ClassicMenu holds the value of the "classic_menu" field.
+	ClassicMenu int `json:"classic_menu,omitempty"`
+	// VegetarianMenu holds the value of the "vegetarian_menu" field.
+	VegetarianMenu int `json:"vegetarian_menu,omitempty"`
+	// VeganMenu holds the value of the "vegan_menu" field.
+	VeganMenu int `json:"vegan_menu,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ParticipantQuery when eager-loading is set.
 	Edges              ParticipantEdges `json:"edges"`
@@ -60,7 +64,9 @@ func (*Participant) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case participant.FieldName, participant.FieldMessage, participant.FieldMenu:
+		case participant.FieldClassicMenu, participant.FieldVegetarianMenu, participant.FieldVeganMenu:
+			values[i] = new(sql.NullInt64)
+		case participant.FieldName, participant.FieldMessage:
 			values[i] = new(sql.NullString)
 		case participant.FieldCreated:
 			values[i] = new(sql.NullTime)
@@ -107,11 +113,23 @@ func (pa *Participant) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				pa.Message = value.String
 			}
-		case participant.FieldMenu:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field menu", values[i])
+		case participant.FieldClassicMenu:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field classic_menu", values[i])
 			} else if value.Valid {
-				pa.Menu = participant.Menu(value.String)
+				pa.ClassicMenu = int(value.Int64)
+			}
+		case participant.FieldVegetarianMenu:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field vegetarian_menu", values[i])
+			} else if value.Valid {
+				pa.VegetarianMenu = int(value.Int64)
+			}
+		case participant.FieldVeganMenu:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field vegan_menu", values[i])
+			} else if value.Valid {
+				pa.VeganMenu = int(value.Int64)
 			}
 		case participant.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -159,8 +177,12 @@ func (pa *Participant) String() string {
 	builder.WriteString(pa.Name)
 	builder.WriteString(", message=")
 	builder.WriteString(pa.Message)
-	builder.WriteString(", menu=")
-	builder.WriteString(fmt.Sprintf("%v", pa.Menu))
+	builder.WriteString(", classic_menu=")
+	builder.WriteString(fmt.Sprintf("%v", pa.ClassicMenu))
+	builder.WriteString(", vegetarian_menu=")
+	builder.WriteString(fmt.Sprintf("%v", pa.VegetarianMenu))
+	builder.WriteString(", vegan_menu=")
+	builder.WriteString(fmt.Sprintf("%v", pa.VeganMenu))
 	builder.WriteByte(')')
 	return builder.String()
 }

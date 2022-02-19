@@ -29,12 +29,6 @@ func (pu *ParticipantUpdate) Where(ps ...predicate.Participant) *ParticipantUpda
 	return pu
 }
 
-// SetMenu sets the "menu" field.
-func (pu *ParticipantUpdate) SetMenu(pa participant.Menu) *ParticipantUpdate {
-	pu.mutation.SetMenu(pa)
-	return pu
-}
-
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (pu *ParticipantUpdate) SetEventID(id uuid.UUID) *ParticipantUpdate {
 	pu.mutation.SetEventID(id)
@@ -72,18 +66,12 @@ func (pu *ParticipantUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(pu.hooks) == 0 {
-		if err = pu.check(); err != nil {
-			return 0, err
-		}
 		affected, err = pu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ParticipantMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = pu.check(); err != nil {
-				return 0, err
 			}
 			pu.mutation = mutation
 			affected, err = pu.sqlSave(ctx)
@@ -125,16 +113,6 @@ func (pu *ParticipantUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (pu *ParticipantUpdate) check() error {
-	if v, ok := pu.mutation.Menu(); ok {
-		if err := participant.MenuValidator(v); err != nil {
-			return &ValidationError{Name: "menu", err: fmt.Errorf(`ent: validator failed for field "Participant.menu": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (pu *ParticipantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -152,13 +130,6 @@ func (pu *ParticipantUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := pu.mutation.Menu(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: participant.FieldMenu,
-		})
 	}
 	if pu.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -214,12 +185,6 @@ type ParticipantUpdateOne struct {
 	mutation *ParticipantMutation
 }
 
-// SetMenu sets the "menu" field.
-func (puo *ParticipantUpdateOne) SetMenu(pa participant.Menu) *ParticipantUpdateOne {
-	puo.mutation.SetMenu(pa)
-	return puo
-}
-
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (puo *ParticipantUpdateOne) SetEventID(id uuid.UUID) *ParticipantUpdateOne {
 	puo.mutation.SetEventID(id)
@@ -264,18 +229,12 @@ func (puo *ParticipantUpdateOne) Save(ctx context.Context) (*Participant, error)
 		node *Participant
 	)
 	if len(puo.hooks) == 0 {
-		if err = puo.check(); err != nil {
-			return nil, err
-		}
 		node, err = puo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ParticipantMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = puo.check(); err != nil {
-				return nil, err
 			}
 			puo.mutation = mutation
 			node, err = puo.sqlSave(ctx)
@@ -317,16 +276,6 @@ func (puo *ParticipantUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (puo *ParticipantUpdateOne) check() error {
-	if v, ok := puo.mutation.Menu(); ok {
-		if err := participant.MenuValidator(v); err != nil {
-			return &ValidationError{Name: "menu", err: fmt.Errorf(`ent: validator failed for field "Participant.menu": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (puo *ParticipantUpdateOne) sqlSave(ctx context.Context) (_node *Participant, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -361,13 +310,6 @@ func (puo *ParticipantUpdateOne) sqlSave(ctx context.Context) (_node *Participan
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := puo.mutation.Menu(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: participant.FieldMenu,
-		})
 	}
 	if puo.mutation.EventCleared() {
 		edge := &sqlgraph.EdgeSpec{

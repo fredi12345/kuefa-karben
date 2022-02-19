@@ -595,6 +595,7 @@ type EventMutation struct {
 	theme               *string
 	title_image         *string
 	starting_time       *time.Time
+	closing_time        *time.Time
 	starter             *string
 	main_dish           *string
 	dessert             *string
@@ -896,6 +897,55 @@ func (m *EventMutation) OldStartingTime(ctx context.Context) (v time.Time, err e
 // ResetStartingTime resets all changes to the "starting_time" field.
 func (m *EventMutation) ResetStartingTime() {
 	m.starting_time = nil
+}
+
+// SetClosingTime sets the "closing_time" field.
+func (m *EventMutation) SetClosingTime(t time.Time) {
+	m.closing_time = &t
+}
+
+// ClosingTime returns the value of the "closing_time" field in the mutation.
+func (m *EventMutation) ClosingTime() (r time.Time, exists bool) {
+	v := m.closing_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClosingTime returns the old "closing_time" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldClosingTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldClosingTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldClosingTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClosingTime: %w", err)
+	}
+	return oldValue.ClosingTime, nil
+}
+
+// ClearClosingTime clears the value of the "closing_time" field.
+func (m *EventMutation) ClearClosingTime() {
+	m.closing_time = nil
+	m.clearedFields[event.FieldClosingTime] = struct{}{}
+}
+
+// ClosingTimeCleared returns if the "closing_time" field was cleared in this mutation.
+func (m *EventMutation) ClosingTimeCleared() bool {
+	_, ok := m.clearedFields[event.FieldClosingTime]
+	return ok
+}
+
+// ResetClosingTime resets all changes to the "closing_time" field.
+func (m *EventMutation) ResetClosingTime() {
+	m.closing_time = nil
+	delete(m.clearedFields, event.FieldClosingTime)
 }
 
 // SetStarter sets the "starter" field.
@@ -1223,7 +1273,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created != nil {
 		fields = append(fields, event.FieldCreated)
 	}
@@ -1238,6 +1288,9 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.starting_time != nil {
 		fields = append(fields, event.FieldStartingTime)
+	}
+	if m.closing_time != nil {
+		fields = append(fields, event.FieldClosingTime)
 	}
 	if m.starter != nil {
 		fields = append(fields, event.FieldStarter)
@@ -1269,6 +1322,8 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.TitleImage()
 	case event.FieldStartingTime:
 		return m.StartingTime()
+	case event.FieldClosingTime:
+		return m.ClosingTime()
 	case event.FieldStarter:
 		return m.Starter()
 	case event.FieldMainDish:
@@ -1296,6 +1351,8 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldTitleImage(ctx)
 	case event.FieldStartingTime:
 		return m.OldStartingTime(ctx)
+	case event.FieldClosingTime:
+		return m.OldClosingTime(ctx)
 	case event.FieldStarter:
 		return m.OldStarter(ctx)
 	case event.FieldMainDish:
@@ -1347,6 +1404,13 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStartingTime(v)
+		return nil
+	case event.FieldClosingTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClosingTime(v)
 		return nil
 	case event.FieldStarter:
 		v, ok := value.(string)
@@ -1405,7 +1469,11 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *EventMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(event.FieldClosingTime) {
+		fields = append(fields, event.FieldClosingTime)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1418,6 +1486,11 @@ func (m *EventMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *EventMutation) ClearField(name string) error {
+	switch name {
+	case event.FieldClosingTime:
+		m.ClearClosingTime()
+		return nil
+	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
 }
 
@@ -1439,6 +1512,9 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldStartingTime:
 		m.ResetStartingTime()
+		return nil
+	case event.FieldClosingTime:
+		m.ResetClosingTime()
 		return nil
 	case event.FieldStarter:
 		m.ResetStarter()
@@ -2035,19 +2111,24 @@ func (m *ImageMutation) ResetEdge(name string) error {
 // ParticipantMutation represents an operation that mutates the Participant nodes in the graph.
 type ParticipantMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uuid.UUID
-	created       *time.Time
-	name          *string
-	message       *string
-	menu          *participant.Menu
-	clearedFields map[string]struct{}
-	event         *uuid.UUID
-	clearedevent  bool
-	done          bool
-	oldValue      func(context.Context) (*Participant, error)
-	predicates    []predicate.Participant
+	op                 Op
+	typ                string
+	id                 *uuid.UUID
+	created            *time.Time
+	name               *string
+	message            *string
+	classic_menu       *int
+	addclassic_menu    *int
+	vegetarian_menu    *int
+	addvegetarian_menu *int
+	vegan_menu         *int
+	addvegan_menu      *int
+	clearedFields      map[string]struct{}
+	event              *uuid.UUID
+	clearedevent       bool
+	done               bool
+	oldValue           func(context.Context) (*Participant, error)
+	predicates         []predicate.Participant
 }
 
 var _ ent.Mutation = (*ParticipantMutation)(nil)
@@ -2262,40 +2343,172 @@ func (m *ParticipantMutation) ResetMessage() {
 	m.message = nil
 }
 
-// SetMenu sets the "menu" field.
-func (m *ParticipantMutation) SetMenu(pa participant.Menu) {
-	m.menu = &pa
+// SetClassicMenu sets the "classic_menu" field.
+func (m *ParticipantMutation) SetClassicMenu(i int) {
+	m.classic_menu = &i
+	m.addclassic_menu = nil
 }
 
-// Menu returns the value of the "menu" field in the mutation.
-func (m *ParticipantMutation) Menu() (r participant.Menu, exists bool) {
-	v := m.menu
+// ClassicMenu returns the value of the "classic_menu" field in the mutation.
+func (m *ParticipantMutation) ClassicMenu() (r int, exists bool) {
+	v := m.classic_menu
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMenu returns the old "menu" field's value of the Participant entity.
+// OldClassicMenu returns the old "classic_menu" field's value of the Participant entity.
 // If the Participant object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ParticipantMutation) OldMenu(ctx context.Context) (v participant.Menu, err error) {
+func (m *ParticipantMutation) OldClassicMenu(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMenu is only allowed on UpdateOne operations")
+		return v, errors.New("OldClassicMenu is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMenu requires an ID field in the mutation")
+		return v, errors.New("OldClassicMenu requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMenu: %w", err)
+		return v, fmt.Errorf("querying old value for OldClassicMenu: %w", err)
 	}
-	return oldValue.Menu, nil
+	return oldValue.ClassicMenu, nil
 }
 
-// ResetMenu resets all changes to the "menu" field.
-func (m *ParticipantMutation) ResetMenu() {
-	m.menu = nil
+// AddClassicMenu adds i to the "classic_menu" field.
+func (m *ParticipantMutation) AddClassicMenu(i int) {
+	if m.addclassic_menu != nil {
+		*m.addclassic_menu += i
+	} else {
+		m.addclassic_menu = &i
+	}
+}
+
+// AddedClassicMenu returns the value that was added to the "classic_menu" field in this mutation.
+func (m *ParticipantMutation) AddedClassicMenu() (r int, exists bool) {
+	v := m.addclassic_menu
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetClassicMenu resets all changes to the "classic_menu" field.
+func (m *ParticipantMutation) ResetClassicMenu() {
+	m.classic_menu = nil
+	m.addclassic_menu = nil
+}
+
+// SetVegetarianMenu sets the "vegetarian_menu" field.
+func (m *ParticipantMutation) SetVegetarianMenu(i int) {
+	m.vegetarian_menu = &i
+	m.addvegetarian_menu = nil
+}
+
+// VegetarianMenu returns the value of the "vegetarian_menu" field in the mutation.
+func (m *ParticipantMutation) VegetarianMenu() (r int, exists bool) {
+	v := m.vegetarian_menu
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVegetarianMenu returns the old "vegetarian_menu" field's value of the Participant entity.
+// If the Participant object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ParticipantMutation) OldVegetarianMenu(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVegetarianMenu is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVegetarianMenu requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVegetarianMenu: %w", err)
+	}
+	return oldValue.VegetarianMenu, nil
+}
+
+// AddVegetarianMenu adds i to the "vegetarian_menu" field.
+func (m *ParticipantMutation) AddVegetarianMenu(i int) {
+	if m.addvegetarian_menu != nil {
+		*m.addvegetarian_menu += i
+	} else {
+		m.addvegetarian_menu = &i
+	}
+}
+
+// AddedVegetarianMenu returns the value that was added to the "vegetarian_menu" field in this mutation.
+func (m *ParticipantMutation) AddedVegetarianMenu() (r int, exists bool) {
+	v := m.addvegetarian_menu
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVegetarianMenu resets all changes to the "vegetarian_menu" field.
+func (m *ParticipantMutation) ResetVegetarianMenu() {
+	m.vegetarian_menu = nil
+	m.addvegetarian_menu = nil
+}
+
+// SetVeganMenu sets the "vegan_menu" field.
+func (m *ParticipantMutation) SetVeganMenu(i int) {
+	m.vegan_menu = &i
+	m.addvegan_menu = nil
+}
+
+// VeganMenu returns the value of the "vegan_menu" field in the mutation.
+func (m *ParticipantMutation) VeganMenu() (r int, exists bool) {
+	v := m.vegan_menu
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVeganMenu returns the old "vegan_menu" field's value of the Participant entity.
+// If the Participant object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ParticipantMutation) OldVeganMenu(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVeganMenu is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVeganMenu requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVeganMenu: %w", err)
+	}
+	return oldValue.VeganMenu, nil
+}
+
+// AddVeganMenu adds i to the "vegan_menu" field.
+func (m *ParticipantMutation) AddVeganMenu(i int) {
+	if m.addvegan_menu != nil {
+		*m.addvegan_menu += i
+	} else {
+		m.addvegan_menu = &i
+	}
+}
+
+// AddedVeganMenu returns the value that was added to the "vegan_menu" field in this mutation.
+func (m *ParticipantMutation) AddedVeganMenu() (r int, exists bool) {
+	v := m.addvegan_menu
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVeganMenu resets all changes to the "vegan_menu" field.
+func (m *ParticipantMutation) ResetVeganMenu() {
+	m.vegan_menu = nil
+	m.addvegan_menu = nil
 }
 
 // SetEventID sets the "event" edge to the Event entity by id.
@@ -2356,7 +2569,7 @@ func (m *ParticipantMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ParticipantMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m.created != nil {
 		fields = append(fields, participant.FieldCreated)
 	}
@@ -2366,8 +2579,14 @@ func (m *ParticipantMutation) Fields() []string {
 	if m.message != nil {
 		fields = append(fields, participant.FieldMessage)
 	}
-	if m.menu != nil {
-		fields = append(fields, participant.FieldMenu)
+	if m.classic_menu != nil {
+		fields = append(fields, participant.FieldClassicMenu)
+	}
+	if m.vegetarian_menu != nil {
+		fields = append(fields, participant.FieldVegetarianMenu)
+	}
+	if m.vegan_menu != nil {
+		fields = append(fields, participant.FieldVeganMenu)
 	}
 	return fields
 }
@@ -2383,8 +2602,12 @@ func (m *ParticipantMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case participant.FieldMessage:
 		return m.Message()
-	case participant.FieldMenu:
-		return m.Menu()
+	case participant.FieldClassicMenu:
+		return m.ClassicMenu()
+	case participant.FieldVegetarianMenu:
+		return m.VegetarianMenu()
+	case participant.FieldVeganMenu:
+		return m.VeganMenu()
 	}
 	return nil, false
 }
@@ -2400,8 +2623,12 @@ func (m *ParticipantMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldName(ctx)
 	case participant.FieldMessage:
 		return m.OldMessage(ctx)
-	case participant.FieldMenu:
-		return m.OldMenu(ctx)
+	case participant.FieldClassicMenu:
+		return m.OldClassicMenu(ctx)
+	case participant.FieldVegetarianMenu:
+		return m.OldVegetarianMenu(ctx)
+	case participant.FieldVeganMenu:
+		return m.OldVeganMenu(ctx)
 	}
 	return nil, fmt.Errorf("unknown Participant field %s", name)
 }
@@ -2432,12 +2659,26 @@ func (m *ParticipantMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetMessage(v)
 		return nil
-	case participant.FieldMenu:
-		v, ok := value.(participant.Menu)
+	case participant.FieldClassicMenu:
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMenu(v)
+		m.SetClassicMenu(v)
+		return nil
+	case participant.FieldVegetarianMenu:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVegetarianMenu(v)
+		return nil
+	case participant.FieldVeganMenu:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVeganMenu(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Participant field %s", name)
@@ -2446,13 +2687,31 @@ func (m *ParticipantMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *ParticipantMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addclassic_menu != nil {
+		fields = append(fields, participant.FieldClassicMenu)
+	}
+	if m.addvegetarian_menu != nil {
+		fields = append(fields, participant.FieldVegetarianMenu)
+	}
+	if m.addvegan_menu != nil {
+		fields = append(fields, participant.FieldVeganMenu)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *ParticipantMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case participant.FieldClassicMenu:
+		return m.AddedClassicMenu()
+	case participant.FieldVegetarianMenu:
+		return m.AddedVegetarianMenu()
+	case participant.FieldVeganMenu:
+		return m.AddedVeganMenu()
+	}
 	return nil, false
 }
 
@@ -2461,6 +2720,27 @@ func (m *ParticipantMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ParticipantMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case participant.FieldClassicMenu:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddClassicMenu(v)
+		return nil
+	case participant.FieldVegetarianMenu:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVegetarianMenu(v)
+		return nil
+	case participant.FieldVeganMenu:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVeganMenu(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Participant numeric field %s", name)
 }
@@ -2497,8 +2777,14 @@ func (m *ParticipantMutation) ResetField(name string) error {
 	case participant.FieldMessage:
 		m.ResetMessage()
 		return nil
-	case participant.FieldMenu:
-		m.ResetMenu()
+	case participant.FieldClassicMenu:
+		m.ResetClassicMenu()
+		return nil
+	case participant.FieldVegetarianMenu:
+		m.ResetVegetarianMenu()
+		return nil
+	case participant.FieldVeganMenu:
+		m.ResetVeganMenu()
 		return nil
 	}
 	return fmt.Errorf("unknown Participant field %s", name)

@@ -53,19 +53,19 @@ func init() {
 	// event.ThemeValidator is a validator for the "theme" field. It is called by the builders before save.
 	event.ThemeValidator = eventDescTheme.Validators[0].(func(string) error)
 	// eventDescStarter is the schema descriptor for starter field.
-	eventDescStarter := eventFields[6].Descriptor()
+	eventDescStarter := eventFields[7].Descriptor()
 	// event.StarterValidator is a validator for the "starter" field. It is called by the builders before save.
 	event.StarterValidator = eventDescStarter.Validators[0].(func(string) error)
 	// eventDescMainDish is the schema descriptor for main_dish field.
-	eventDescMainDish := eventFields[7].Descriptor()
+	eventDescMainDish := eventFields[8].Descriptor()
 	// event.MainDishValidator is a validator for the "main_dish" field. It is called by the builders before save.
 	event.MainDishValidator = eventDescMainDish.Validators[0].(func(string) error)
 	// eventDescDessert is the schema descriptor for dessert field.
-	eventDescDessert := eventFields[8].Descriptor()
+	eventDescDessert := eventFields[9].Descriptor()
 	// event.DessertValidator is a validator for the "dessert" field. It is called by the builders before save.
 	event.DessertValidator = eventDescDessert.Validators[0].(func(string) error)
 	// eventDescDescription is the schema descriptor for description field.
-	eventDescDescription := eventFields[9].Descriptor()
+	eventDescDescription := eventFields[10].Descriptor()
 	// event.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	event.DescriptionValidator = eventDescDescription.Validators[0].(func(string) error)
 	// eventDescID is the schema descriptor for id field.
@@ -100,6 +100,18 @@ func init() {
 	participantDescMessage := participantFields[3].Descriptor()
 	// participant.MessageValidator is a validator for the "message" field. It is called by the builders before save.
 	participant.MessageValidator = participantDescMessage.Validators[0].(func(string) error)
+	// participantDescClassicMenu is the schema descriptor for classic_menu field.
+	participantDescClassicMenu := participantFields[4].Descriptor()
+	// participant.ClassicMenuValidator is a validator for the "classic_menu" field. It is called by the builders before save.
+	participant.ClassicMenuValidator = participantDescClassicMenu.Validators[0].(func(int) error)
+	// participantDescVegetarianMenu is the schema descriptor for vegetarian_menu field.
+	participantDescVegetarianMenu := participantFields[5].Descriptor()
+	// participant.VegetarianMenuValidator is a validator for the "vegetarian_menu" field. It is called by the builders before save.
+	participant.VegetarianMenuValidator = participantDescVegetarianMenu.Validators[0].(func(int) error)
+	// participantDescVeganMenu is the schema descriptor for vegan_menu field.
+	participantDescVeganMenu := participantFields[6].Descriptor()
+	// participant.VeganMenuValidator is a validator for the "vegan_menu" field. It is called by the builders before save.
+	participant.VeganMenuValidator = participantDescVeganMenu.Validators[0].(func(int) error)
 	// participantDescID is the schema descriptor for id field.
 	participantDescID := participantFields[0].Descriptor()
 	// participant.DefaultID holds the default value on creation for the id field.

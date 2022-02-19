@@ -129,6 +129,13 @@ func StartingTime(v time.Time) predicate.Event {
 	})
 }
 
+// ClosingTime applies equality check predicate on the "closing_time" field. It's identical to ClosingTimeEQ.
+func ClosingTime(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClosingTime), v))
+	})
+}
+
 // Starter applies equality check predicate on the "starter" field. It's identical to StarterEQ.
 func Starter(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -604,6 +611,96 @@ func StartingTimeLT(v time.Time) predicate.Event {
 func StartingTimeLTE(v time.Time) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStartingTime), v))
+	})
+}
+
+// ClosingTimeEQ applies the EQ predicate on the "closing_time" field.
+func ClosingTimeEQ(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClosingTime), v))
+	})
+}
+
+// ClosingTimeNEQ applies the NEQ predicate on the "closing_time" field.
+func ClosingTimeNEQ(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldClosingTime), v))
+	})
+}
+
+// ClosingTimeIn applies the In predicate on the "closing_time" field.
+func ClosingTimeIn(vs ...time.Time) predicate.Event {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldClosingTime), v...))
+	})
+}
+
+// ClosingTimeNotIn applies the NotIn predicate on the "closing_time" field.
+func ClosingTimeNotIn(vs ...time.Time) predicate.Event {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Event(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldClosingTime), v...))
+	})
+}
+
+// ClosingTimeGT applies the GT predicate on the "closing_time" field.
+func ClosingTimeGT(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldClosingTime), v))
+	})
+}
+
+// ClosingTimeGTE applies the GTE predicate on the "closing_time" field.
+func ClosingTimeGTE(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldClosingTime), v))
+	})
+}
+
+// ClosingTimeLT applies the LT predicate on the "closing_time" field.
+func ClosingTimeLT(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldClosingTime), v))
+	})
+}
+
+// ClosingTimeLTE applies the LTE predicate on the "closing_time" field.
+func ClosingTimeLTE(v time.Time) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldClosingTime), v))
+	})
+}
+
+// ClosingTimeIsNil applies the IsNil predicate on the "closing_time" field.
+func ClosingTimeIsNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldClosingTime)))
+	})
+}
+
+// ClosingTimeNotNil applies the NotNil predicate on the "closing_time" field.
+func ClosingTimeNotNil() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldClosingTime)))
 	})
 }
 

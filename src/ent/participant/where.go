@@ -115,6 +115,27 @@ func Message(v string) predicate.Participant {
 	})
 }
 
+// ClassicMenu applies equality check predicate on the "classic_menu" field. It's identical to ClassicMenuEQ.
+func ClassicMenu(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClassicMenu), v))
+	})
+}
+
+// VegetarianMenu applies equality check predicate on the "vegetarian_menu" field. It's identical to VegetarianMenuEQ.
+func VegetarianMenu(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VeganMenu applies equality check predicate on the "vegan_menu" field. It's identical to VeganMenuEQ.
+func VeganMenu(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVeganMenu), v))
+	})
+}
+
 // CreatedEQ applies the EQ predicate on the "created" field.
 func CreatedEQ(v time.Time) predicate.Participant {
 	return predicate.Participant(func(s *sql.Selector) {
@@ -413,22 +434,22 @@ func MessageContainsFold(v string) predicate.Participant {
 	})
 }
 
-// MenuEQ applies the EQ predicate on the "menu" field.
-func MenuEQ(v Menu) predicate.Participant {
+// ClassicMenuEQ applies the EQ predicate on the "classic_menu" field.
+func ClassicMenuEQ(v int) predicate.Participant {
 	return predicate.Participant(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldMenu), v))
+		s.Where(sql.EQ(s.C(FieldClassicMenu), v))
 	})
 }
 
-// MenuNEQ applies the NEQ predicate on the "menu" field.
-func MenuNEQ(v Menu) predicate.Participant {
+// ClassicMenuNEQ applies the NEQ predicate on the "classic_menu" field.
+func ClassicMenuNEQ(v int) predicate.Participant {
 	return predicate.Participant(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldMenu), v))
+		s.Where(sql.NEQ(s.C(FieldClassicMenu), v))
 	})
 }
 
-// MenuIn applies the In predicate on the "menu" field.
-func MenuIn(vs ...Menu) predicate.Participant {
+// ClassicMenuIn applies the In predicate on the "classic_menu" field.
+func ClassicMenuIn(vs ...int) predicate.Participant {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -440,12 +461,12 @@ func MenuIn(vs ...Menu) predicate.Participant {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldMenu), v...))
+		s.Where(sql.In(s.C(FieldClassicMenu), v...))
 	})
 }
 
-// MenuNotIn applies the NotIn predicate on the "menu" field.
-func MenuNotIn(vs ...Menu) predicate.Participant {
+// ClassicMenuNotIn applies the NotIn predicate on the "classic_menu" field.
+func ClassicMenuNotIn(vs ...int) predicate.Participant {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -457,7 +478,187 @@ func MenuNotIn(vs ...Menu) predicate.Participant {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldMenu), v...))
+		s.Where(sql.NotIn(s.C(FieldClassicMenu), v...))
+	})
+}
+
+// ClassicMenuGT applies the GT predicate on the "classic_menu" field.
+func ClassicMenuGT(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldClassicMenu), v))
+	})
+}
+
+// ClassicMenuGTE applies the GTE predicate on the "classic_menu" field.
+func ClassicMenuGTE(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldClassicMenu), v))
+	})
+}
+
+// ClassicMenuLT applies the LT predicate on the "classic_menu" field.
+func ClassicMenuLT(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldClassicMenu), v))
+	})
+}
+
+// ClassicMenuLTE applies the LTE predicate on the "classic_menu" field.
+func ClassicMenuLTE(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldClassicMenu), v))
+	})
+}
+
+// VegetarianMenuEQ applies the EQ predicate on the "vegetarian_menu" field.
+func VegetarianMenuEQ(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VegetarianMenuNEQ applies the NEQ predicate on the "vegetarian_menu" field.
+func VegetarianMenuNEQ(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VegetarianMenuIn applies the In predicate on the "vegetarian_menu" field.
+func VegetarianMenuIn(vs ...int) predicate.Participant {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Participant(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldVegetarianMenu), v...))
+	})
+}
+
+// VegetarianMenuNotIn applies the NotIn predicate on the "vegetarian_menu" field.
+func VegetarianMenuNotIn(vs ...int) predicate.Participant {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Participant(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldVegetarianMenu), v...))
+	})
+}
+
+// VegetarianMenuGT applies the GT predicate on the "vegetarian_menu" field.
+func VegetarianMenuGT(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VegetarianMenuGTE applies the GTE predicate on the "vegetarian_menu" field.
+func VegetarianMenuGTE(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VegetarianMenuLT applies the LT predicate on the "vegetarian_menu" field.
+func VegetarianMenuLT(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VegetarianMenuLTE applies the LTE predicate on the "vegetarian_menu" field.
+func VegetarianMenuLTE(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldVegetarianMenu), v))
+	})
+}
+
+// VeganMenuEQ applies the EQ predicate on the "vegan_menu" field.
+func VeganMenuEQ(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVeganMenu), v))
+	})
+}
+
+// VeganMenuNEQ applies the NEQ predicate on the "vegan_menu" field.
+func VeganMenuNEQ(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldVeganMenu), v))
+	})
+}
+
+// VeganMenuIn applies the In predicate on the "vegan_menu" field.
+func VeganMenuIn(vs ...int) predicate.Participant {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Participant(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldVeganMenu), v...))
+	})
+}
+
+// VeganMenuNotIn applies the NotIn predicate on the "vegan_menu" field.
+func VeganMenuNotIn(vs ...int) predicate.Participant {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Participant(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldVeganMenu), v...))
+	})
+}
+
+// VeganMenuGT applies the GT predicate on the "vegan_menu" field.
+func VeganMenuGT(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldVeganMenu), v))
+	})
+}
+
+// VeganMenuGTE applies the GTE predicate on the "vegan_menu" field.
+func VeganMenuGTE(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldVeganMenu), v))
+	})
+}
+
+// VeganMenuLT applies the LT predicate on the "vegan_menu" field.
+func VeganMenuLT(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldVeganMenu), v))
+	})
+}
+
+// VeganMenuLTE applies the LTE predicate on the "vegan_menu" field.
+func VeganMenuLTE(v int) predicate.Participant {
+	return predicate.Participant(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldVeganMenu), v))
 	})
 }
 

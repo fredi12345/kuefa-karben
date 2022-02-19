@@ -48,9 +48,21 @@ func (pc *ParticipantCreate) SetMessage(s string) *ParticipantCreate {
 	return pc
 }
 
-// SetMenu sets the "menu" field.
-func (pc *ParticipantCreate) SetMenu(pa participant.Menu) *ParticipantCreate {
-	pc.mutation.SetMenu(pa)
+// SetClassicMenu sets the "classic_menu" field.
+func (pc *ParticipantCreate) SetClassicMenu(i int) *ParticipantCreate {
+	pc.mutation.SetClassicMenu(i)
+	return pc
+}
+
+// SetVegetarianMenu sets the "vegetarian_menu" field.
+func (pc *ParticipantCreate) SetVegetarianMenu(i int) *ParticipantCreate {
+	pc.mutation.SetVegetarianMenu(i)
+	return pc
+}
+
+// SetVeganMenu sets the "vegan_menu" field.
+func (pc *ParticipantCreate) SetVeganMenu(i int) *ParticipantCreate {
+	pc.mutation.SetVeganMenu(i)
 	return pc
 }
 
@@ -189,12 +201,28 @@ func (pc *ParticipantCreate) check() error {
 			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Participant.message": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.Menu(); !ok {
-		return &ValidationError{Name: "menu", err: errors.New(`ent: missing required field "Participant.menu"`)}
+	if _, ok := pc.mutation.ClassicMenu(); !ok {
+		return &ValidationError{Name: "classic_menu", err: errors.New(`ent: missing required field "Participant.classic_menu"`)}
 	}
-	if v, ok := pc.mutation.Menu(); ok {
-		if err := participant.MenuValidator(v); err != nil {
-			return &ValidationError{Name: "menu", err: fmt.Errorf(`ent: validator failed for field "Participant.menu": %w`, err)}
+	if v, ok := pc.mutation.ClassicMenu(); ok {
+		if err := participant.ClassicMenuValidator(v); err != nil {
+			return &ValidationError{Name: "classic_menu", err: fmt.Errorf(`ent: validator failed for field "Participant.classic_menu": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.VegetarianMenu(); !ok {
+		return &ValidationError{Name: "vegetarian_menu", err: errors.New(`ent: missing required field "Participant.vegetarian_menu"`)}
+	}
+	if v, ok := pc.mutation.VegetarianMenu(); ok {
+		if err := participant.VegetarianMenuValidator(v); err != nil {
+			return &ValidationError{Name: "vegetarian_menu", err: fmt.Errorf(`ent: validator failed for field "Participant.vegetarian_menu": %w`, err)}
+		}
+	}
+	if _, ok := pc.mutation.VeganMenu(); !ok {
+		return &ValidationError{Name: "vegan_menu", err: errors.New(`ent: missing required field "Participant.vegan_menu"`)}
+	}
+	if v, ok := pc.mutation.VeganMenu(); ok {
+		if err := participant.VeganMenuValidator(v); err != nil {
+			return &ValidationError{Name: "vegan_menu", err: fmt.Errorf(`ent: validator failed for field "Participant.vegan_menu": %w`, err)}
 		}
 	}
 	return nil
@@ -257,13 +285,29 @@ func (pc *ParticipantCreate) createSpec() (*Participant, *sqlgraph.CreateSpec) {
 		})
 		_node.Message = value
 	}
-	if value, ok := pc.mutation.Menu(); ok {
+	if value, ok := pc.mutation.ClassicMenu(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
+			Type:   field.TypeInt,
 			Value:  value,
-			Column: participant.FieldMenu,
+			Column: participant.FieldClassicMenu,
 		})
-		_node.Menu = value
+		_node.ClassicMenu = value
+	}
+	if value, ok := pc.mutation.VegetarianMenu(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: participant.FieldVegetarianMenu,
+		})
+		_node.VegetarianMenu = value
+	}
+	if value, ok := pc.mutation.VeganMenu(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: participant.FieldVeganMenu,
+		})
+		_node.VeganMenu = value
 	}
 	if nodes := pc.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

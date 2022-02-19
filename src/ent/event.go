@@ -27,6 +27,8 @@ type Event struct {
 	TitleImage string `json:"title_image,omitempty"`
 	// StartingTime holds the value of the "starting_time" field.
 	StartingTime time.Time `json:"starting_time,omitempty"`
+	// ClosingTime holds the value of the "closing_time" field.
+	ClosingTime *time.Time `json:"closing_time,omitempty"`
 	// Starter holds the value of the "starter" field.
 	Starter string `json:"starter,omitempty"`
 	// MainDish holds the value of the "main_dish" field.
@@ -87,7 +89,7 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case event.FieldTheme, event.FieldTitleImage, event.FieldStarter, event.FieldMainDish, event.FieldDessert, event.FieldDescription:
 			values[i] = new(sql.NullString)
-		case event.FieldCreated, event.FieldLastModified, event.FieldStartingTime:
+		case event.FieldCreated, event.FieldLastModified, event.FieldStartingTime, event.FieldClosingTime:
 			values[i] = new(sql.NullTime)
 		case event.FieldID:
 			values[i] = new(uuid.UUID)
@@ -141,6 +143,13 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field starting_time", values[i])
 			} else if value.Valid {
 				e.StartingTime = value.Time
+			}
+		case event.FieldClosingTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field closing_time", values[i])
+			} else if value.Valid {
+				e.ClosingTime = new(time.Time)
+				*e.ClosingTime = value.Time
 			}
 		case event.FieldStarter:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -219,6 +228,10 @@ func (e *Event) String() string {
 	builder.WriteString(e.TitleImage)
 	builder.WriteString(", starting_time=")
 	builder.WriteString(e.StartingTime.Format(time.ANSIC))
+	if v := e.ClosingTime; v != nil {
+		builder.WriteString(", closing_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", starter=")
 	builder.WriteString(e.Starter)
 	builder.WriteString(", main_dish=")

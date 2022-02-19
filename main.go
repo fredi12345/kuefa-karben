@@ -1,16 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/src/config"
-	"github.com/fredi12345/kuefa-karben/src/storage/mydb"
-	"github.com/fredi12345/kuefa-karben/src/web"
-	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/fredi12345/kuefa-karben/src/config"
+	"github.com/fredi12345/kuefa-karben/src/storage"
+	"github.com/fredi12345/kuefa-karben/src/web"
+	"github.com/spf13/viper"
 
 	"github.com/gorilla/mux"
 )
@@ -32,9 +34,23 @@ func main() {
 		log.Fatalf("could not read config: %v\n", err)
 	}
 
-	db, err := mydb.New(cfg)
+	db, err := storage.NewPostgresBackend()
 	if err != nil {
-		log.Fatalf("could not create database: %v\n", err)
+		log.Fatalf("could not create postgres backend: %v", err)
+	}
+
+	err = db.Migrate(context.Background())
+	if err != nil {
+		log.Fatalf("could not execute migration: %v", err)
+	}
+
+	user := viper.GetString("default.user")
+	password := viper.GetString("default.password")
+	if user != "" && password != "" {
+		err = db.CreateUser(user, password)
+		if err != nil {
+			log.Printf("failed to create default user %s: %v", user, err)
+		}
 	}
 
 	if err := os.MkdirAll(cfg.Path.Image, 0750|os.ModeDir); err != nil {

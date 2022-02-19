@@ -70,6 +70,20 @@ func (ec *EventCreate) SetStartingTime(t time.Time) *EventCreate {
 	return ec
 }
 
+// SetClosingTime sets the "closing_time" field.
+func (ec *EventCreate) SetClosingTime(t time.Time) *EventCreate {
+	ec.mutation.SetClosingTime(t)
+	return ec
+}
+
+// SetNillableClosingTime sets the "closing_time" field if the given value is not nil.
+func (ec *EventCreate) SetNillableClosingTime(t *time.Time) *EventCreate {
+	if t != nil {
+		ec.SetClosingTime(*t)
+	}
+	return ec
+}
+
 // SetStarter sets the "starter" field.
 func (ec *EventCreate) SetStarter(s string) *EventCreate {
 	ec.mutation.SetStarter(s)
@@ -367,6 +381,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Column: event.FieldStartingTime,
 		})
 		_node.StartingTime = value
+	}
+	if value, ok := ec.mutation.ClosingTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: event.FieldClosingTime,
+		})
+		_node.ClosingTime = &value
 	}
 	if value, ok := ec.mutation.Starter(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

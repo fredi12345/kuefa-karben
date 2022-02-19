@@ -1,11 +1,13 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"time"
 )
 
 // Participant holds the schema definition for the Participant entity.
@@ -20,14 +22,17 @@ func (Participant) Fields() []ent.Field {
 		field.Time("created").Default(time.Now).Immutable(),
 		field.String("name").MaxLen(256).Immutable(),
 		field.String("message").MaxLen(256).Immutable(),
-		field.Enum("menu").Values("CLASSIC", "VEGETARIAN", "VEGAN"),
+		field.Int("classic_menu").Min(0).Immutable(),
+		field.Int("vegetarian_menu").Min(0).Immutable(),
+		field.Int("vegan_menu").Min(0).Immutable(),
 	}
 }
 
 // Edges of the Participant.
 func (Participant) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("event", Event.Type).Ref("participants").Unique(),
+		edge.From("event", Event.Type).Ref("participants").Unique().
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 	}
 
 }
