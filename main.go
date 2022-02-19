@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/fredi12345/kuefa-karben/src/config"
+	"github.com/fredi12345/kuefa-karben/src/storage/mydb"
+	"github.com/fredi12345/kuefa-karben/src/web"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/fredi12345/kuefa-karben/config"
-	"github.com/fredi12345/kuefa-karben/storage/mydb"
-	"github.com/fredi12345/kuefa-karben/web"
 	"github.com/gorilla/mux"
 )
 

@@ -1,0 +1,10 @@
+version: "3"
+services:
+  timetrack-database:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=kuefa_karben
+    ports:
+      - "5432:5432"
