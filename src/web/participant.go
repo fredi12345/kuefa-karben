@@ -19,14 +19,11 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request, sess 
 		return errors.WithStack(err)
 	}
 
-	participantId, err := strconv.Atoi(r.Form.Get("participantId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
+	participantId := r.Form.Get("participantId")
 
 	err = s.db.DeleteParticipant(participantId)
 	if err != nil {
-		return errors.WithMessage(err, "cannot delete participant "+strconv.Itoa(participantId))
+		return errors.WithMessage(err, "cannot delete participant "+participantId)
 	}
 
 	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#participantList"), http.StatusSeeOther)
@@ -36,11 +33,7 @@ func (s *Server) DeleteParticipant(w http.ResponseWriter, r *http.Request, sess 
 func (s *Server) AddParticipant(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
 	r.ParseForm()
 
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	eventId := r.Form.Get("eventId")
 	classicCount, err := strconv.Atoi(r.Form.Get("classic_count"))
 	vegetarianCount, err := strconv.Atoi(r.Form.Get("vegetarian_count"))
 	veganCount, err := strconv.Atoi(r.Form.Get("vegan_count"))

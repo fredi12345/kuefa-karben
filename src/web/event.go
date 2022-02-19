@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -70,11 +69,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithStack(err)
 	}
 
-	id, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	id := r.Form.Get("eventId")
 	images, err := s.db.GetImages(id)
 	for _, image := range images {
 		err = s.deleteImageById(image.ID)
@@ -91,7 +86,7 @@ func (s *Server) DeleteEvent(w http.ResponseWriter, r *http.Request, sess *sessi
 
 	err = s.db.DeleteEvent(id)
 	if err != nil {
-		return errors.WithMessage(err, "cannot delete event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot delete event "+id)
 	}
 	sess.AddFlash(&template2.Message{Type: template2.TypeHint, Text: "Veranstaltung '" + event.Theme + "' erfolgreich gelöscht"})
 	_ = sess.Save(r, w)
@@ -134,11 +129,7 @@ func (s *Server) AllEvents(w http.ResponseWriter, r *http.Request, sess *session
 }
 
 func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessions.Session) error {
-	id, err := strconv.Atoi(mux.Vars(r)["id"])
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	id := mux.Vars(r)["id"]
 	tmpl, err := template2.EventDetailTemplate(id, sess, s.db)
 	if err != nil {
 		if errors.Cause(err).Error() == "sql: no rows in result set" {
@@ -160,13 +151,4 @@ func (s *Server) EventDetail(w http.ResponseWriter, r *http.Request, sess *sessi
 	}
 
 	return nil
-}
-
-func (s *Server) getEventIdByUrl(url *url.URL) (int, error) {
-	keys, ok := url.Query()["id"]
-	if !ok || len(keys) < 1 {
-		return s.db.GetLatestEventId()
-	}
-
-	return strconv.Atoi(keys[0])
 }

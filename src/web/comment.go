@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/fredi12345/kuefa-karben/src/storage"
 
@@ -18,11 +17,7 @@ func (s *Server) AddComment(w http.ResponseWriter, r *http.Request, sess *sessio
 		return errors.WithStack(err)
 	}
 
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	eventId := r.Form.Get("eventId")
 	var c storage.Comment
 	c.Name = r.Form.Get("name")
 	c.Content = r.Form.Get("comment")
@@ -43,14 +38,10 @@ func (s *Server) DeleteComment(w http.ResponseWriter, r *http.Request, sess *ses
 		return errors.WithStack(err)
 	}
 
-	commentId, err := strconv.Atoi(r.Form.Get("commentId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	commentId := r.Form.Get("commentId")
 	err = s.db.DeleteComment(commentId)
 	if err != nil {
-		return errors.WithMessage(err, "cannot delete comment "+strconv.Itoa(commentId))
+		return errors.WithMessage(err, "cannot delete comment "+commentId)
 	}
 
 	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#comments"), http.StatusSeeOther)

@@ -3,7 +3,6 @@ package web
 import (
 	"bytes"
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/src/web/template"
 	"image"
 	"image/jpeg"
 	_ "image/png"
@@ -14,6 +13,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/fredi12345/kuefa-karben/src/web/template"
 
 	"github.com/pkg/errors"
 
@@ -28,11 +29,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 		return errors.WithStack(err)
 	}
 
-	eventId, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	eventId := r.Form.Get("eventId")
 	m := r.MultipartForm
 
 	files := m.File["images"]
@@ -96,29 +93,25 @@ func (s *Server) DeleteImage(w http.ResponseWriter, r *http.Request, sess *sessi
 		return errors.WithStack(err)
 	}
 
-	imageId, err := strconv.Atoi(r.Form.Get("imageId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	imageId := r.Form.Get("imageId")
 	err = s.deleteImageById(imageId)
 	if err != nil {
-		return errors.WithMessage(err, "cannot remove image "+strconv.Itoa(imageId))
+		return errors.WithMessage(err, "cannot remove image "+imageId)
 	}
 
 	http.Redirect(w, r, fmt.Sprint(r.Referer()+"#images"), http.StatusSeeOther)
 	return nil
 }
 
-func (s *Server) deleteImageById(id int) error {
+func (s *Server) deleteImageById(id string) error {
 	filename, err := s.db.DeleteImage(id)
 	if err != nil {
-		return errors.WithMessage(err, "cannot delete image "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot delete image "+id)
 	}
 
 	err = s.removeImageFileByFilename(filename)
 	if err != nil {
-		return errors.WithMessage(err, "cannot remove image "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot remove image "+id)
 	}
 
 	return nil

@@ -10,7 +10,7 @@ type tmplEditEvent struct {
 	tmplEvent
 }
 
-func EditEventTemplate(id int, sess *sessions.Session, service storage.Service) (*tmplEditEvent, error) {
+func EditEventTemplate(id string, sess *sessions.Session, service storage.Service) (*tmplEditEvent, error) {
 	var t tmplEditEvent
 	err := t.initTemplate(id, sess, service)
 	if err != nil {
@@ -19,7 +19,7 @@ func EditEventTemplate(id int, sess *sessions.Session, service storage.Service) 
 	return &t, nil
 }
 
-func (t *tmplEditEvent) initTemplate(id int, sess *sessions.Session, service storage.Service) error {
+func (t *tmplEditEvent) initTemplate(id string, sess *sessions.Session, service storage.Service) error {
 	t.initBase(sess, "edit-event")
 
 	err := t.initEvent(id, service)

@@ -2,8 +2,6 @@ package template
 
 import (
 	"github.com/fredi12345/kuefa-karben/src/storage"
-	"strconv"
-
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
 )
@@ -40,10 +38,10 @@ type tmplEvent struct {
 	Event *storage.Event
 }
 
-func (e *tmplEvent) initEvent(id int, service storage.Service) error {
+func (e *tmplEvent) initEvent(id string, service storage.Service) error {
 	event, err := service.GetEvent(id)
 	if err != nil {
-		return errors.WithMessage(err, "cannot get event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot get event "+id)
 	}
 
 	e.Event = event

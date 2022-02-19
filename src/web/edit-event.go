@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/fredi12345/kuefa-karben/src/storage"
@@ -20,11 +19,7 @@ func (s *Server) EditEventPage(w http.ResponseWriter, r *http.Request, sess *ses
 		return errors.WithStack(err)
 	}
 
-	id, err := strconv.Atoi(r.Form.Get("eventId"))
-	if err != nil {
-		return errors.WithStack(err)
-	}
-
+	id := r.Form.Get("eventId")
 	tmpl, err := template2.EditEventTemplate(id, sess, s.db)
 	if err != nil {
 		return err

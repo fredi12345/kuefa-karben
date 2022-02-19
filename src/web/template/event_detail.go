@@ -1,9 +1,9 @@
 package template
 
 import (
-	"github.com/fredi12345/kuefa-karben/src/storage"
-	"strconv"
 	"time"
+
+	"github.com/fredi12345/kuefa-karben/src/storage"
 
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
@@ -24,7 +24,7 @@ type tmplEventDetail struct {
 	Vegan                int
 }
 
-func EventDetailTemplate(id int, sess *sessions.Session, service storage.Service) (*tmplEventDetail, error) {
+func EventDetailTemplate(id string, sess *sessions.Session, service storage.Service) (*tmplEventDetail, error) {
 	var t tmplEventDetail
 	err := t.initTemplate(id, sess, service)
 	if err != nil {
@@ -33,7 +33,7 @@ func EventDetailTemplate(id int, sess *sessions.Session, service storage.Service
 	return &t, nil
 }
 
-func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, service storage.Service) error {
+func (tmpl *tmplEventDetail) initTemplate(id string, sess *sessions.Session, service storage.Service) error {
 	tmpl.initBase(sess, "event")
 
 	err := tmpl.initEvent(id, service)
@@ -48,7 +48,7 @@ func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, servic
 
 	part, err := service.GetParticipants(id)
 	if err != nil {
-		return errors.WithMessage(err, "cannot get participants of event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot get participants of event "+id)
 	}
 	tmpl.Participants = part
 	classic, vegetarian, vegan := 0, 0, 0
@@ -63,13 +63,13 @@ func (tmpl *tmplEventDetail) initTemplate(id int, sess *sessions.Session, servic
 
 	imagesFileNames, err := service.GetImages(id)
 	if err != nil {
-		return errors.WithMessage(err, "cannot get images of event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot get images of event "+id)
 	}
 	tmpl.ImageNames = imagesFileNames
 
 	comments, err := service.GetComments(id)
 	if err != nil {
-		return errors.WithMessage(err, "cannot get comments of event "+strconv.Itoa(id))
+		return errors.WithMessage(err, "cannot get comments of event "+id)
 	}
 	tmpl.Comments = comments
 
