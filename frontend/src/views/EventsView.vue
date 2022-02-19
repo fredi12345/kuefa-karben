@@ -1,5 +1,5 @@
 <template>
-  <h1>Veranstaltungen</h1>
+  <h1>{{ $t('navigation.events') }}</h1>
 </template>
 
 <script setup lang="ts">

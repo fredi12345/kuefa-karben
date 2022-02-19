@@ -1,8 +1,8 @@
 <template>
   <nav class="navigation">
-    <router-link to="/">Startseite</router-link>
-    <router-link to="/events">Veranstaltungen</router-link>
-    <router-link to="/gallery">Galerie</router-link>
+    <router-link to="/">{{ $t('navigation.home') }}</router-link>
+    <router-link to="/events">{{ $t('navigation.events') }}</router-link>
+    <router-link to="/gallery">{{ $t('navigation.gallery') }}</router-link>
   </nav>
 </template>
 

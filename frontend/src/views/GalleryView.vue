@@ -1,5 +1,5 @@
 <template>
-  <h1>Galerie</h1>
+  <h1>{{ $t('navigation.gallery') }}</h1>
 </template>
 
 <script setup lang="ts">
