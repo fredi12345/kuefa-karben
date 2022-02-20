@@ -1,4 +1,4 @@
-import {createApp} from 'vue/dist/vue.esm-bundler'
+import {createApp} from 'vue'
 import App from './App.vue'
 import {router} from './plugins/routes';
 import {i18n} from './plugins/translations'

@@ -12,6 +12,8 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/config"
 	"github.com/fredi12345/kuefa-karben/src/storage"
 	"github.com/fredi12345/kuefa-karben/src/web"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
 
 	"github.com/gorilla/mux"
@@ -67,9 +69,25 @@ func main() {
 	}
 
 	handler := createHandler(server)
-	fmt.Printf("http://localhost:%s\n", cfg.Port)
+	fmt.Printf("legacy: http://localhost:%s\n", cfg.Port)
+	fmt.Printf("new:    http://localhost:%d\n", viper.GetInt("web.port"))
 
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), handler); err != nil {
+	go func() {
+		if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), handler); err != nil {
+			log.Fatal(err)
+		}
+	}()
+
+	e := echo.New()
+	e.HideBanner = true
+	e.HidePort = true
+	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:  viper.GetString("web.root"),
+		Index: "index.html",
+		HTML5: true,
+	}))
+
+	if err := e.Start(fmt.Sprintf(":%d", viper.GetInt("web.port"))); err != nil {
 		log.Fatal(err)
 	}
 }

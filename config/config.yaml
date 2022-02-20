@@ -12,4 +12,5 @@ postgres:
     - sslmode=disable
 
 web:
+  root: frontend/dist
   port: 3001
