@@ -12,16 +12,31 @@ import FooterBar from "./components/FooterBar.vue";
 useRouter()
 </script>
 
-<style>
-:root{
+<style lang="scss">
+:root {
   --theme-color-rgb: 139 0 0;
   --theme-color: rgb(var(--theme-color-rgb));
 }
 
-body{
+body {
+  --footerHeight: 38px;
+  position: relative;
   background: #eee;
-  margin-block: 0;
+  margin: 0;
+  padding-bottom: calc(var(--footerHeight) + 10px);
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --card-color: #333
+  }
+
+  body{
+    background: #222;
+    color: white;
+  }
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -29,7 +44,7 @@ body{
   text-align: center;
 }
 
-p{
+p {
   line-height: 1.5;
 }
 </style>

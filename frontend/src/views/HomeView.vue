@@ -7,34 +7,15 @@
     </div>
   </section>
   <AboutKuefa/>
-  <section>
-    <h2>Aktuelle Veranstaltungen</h2>
-    <div id="events">
-      <EventCard v-for="event in events" :event="event"></EventCard>
-    </div>
-  </section>
+  <UpcomingEvents/>
   <FindUs/>
 </template>
 
 <script setup lang="ts">
-import EventCard from "../components/EventCard.vue";
 import AboutKuefa from "../components/AboutKuefa.vue";
 import FindUs from "../components/FindUs.vue";
+import UpcomingEvents from "../components/UpcomingEvents.vue";
 
-let events = [
-  {
-    title: "Heimische Kräuterküche",
-    date: "22.02.2022",
-    img: "https://unsplash.it/640/425",
-    description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?"
-  },
-  {
-    title: "Krimidinner - To Bee or Not To Bee or Not To Bee or Not To Bee!",
-    date: "25.02.2022",
-    img: "https://unsplash.it/640/425?random=1",
-    description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?"
-  }
-]
 
 let count = 1;
 let heros = [
@@ -48,12 +29,6 @@ setInterval(() => {
 </script>
 
 <style scoped lang="scss">
-#events {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  justify-content: center;
-}
 
 .hero {
   position: relative;
@@ -68,6 +43,7 @@ setInterval(() => {
     margin: 20px 20px;
     color: white;
     bottom: 0;
+    left: max(0%, calc(25% - 200px));
     padding: 20px 80px;
 
     &:before {

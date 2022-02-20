@@ -1,7 +1,7 @@
 <template>
   <section id="findUs">
     <div id="address">
-      <img src="../assets/logo_wide_thin.png">
+      <img class="kflogo" src="../assets/logo_wide_thin.png">
       <address>
         Jugendkulturzentrum Karben<br>
         Brunnenstr. 2<br>
@@ -39,6 +39,7 @@ const showMap = ref(false);
 <style scoped lang="scss">
 #gmap{
   width: 100%;
+  height: 60vh;
 }
 
 #findUs{
@@ -90,30 +91,12 @@ const showMap = ref(false);
     address{
       font-style: normal;
     }
-    >img{
+    .kflogo{
       margin-top: 20px;
       width: 250px;
       height: 50px;
       object-fit: cover;
     }
-  }
-}
-
-
-
-
-
-#mapPlaceholder{
-  cursor: pointer;
-  width: 100%;
-  background: #eee;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 20vh;
-
-  &:hover{
-    background: #bbb;
   }
 }
 </style>

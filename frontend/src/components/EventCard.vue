@@ -46,7 +46,7 @@ defineProps({
   .details {
     border-top: 4px solid var(--theme-color);
     flex-grow: 1;
-    background-color: white;
+    background-color: var(--card-color);
     padding: 10px 16px 16px;
 
     h4 {
