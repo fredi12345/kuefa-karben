@@ -1,0 +1,90 @@
+basePath: /api
+consumes:
+- application/json
+definitions:
+  ErrorResponseData:
+    properties:
+      additionalAttributes:
+        additionalProperties:
+          type: object
+        description: Additional data to describe the error
+        example:
+          field: firstname
+        type: object
+      description:
+        description: Human-readable description of the error
+        example: required field missing in request
+        type: string
+      errorCode:
+        description: Generic code to detect kind of error
+        example: validation.parameter.required
+        type: string
+    required:
+    - errorCode
+    - description
+    type: object
+  UploadImageResponseData:
+    properties:
+      id:
+        description: Generated v4 UUID of the image
+        example: 13cc859d-a679-49ff-9791-d62f3e761253
+        type: string
+      imageURL:
+        description: Relative URL to access the image
+        example: /public/image/13cc859d-a679-49ff-9791-d62f3e761253.jpeg
+        type: string
+      thumbnailURL:
+        description: Relative URL to access the thumbnail
+        example: /public/thumbnails/13cc859d-a679-49ff-9791-d62f3e761253.jpeg
+        type: string
+    required:
+    - id
+    - imageURL
+    - thumbnailURL
+    type: object
+host: localhost:3001
+info:
+  description: This is the Rest-API specification for server-side API.
+  title: Kuefa-API
+  version: 1.0.0
+paths:
+  /images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: It is automatically served on /public/images/{id}. There is also
+        a thumbnail being generated on /public/thumbnails/{id}.
+      operationId: UploadImage
+      parameters:
+      - in: formData
+        name: image
+        required: true
+        type: file
+      - in: formData
+        name: isTitle
+        type: boolean
+      responses:
+        "200":
+          $ref: '#/responses/UploadImageResponse'
+        "400":
+          $ref: '#/responses/ErrorResponse'
+        "500":
+          $ref: '#/responses/ErrorResponse'
+      summary: Upload an image.
+      tags:
+      - kuefa
+produces:
+- application/json
+responses:
+  ErrorResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/ErrorResponseData'
+  UploadImageResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/UploadImageResponseData'
+schemes:
+- http
+- https
+swagger: "2.0"

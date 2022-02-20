@@ -80,6 +80,7 @@ func createEchoHandler(server *rest.Server) *echo.Echo {
 	e.HideBanner = true
 	e.HidePort = true
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:  viper.GetString("web.root"),
 		Index: "index.html",

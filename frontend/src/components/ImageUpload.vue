@@ -23,14 +23,10 @@ const emit = defineEmits(['update:modelValue'])
 const previewImage = ref('')
 
 async function onImageUpload(event: any) {
-  const resp = await client.uploadImage({
-    contentType: event.target.files[0].type,
-    file: event.target.files[0],
-    isTitle: true,
-  })
+  const resp = await client.uploadImage(event.target.files[0], true)
 
-  previewImage.value = resp.thumbnailURL
-  emit('update:modelValue', resp.id)
+  previewImage.value = resp.data.thumbnailURL
+  emit('update:modelValue', resp.data.id)
 }
 
 async function onImageClear(event: Event) {

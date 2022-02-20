@@ -16,8 +16,64 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type (
+	// swagger:parameters UploadImage
+	UploadImageRequest struct {
+		// in: formData
+		// required: true
+		// swagger:file
+		Image *bytes.Buffer `json:"image"`
+
+		// in: formData
+		// required: false
+		IsTitle bool `json:"isTitle"`
+	}
+
+	UploadImageRequestData struct {
+	}
+
+	// swagger:response UploadImageResponse
+	UploadImageResponse struct {
+		// in: body
+		Body UploadImageResponseData
+	}
+
+	UploadImageResponseData struct {
+		// Generated v4 UUID of the image
+		// Required: true
+		// Example: 13cc859d-a679-49ff-9791-d62f3e761253
+		ID string `json:"id"`
+
+		// Relative URL to access the image
+		// Required: true
+		// Example: /public/image/13cc859d-a679-49ff-9791-d62f3e761253.jpeg
+		ImageURL string `json:"imageURL"`
+
+		// Relative URL to access the thumbnail
+		// Required: true
+		// Example: /public/thumbnails/13cc859d-a679-49ff-9791-d62f3e761253.jpeg
+		ThumbnailURL string `json:"thumbnailURL"`
+	}
+)
+
+// swagger:route POST /images kuefa UploadImage
+//
+// Upload an image.
+//
+// It is automatically served on /public/images/{id}. There is also a thumbnail being generated on /public/thumbnails/{id}.
+//
+// Consumes:
+//   - multipart/form-data
+//
+// Responses:
+//   200: UploadImageResponse
+// 	 400: ErrorResponse
+// 	 500: ErrorResponse
 func (s *Server) UploadImage(c echo.Context) error {
-	fileHeader, err := c.FormFile("file")
+	// TODO bind request?
+	// TODO return proper error structs
+
+	fileHeader, err := c.FormFile("image")
 	if err != nil {
 		log.Printf("could not find form file: %v", err)
 		return echo.ErrBadRequest
@@ -56,11 +112,7 @@ func (s *Server) UploadImage(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, struct {
-		ID           string `json:"id"`
-		ImageURL     string `json:"imageURL"`
-		ThumbnailURL string `json:"thumbnailURL"`
-	}{
+	return c.JSON(http.StatusOK, UploadImageResponseData{
 		ID:           imageID,
 		ImageURL:     fmt.Sprintf("/public/images/%s.jpeg", imageID),
 		ThumbnailURL: fmt.Sprintf("/public/thumbnails/%s.jpeg", imageID),
