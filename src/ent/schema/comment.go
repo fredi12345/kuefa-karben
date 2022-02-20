@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
@@ -27,7 +28,9 @@ func (Comment) Fields() []ent.Field {
 // Edges of the Comment.
 func (Comment) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("event", Event.Type).Ref("comments").Unique(),
+		edge.From("event", Event.Type).Ref("comments").
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
+			Required().Unique(),
 	}
 
 }

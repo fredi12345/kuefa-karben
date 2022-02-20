@@ -5,6 +5,7 @@ config.xml
 *.key
 resources/public/images
 resources/public/thumbs
+store/
 
 frontend/node_modules
 frontend/dist

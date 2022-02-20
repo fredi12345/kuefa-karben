@@ -35,14 +35,6 @@ func (cu *CommentUpdate) SetEventID(id uuid.UUID) *CommentUpdate {
 	return cu
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (cu *CommentUpdate) SetNillableEventID(id *uuid.UUID) *CommentUpdate {
-	if id != nil {
-		cu = cu.SetEventID(*id)
-	}
-	return cu
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (cu *CommentUpdate) SetEvent(e *Event) *CommentUpdate {
 	return cu.SetEventID(e.ID)
@@ -66,12 +58,18 @@ func (cu *CommentUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(cu.hooks) == 0 {
+		if err = cu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = cu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CommentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cu.check(); err != nil {
+				return 0, err
 			}
 			cu.mutation = mutation
 			affected, err = cu.sqlSave(ctx)
@@ -111,6 +109,14 @@ func (cu *CommentUpdate) ExecX(ctx context.Context) {
 	if err := cu.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (cu *CommentUpdate) check() error {
+	if _, ok := cu.mutation.EventID(); cu.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Comment.event"`)
+	}
+	return nil
 }
 
 func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -191,14 +197,6 @@ func (cuo *CommentUpdateOne) SetEventID(id uuid.UUID) *CommentUpdateOne {
 	return cuo
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (cuo *CommentUpdateOne) SetNillableEventID(id *uuid.UUID) *CommentUpdateOne {
-	if id != nil {
-		cuo = cuo.SetEventID(*id)
-	}
-	return cuo
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (cuo *CommentUpdateOne) SetEvent(e *Event) *CommentUpdateOne {
 	return cuo.SetEventID(e.ID)
@@ -229,12 +227,18 @@ func (cuo *CommentUpdateOne) Save(ctx context.Context) (*Comment, error) {
 		node *Comment
 	)
 	if len(cuo.hooks) == 0 {
+		if err = cuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = cuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CommentMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = cuo.check(); err != nil {
+				return nil, err
 			}
 			cuo.mutation = mutation
 			node, err = cuo.sqlSave(ctx)
@@ -274,6 +278,14 @@ func (cuo *CommentUpdateOne) ExecX(ctx context.Context) {
 	if err := cuo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (cuo *CommentUpdateOne) check() error {
+	if _, ok := cuo.mutation.EventID(); cuo.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Comment.event"`)
+	}
+	return nil
 }
 
 func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err error) {

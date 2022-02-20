@@ -68,14 +68,6 @@ func (cc *CommentCreate) SetEventID(id uuid.UUID) *CommentCreate {
 	return cc
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (cc *CommentCreate) SetNillableEventID(id *uuid.UUID) *CommentCreate {
-	if id != nil {
-		cc = cc.SetEventID(*id)
-	}
-	return cc
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (cc *CommentCreate) SetEvent(e *Event) *CommentCreate {
 	return cc.SetEventID(e.ID)
@@ -182,6 +174,9 @@ func (cc *CommentCreate) check() error {
 		if err := comment.MessageValidator(v); err != nil {
 			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Comment.message": %w`, err)}
 		}
+	}
+	if _, ok := cc.mutation.EventID(); !ok {
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "Comment.event"`)}
 	}
 	return nil
 }

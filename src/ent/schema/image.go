@@ -1,11 +1,13 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
-	"time"
 )
 
 // Image holds the schema definition for the Image entity.
@@ -25,6 +27,8 @@ func (Image) Fields() []ent.Field {
 // Edges of the Image.
 func (Image) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("event", Event.Type).Ref("images").Unique(),
+		edge.From("event", Event.Type).Ref("images").
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
+			Unique(),
 	}
 }

@@ -86,14 +86,6 @@ func (pc *ParticipantCreate) SetEventID(id uuid.UUID) *ParticipantCreate {
 	return pc
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (pc *ParticipantCreate) SetNillableEventID(id *uuid.UUID) *ParticipantCreate {
-	if id != nil {
-		pc = pc.SetEventID(*id)
-	}
-	return pc
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (pc *ParticipantCreate) SetEvent(e *Event) *ParticipantCreate {
 	return pc.SetEventID(e.ID)
@@ -224,6 +216,9 @@ func (pc *ParticipantCreate) check() error {
 		if err := participant.VeganMenuValidator(v); err != nil {
 			return &ValidationError{Name: "vegan_menu", err: fmt.Errorf(`ent: validator failed for field "Participant.vegan_menu": %w`, err)}
 		}
+	}
+	if _, ok := pc.mutation.EventID(); !ok {
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "Participant.event"`)}
 	}
 	return nil
 }

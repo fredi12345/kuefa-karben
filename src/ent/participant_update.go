@@ -35,14 +35,6 @@ func (pu *ParticipantUpdate) SetEventID(id uuid.UUID) *ParticipantUpdate {
 	return pu
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (pu *ParticipantUpdate) SetNillableEventID(id *uuid.UUID) *ParticipantUpdate {
-	if id != nil {
-		pu = pu.SetEventID(*id)
-	}
-	return pu
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (pu *ParticipantUpdate) SetEvent(e *Event) *ParticipantUpdate {
 	return pu.SetEventID(e.ID)
@@ -66,12 +58,18 @@ func (pu *ParticipantUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(pu.hooks) == 0 {
+		if err = pu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = pu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ParticipantMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = pu.check(); err != nil {
+				return 0, err
 			}
 			pu.mutation = mutation
 			affected, err = pu.sqlSave(ctx)
@@ -111,6 +109,14 @@ func (pu *ParticipantUpdate) ExecX(ctx context.Context) {
 	if err := pu.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (pu *ParticipantUpdate) check() error {
+	if _, ok := pu.mutation.EventID(); pu.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Participant.event"`)
+	}
+	return nil
 }
 
 func (pu *ParticipantUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -191,14 +197,6 @@ func (puo *ParticipantUpdateOne) SetEventID(id uuid.UUID) *ParticipantUpdateOne 
 	return puo
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (puo *ParticipantUpdateOne) SetNillableEventID(id *uuid.UUID) *ParticipantUpdateOne {
-	if id != nil {
-		puo = puo.SetEventID(*id)
-	}
-	return puo
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (puo *ParticipantUpdateOne) SetEvent(e *Event) *ParticipantUpdateOne {
 	return puo.SetEventID(e.ID)
@@ -229,12 +227,18 @@ func (puo *ParticipantUpdateOne) Save(ctx context.Context) (*Participant, error)
 		node *Participant
 	)
 	if len(puo.hooks) == 0 {
+		if err = puo.check(); err != nil {
+			return nil, err
+		}
 		node, err = puo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ParticipantMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = puo.check(); err != nil {
+				return nil, err
 			}
 			puo.mutation = mutation
 			node, err = puo.sqlSave(ctx)
@@ -274,6 +278,14 @@ func (puo *ParticipantUpdateOne) ExecX(ctx context.Context) {
 	if err := puo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (puo *ParticipantUpdateOne) check() error {
+	if _, ok := puo.mutation.EventID(); puo.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Participant.event"`)
+	}
+	return nil
 }
 
 func (puo *ParticipantUpdateOne) sqlSave(ctx context.Context) (_node *Participant, err error) {

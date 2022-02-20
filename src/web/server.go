@@ -3,19 +3,21 @@ package web
 import (
 	"bytes"
 	"fmt"
-	"github.com/fredi12345/kuefa-karben/src/random"
-	"github.com/fredi12345/kuefa-karben/src/storage"
 	"html/template"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path"
 	"time"
 
+	"github.com/fredi12345/kuefa-karben/src/random"
+	"github.com/fredi12345/kuefa-karben/src/storage"
+	"github.com/spf13/viper"
+
 	"github.com/gorilla/securecookie"
 
 	"github.com/gorilla/sessions"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -32,10 +34,15 @@ type Server struct {
 	rnd       *random.Rnd
 }
 
-func NewServer(db storage.Service, imagePath string, thumbPath string, cookieKeyFile string) (*Server, error) {
-	err := os.MkdirAll(imagePath, os.ModePerm)
-	if err != nil {
-		return nil, errors.WithStack(err)
+func NewServer(db storage.Service, cookieKeyFile string) (*Server, error) {
+	imagePath := path.Join(viper.GetString("web.storage"), "images")
+	if err := os.MkdirAll(imagePath, 0750|os.ModeDir); err != nil {
+		log.Fatalf("could not create folder: %v\n", err)
+	}
+
+	thumbnailPath := path.Join(viper.GetString("web.storage"), "thumbnails")
+	if err := os.MkdirAll(thumbnailPath, 0750|os.ModeDir); err != nil {
+		log.Fatalf("could not create folder: %v\n", err)
 	}
 
 	t := template.Must(template.ParseGlob(path.Join("resources", "template", "**/*.tmpl")))
@@ -46,7 +53,7 @@ func NewServer(db storage.Service, imagePath string, thumbPath string, cookieKey
 		cs:        sessions.NewFilesystemStore("", getCookieKeys(cookieKeyFile)...),
 		tmpl:      t,
 		imgPath:   imagePath,
-		thumbPath: thumbPath,
+		thumbPath: thumbnailPath,
 		rnd:       random.New(time.Now().UnixNano()),
 	}, nil
 }

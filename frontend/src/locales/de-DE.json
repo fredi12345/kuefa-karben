@@ -2,6 +2,7 @@
   "navigation.home": "Startseite",
   "navigation.events": "Veranstaltungen",
   "navigation.gallery": "Galerie",
+  "navigation.createEvent": "Neue Veranstaltung",
   "navigation.imprint": "Impressum & Datenschutzerklärung",
   "navigation.login": "Einloggen",
   "navigation.logout": "Ausloggen",
@@ -9,5 +10,8 @@
   "home.about.content.1": "\"Küche für Alle\" ist genau das, wonach es klingt: Gutes Essen in netter Runde.",
   "home.about.content.2": "Im Vordergrund stehen für uns der Kontakt mit neuen, interessanten Personen, tolle Gespräche und gerne auch Generationen übergreifender Austausch. Natürlich spielt das Essen auch eine zentrale Rolle und da ist es uns vor allem wichtig, dass es frisch, qualitativ gut und natürlich selbstgemacht ist.",
   "home.about.content.3": "Die Menüs für unsere Veranstaltungen veröffentlichen wir zuvor auf Facebook und unserer Website. Um besser planen zu können freuen wir uns über jede Anmeldung zu den Veranstaltungen. Natürlich bekommt auch jeder unangemeldete Besucher Essen und Getränke. ;)",
-  "home.about.content.4": "Für alle Veranstaltungen gelten die Getränkekarten und -preise des Jugendcafés. Der vorgeschlagene Menüpreis variiert."
+  "home.about.content.4": "Für alle Veranstaltungen gelten die Getränkekarten und -preise des Jugendcafés. Der vorgeschlagene Menüpreis variiert.",
+  "eventEditor.title.new": "Neue Veranstaltung",
+  "eventEditor.title.edit": "Veranstaltung bearbeiten"
+
 }

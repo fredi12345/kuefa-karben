@@ -6,12 +6,7 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      '^/api': {
-        target: 'http://localhost:3001',
-        changeOrigin: true,
-        secure: false,
-      },
-      '^/auth': {
+      '^(/api|/auth|/public)': {
         target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,

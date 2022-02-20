@@ -21,3 +21,4 @@ auth:
 web:
   root: frontend/dist
   port: 3001
+  storage: store/public

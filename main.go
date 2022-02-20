@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"path"
 	"strings"
 
 	"github.com/fredi12345/kuefa-karben/src/auth"
-	"github.com/fredi12345/kuefa-karben/src/config"
+	"github.com/fredi12345/kuefa-karben/src/rest"
 	"github.com/fredi12345/kuefa-karben/src/storage"
 	"github.com/fredi12345/kuefa-karben/src/web"
 	"github.com/labstack/echo/v4"
@@ -31,12 +30,6 @@ func main() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
-	// TODO remove
-	cfg, err := config.Read("config.xml")
-	if err != nil {
-		log.Fatalf("could not read config: %v\n", err)
-	}
-
 	db, err := storage.NewPostgresBackend()
 	if err != nil {
 		log.Fatalf("could not create postgres backend: %v", err)
@@ -56,35 +49,28 @@ func main() {
 		}
 	}
 
-	if err := os.MkdirAll(cfg.Path.Image, 0750|os.ModeDir); err != nil {
-		log.Fatalf("could not create folder: %v\n", err)
-	}
-
-	if err := os.MkdirAll(cfg.Path.Thumbnail, 0750|os.ModeDir); err != nil {
-		log.Fatalf("could not create folder: %v\n", err)
-	}
-
-	server, err := web.NewServer(db, cfg.Path.Image, cfg.Path.Thumbnail, "cookies.key")
+	server, err := web.NewServer(db, "cookies.key")
 	if err != nil {
 		log.Fatalf("could not create server: %v\n", err)
 	}
 
 	handler := createHandler(server)
-	fmt.Printf("legacy: http://localhost:%s\n", cfg.Port)
+	fmt.Printf("legacy: http://localhost:8000\n")
 	go func() {
-		if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), handler); err != nil {
+		if err := http.ListenAndServe(":8000", handler); err != nil {
 			log.Fatal(err)
 		}
 	}()
 
+	restServer := rest.NewServer(db)
 	fmt.Printf("new:    http://localhost:%d\n", viper.GetInt("web.port"))
-	e := createEchoHandler()
+	e := createEchoHandler(restServer)
 	if err := e.Start(fmt.Sprintf(":%d", viper.GetInt("web.port"))); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func createEchoHandler() *echo.Echo {
+func createEchoHandler(server *rest.Server) *echo.Echo {
 	authenticationProvider, err := auth.NewProvider()
 	if err != nil {
 		log.Fatalf("could not create authentication provider: %v\n", err)
@@ -100,15 +86,19 @@ func createEchoHandler() *echo.Echo {
 		HTML5: true,
 	}))
 
+	public := e.Group("public")
+	public.Use(middleware.StaticWithConfig(middleware.StaticConfig{
+		Root:       viper.GetString("web.storage"),
+		IgnoreBase: true,
+	}))
+
 	authAPI := e.Group("auth")
 	authAPI.GET("/login", authenticationProvider.Login)
 	authAPI.GET("/callback", authenticationProvider.Callback)
 	authAPI.GET("/logout", authenticationProvider.Logout)
 
 	api := e.Group("api")
-	api.GET("/testme", func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK")
-	})
+	api.POST("/images", server.UploadImage)
 	return e
 }
 

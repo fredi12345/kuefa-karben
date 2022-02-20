@@ -31,8 +31,9 @@ func (Participant) Fields() []ent.Field {
 // Edges of the Participant.
 func (Participant) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("event", Event.Type).Ref("participants").Unique().
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.From("event", Event.Type).Ref("participants").
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
+			Required().Unique(),
 	}
 
 }
