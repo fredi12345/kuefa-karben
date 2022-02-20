@@ -19,7 +19,7 @@ useRouter()
 }
 
 body{
-  background: #ddd;
+  background: #eee;
   margin-block: 0;
 }
 #app {

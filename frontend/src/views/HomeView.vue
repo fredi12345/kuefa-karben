@@ -1,23 +1,25 @@
 <template>
-  <AboutKuefa/>
   <section id="hero" class="hero">
     <div class="text">
       <h1>Küche für alle</h1>
       <p>Gutes Essen in
         netter Runde.</p>
     </div>
-
   </section>
-
-  <h2>Aktuelle Veranstaltungen</h2>
-  <div id="events">
-    <EventCard v-for="event in events" :event="event"></EventCard>
-  </div>
+  <AboutKuefa/>
+  <section>
+    <h2>Aktuelle Veranstaltungen</h2>
+    <div id="events">
+      <EventCard v-for="event in events" :event="event"></EventCard>
+    </div>
+  </section>
+  <FindUs/>
 </template>
 
 <script setup lang="ts">
 import EventCard from "../components/EventCard.vue";
 import AboutKuefa from "../components/AboutKuefa.vue";
+import FindUs from "../components/FindUs.vue";
 
 let events = [
   {
@@ -77,10 +79,11 @@ setInterval(() => {
       background-color: var(--theme-color);
     }
 
-    p, h1{
+    p, h1 {
       position: relative;
     }
-    h1{
+
+    h1 {
       font-size: 2rem;
     }
   }
