@@ -15,6 +15,7 @@
 import AboutKuefa from "../components/AboutKuefa.vue";
 import FindUs from "../components/FindUs.vue";
 import UpcomingEvents from "../components/UpcomingEvents.vue";
+import {onUnmounted} from "vue";
 
 
 let count = 1;
@@ -23,9 +24,14 @@ let heros = [
   "https://xn--kfa-karben-9db.de/public/images/1583876349736466949.jpg",
   "https://xn--kfa-karben-9db.de/public/images/1561540425463947945.jpg"
 ]
-setInterval(() => {
-  document.getElementById("hero").style.backgroundImage = `url("${heros[count++ % 3]}")`;
+let heroSwapper = setInterval(() => {
+  let hero = document.getElementById("hero")
+  if (hero) hero.style.backgroundImage = `url("${heros[count++ % 3]}")`;
 }, 6000)
+
+onUnmounted(() => {
+  clearInterval(heroSwapper);
+})
 </script>
 
 <style scoped lang="scss">

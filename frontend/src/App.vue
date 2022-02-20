@@ -24,6 +24,8 @@ body {
   background: #eee;
   margin: 0;
   padding-bottom: calc(var(--footerHeight) + 10px);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 @media (prefers-color-scheme: dark) {

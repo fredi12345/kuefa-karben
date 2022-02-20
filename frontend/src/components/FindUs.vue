@@ -26,7 +26,7 @@
     </div>
 
   </section>
-  <iframe v-if="showMap" id="gmap" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2551.875012188656!2d8.753086115723688!3d50.23823987944658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47bd045975035be5%3A0xb426c757ea8e8e98!2sJUKUZ%20Karben%20Jugendkulturzentrum%20Selzerbrunnenhof!5e0!3m2!1sde!2sde!4v1645366663457!5m2!1sde!2sde" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+  <iframe v-if="showMap" id="gmap" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2551.875012188656!2d8.753086115723688!3d50.23823987944658!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47bd045975035be5%3A0xb426c757ea8e8e98!2sJUKUZ%20Karben%20Jugendkulturzentrum%20Selzerbrunnenhof!5e0!3m2!1sde!2sde!4v1645366663457!5m2!1sde!2sde" width="600" height="450" style="border:0;" loading="lazy"></iframe>
 </template>
 
 <script setup lang="ts">
