@@ -16,6 +16,7 @@ useRouter()
 :root {
   --theme-color-rgb: 139 0 0;
   --theme-color: rgb(var(--theme-color-rgb));
+  --card-color: #fff
 }
 
 body {

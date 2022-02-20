@@ -25,7 +25,7 @@ defineProps({
   text-decoration: none;
   color: currentColor;
 
-  background-color: white;
+  background-color: white; /* yes white, not card-color! is (visually) overwritten in .details */
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 15%);
 
   transition-property: box-shadow, background-color;
