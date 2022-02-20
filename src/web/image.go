@@ -48,7 +48,7 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 			if err.Error() == "image: unknown format" {
 				sess.AddFlash(&template.Message{Type: template.TypeError, Text: "Hinzufügen von Bildern fehlgeschlagen. Mindestens eine Datei hatte ein unbekanntes Format. Unterstützte Bildformate sind .jpg und .png."})
 				_ = sess.Save(r, w)
-				http.Redirect(w, r, fmt.Sprintf("/event/%d", eventId), http.StatusSeeOther)
+				http.Redirect(w, r, fmt.Sprintf("/event/%s", eventId), http.StatusSeeOther)
 			} else {
 				return err
 			}

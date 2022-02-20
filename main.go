@@ -91,7 +91,7 @@ func createHandler(server *web.Server) http.Handler {
 	r.HandleFunc("/", server.WithSession(server.HandleError(server.Index))).Methods(http.MethodGet)
 	r.HandleFunc("/event/create", server.WithSession(server.HandleError(server.NeedsAuthentication(server.CreateEventPage)))).Methods(http.MethodGet)
 	r.HandleFunc("/event/edit", server.WithSession(server.HandleError(server.NeedsAuthentication(server.EditEventPage)))).Methods(http.MethodGet)
-	r.HandleFunc("/event/{id:[0-9]+}", server.WithSession(server.HandleError(server.EventDetail))).Methods(http.MethodGet)
+	r.HandleFunc("/event/{id}", server.WithSession(server.HandleError(server.EventDetail))).Methods(http.MethodGet)
 	r.HandleFunc("/event/all/{page:[0-9]+}", server.WithSession(server.HandleError(server.AllEvents))).Methods(http.MethodGet)
 	r.HandleFunc("/impressum", server.WithSession(server.HandleError(server.Impressum))).Methods(http.MethodGet)
 	r.HandleFunc("/gallery/{page:[0-9]*}", server.WithSession(server.HandleError(server.Gallery))).Methods(http.MethodGet)

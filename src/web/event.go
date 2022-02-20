@@ -59,7 +59,7 @@ func (s *Server) AddEvent(w http.ResponseWriter, r *http.Request, sess *sessions
 		return errors.WithMessage(err, "cannot create new event")
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("/event/%d", id), http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/event/%s", id), http.StatusSeeOther)
 	return nil
 }
 

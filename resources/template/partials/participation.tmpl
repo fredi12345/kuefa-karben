@@ -14,7 +14,7 @@
                     <label><input type="number" name="classic_count" value="1" min="0">x Klassisch</label>
                     <label><input type="number" name="vegetarian_count" value="0" min="0">x Vegetarisch</label>
                     <label><input type="number" name="vegan_count" value="0" min="0">x Vegan</label>
-                    <input name="eventId" value="{{.Event.Id}}" hidden>
+                    <input name="eventId" value="{{.Event.ID}}" hidden>
                     <p class="info">Dein Name erscheint öffentlich auf dieser Seite. Benutze gegebenenfalls einen
                         Spitznamen, um anonym zu bleiben.</p>
                     <input type="submit" class="buttonRight" value="Teilnehmen">
@@ -37,8 +37,8 @@
                         {{if $.Authenticated}}
                             <form action="/participant/delete" method="post"
                                   onsubmit="return confirmDeletion('den Teilnehmer')">
-                                <input name="participantId" value="{{.Id}}" hidden>
-                                <input name="eventId" value="{{$.Event.Id}}" hidden>
+                                <input name="participantId" value="{{.ID}}" hidden>
+                                <input name="eventId" value="{{$.Event.ID}}" hidden>
                                 <input class="deleteButton" type="submit" value="Löschen" alt="Löschen">
                             </form>
                         {{end}}

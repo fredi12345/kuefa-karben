@@ -8,7 +8,7 @@
                     <div class="imageBox">
                         {{ if $.Authenticated }}
                             <form action="/image/delete" method="post" onsubmit="return confirmDeletion('das Bild')">
-                                <input name="imageId" value="{{.Id}}" hidden>
+                                <input name="imageId" value="{{.ID}}" hidden>
                                 <input class="deleteButton" type="submit" value="Löschen" alt="Löschen">
                             </form>
                         {{end}}
@@ -22,7 +22,7 @@
                     .jpg, .png</p>
                 <form id="imageUpload" name="imageUpload" action="/image/add" enctype="multipart/form-data"
                       method="post">
-                    <input name="eventId" value="{{.Event.Id}}" hidden>
+                    <input name="eventId" value="{{.Event.ID}}" hidden>
                     <input type="file" accept="image/*" name="images" multiple required>
                     <input type="submit" value="Hochladen">
                 </form>

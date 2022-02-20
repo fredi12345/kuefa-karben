@@ -20,7 +20,7 @@
                 <input name="dessert" type="text" placeholder="Nachtisch" value="{{.Event.Dessert}}" required>
                 <input name="image" type="file" accept="image/*" onchange="previewImage(this)">
                 <textarea name="info" placeholder="Infotext" rows="6" required>{{.Event.InfoText}}</textarea>
-                <input name="event-id" type="hidden" value="{{.Event.Id}}" />
+                <input name="event-id" type="hidden" value="{{.Event.ID}}" />
                 <label>Anmeldeschluss:<input name="closingDate" type="datetime-local" value="{{.Event.ClosingDate.Format "2006-01-02T15:04"}}"
                     required></label>
             </div>

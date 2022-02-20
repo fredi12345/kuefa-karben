@@ -3,12 +3,12 @@
         {{with .Event}}
             {{ if $.Authenticated }}
                 <form action="/event/edit" method="get">
-                    <input name="eventId" value="{{.Id}}" hidden>
+                    <input name="eventId" value="{{.ID}}" hidden>
                     <input class="editButton" type="submit" value="Bearbeiten" alt="Bearbeiten">
                 </form>
                 <form id="deleteForm" action="/event/delete" onsubmit="return confirmDeletion('die Veranstaltung')"
                       method="post">
-                    <input name="eventId" value="{{.Id}}" hidden>
+                    <input name="eventId" value="{{.ID}}" hidden>
                     <input class="deleteButton" type="submit" value="Löschen" alt="Löschen">
                 </form>
             {{end}}
