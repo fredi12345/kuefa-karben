@@ -12,6 +12,7 @@ import EventCard from "./EventCard.vue";
 let events = [
   {
     title: "Heimische Kräuterküche",
+    id: 1,
     date: "22.02.2022",
     img: "https://unsplash.it/640/425",
     description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?"
@@ -19,6 +20,7 @@ let events = [
   {
     title: "Krimidinner - To Bee or Not To Bee or Not To Bee or Not To Bee!",
     date: "25.02.2022",
+    id: 2,
     img: "https://unsplash.it/640/425?random=1",
     description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?"
   }

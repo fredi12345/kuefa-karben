@@ -1,12 +1,12 @@
 <template>
-  <a href="#" class="event">
+  <router-link :to="'/event/'+event.id" class="event">
     <img :src="event.img" alt="Veranstaltungsbild">
     <div class="details">
       <h4>{{ event.title }}</h4>
       <time :datetime="event.date">{{ event.date }}</time>
       <p>{{ event.description }}</p>
     </div>
-  </a>
+  </router-link>
 </template>
 
 <script setup>
