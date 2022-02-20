@@ -13,5 +13,20 @@ const auth = useAuth()
 </script>
 
 <style scoped lang="scss">
+footer{
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #111;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  a{
+    text-decoration: none;
+    color: white;
 
+    &:hover{
+      text-decoration: underline;
+    }
+  }
+}
 </style>

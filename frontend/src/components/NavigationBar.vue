@@ -17,6 +17,7 @@
 <style scoped lang="scss">
 header img {
   width: 100%;
+  max-width: 1000px;
   height: 20vh;
   filter: drop-shadow(4px 4px 3px black);
   object-fit: cover;
