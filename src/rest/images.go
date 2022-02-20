@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -22,11 +21,11 @@ type (
 		// in: formData
 		// required: true
 		// swagger:file
-		Image *bytes.Buffer `json:"image"`
+		Image *bytes.Buffer `json:"image" form:"image"`
 
 		// in: formData
 		// required: false
-		IsTitle bool `json:"isTitle"`
+		IsTitle bool `json:"isTitle" form:"isTitle"`
 	}
 
 	UploadImageRequestData struct {
@@ -70,30 +69,16 @@ type (
 // 	 400: ErrorResponse
 // 	 500: ErrorResponse
 func (s *Server) UploadImage(c echo.Context) error {
-	// TODO bind request?
 	// TODO return proper error structs
 
-	fileHeader, err := c.FormFile("image")
+	var request UploadImageRequest
+	err := c.Bind(&request)
 	if err != nil {
-		log.Printf("could not find form file: %v", err)
+		log.Printf("could not bind request: %v", err)
 		return echo.ErrBadRequest
 	}
 
-	f, err := fileHeader.Open()
-	if err != nil {
-		log.Printf("could not open form file: %v", err)
-		return echo.ErrBadRequest
-	}
-	defer f.Close()
-
-	var b bytes.Buffer
-	_, err = io.Copy(&b, f)
-	if err != nil {
-		log.Printf("could not load file into buffer: %v", err)
-		return echo.ErrInternalServerError
-	}
-
-	fullSizeImage, err := imaging.Decode(&b, imaging.AutoOrientation(true))
+	fullSizeImage, err := imaging.Decode(request.Image, imaging.AutoOrientation(true))
 	if err != nil {
 		log.Printf("could not open form file: %v", err)
 		return echo.ErrInternalServerError

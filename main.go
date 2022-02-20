@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/fredi12345/kuefa-karben/src/auth"
+	"github.com/fredi12345/kuefa-karben/src/extensions"
 	"github.com/fredi12345/kuefa-karben/src/rest"
 	"github.com/fredi12345/kuefa-karben/src/storage"
 	"github.com/fredi12345/kuefa-karben/src/web"
@@ -77,8 +78,10 @@ func createEchoHandler(server *rest.Server) *echo.Echo {
 	}
 
 	e := echo.New()
+	e.Binder = extensions.BinderChain(&echo.DefaultBinder{}, extensions.MultipartFileBinder())
 	e.HideBanner = true
 	e.HidePort = true
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
