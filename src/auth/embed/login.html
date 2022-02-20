@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body class="p-4">
+<h1>Küfa Fake Login</h1>
+
+<h4>Predefined User</h4>
+<div class="mb-4">
+  <a class="btn btn-primary" href="/auth/callback?user=kevin" role="button">Kevin</a>
+  <a class="btn btn-primary" href="/auth/callback?user=fred" role="button">Fred</a>
+  <a class="btn btn-primary" href="/auth/callback?user=karsten" role="button">Karsten</a>
+</div>
+
+<h4>Individual User</h4>
+<form method="GET" action="/auth/callback">
+  <div class="form-group">
+    <input type="text" class="form-control col-2" placeholder="User Name" name="user">
+  </div>
+  <button type="submit" class="btn btn-primary">Login</button>
+</form>
+
+</body>
+</html>

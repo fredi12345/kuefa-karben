@@ -11,6 +11,13 @@ postgres:
   options:
     - sslmode=disable
 
+auth:
+  provider: local
+  session:
+    name: kuefa
+    lifetime: 720h
+    secret: my-secret-value
+
 web:
   root: frontend/dist
   port: 3001

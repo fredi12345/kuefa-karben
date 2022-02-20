@@ -1,11 +1,13 @@
 <template>
   <NavigationBar/>
   <router-view></router-view>
+  <FooterBar/>
 </template>
 
 <script setup lang="ts">
 import {useRouter} from "vue-router";
 import NavigationBar from "./components/NavigationBar.vue";
+import FooterBar from "./components/FooterBar.vue";
 
 useRouter()
 </script>

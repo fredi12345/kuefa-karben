@@ -9,6 +9,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/fredi12345/kuefa-karben/src/auth"
 	"github.com/fredi12345/kuefa-karben/src/config"
 	"github.com/fredi12345/kuefa-karben/src/storage"
 	"github.com/fredi12345/kuefa-karben/src/web"
@@ -70,26 +71,45 @@ func main() {
 
 	handler := createHandler(server)
 	fmt.Printf("legacy: http://localhost:%s\n", cfg.Port)
-	fmt.Printf("new:    http://localhost:%d\n", viper.GetInt("web.port"))
-
 	go func() {
 		if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), handler); err != nil {
 			log.Fatal(err)
 		}
 	}()
 
+	fmt.Printf("new:    http://localhost:%d\n", viper.GetInt("web.port"))
+	e := createEchoHandler()
+	if err := e.Start(fmt.Sprintf(":%d", viper.GetInt("web.port"))); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func createEchoHandler() *echo.Echo {
+	authenticationProvider, err := auth.NewProvider()
+	if err != nil {
+		log.Fatalf("could not create authentication provider: %v\n", err)
+	}
+
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.Use(middleware.Logger())
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:  viper.GetString("web.root"),
 		Index: "index.html",
 		HTML5: true,
 	}))
 
-	if err := e.Start(fmt.Sprintf(":%d", viper.GetInt("web.port"))); err != nil {
-		log.Fatal(err)
-	}
+	authAPI := e.Group("auth")
+	authAPI.GET("/login", authenticationProvider.Login)
+	authAPI.GET("/callback", authenticationProvider.Callback)
+	authAPI.GET("/logout", authenticationProvider.Logout)
+
+	api := e.Group("api")
+	api.GET("/testme", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK")
+	})
+	return e
 }
 
 func createHandler(server *web.Server) http.Handler {

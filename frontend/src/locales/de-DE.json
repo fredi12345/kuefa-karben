@@ -1,5 +1,8 @@
 {
   "navigation.home": "Startseite",
   "navigation.events": "Veranstaltungen",
-  "navigation.gallery": "Galerie"
+  "navigation.gallery": "Galerie",
+  "navigation.imprint": "Impressum & Datenschutzerklärung",
+  "navigation.login": "Einloggen",
+  "navigation.logout": "Ausloggen"
 }
