@@ -8,12 +8,10 @@
   </section>
   <AboutKuefa/>
   <UpcomingEvents/>
-  <FindUs/>
 </template>
 
 <script setup lang="ts">
 import AboutKuefa from "../components/AboutKuefa.vue";
-import FindUs from "../components/FindUs.vue";
 import UpcomingEvents from "../components/UpcomingEvents.vue";
 import {onUnmounted} from "vue";
 

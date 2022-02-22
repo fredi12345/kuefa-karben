@@ -1,17 +1,24 @@
 <template>
   <header>
     <img alt="Küfa Logo" src="../assets/logo_wide_thin.png">
+    <nav class="navigation">
+      <router-link to="/">{{ $t('navigation.home') }}</router-link>
+      <router-link to="/events">{{ $t('navigation.events') }}</router-link>
+      <router-link to="/gallery">{{ $t('navigation.gallery') }}</router-link>
+      <router-link to="/event/edit">{{ $t('navigation.createEvent') }}</router-link>
+      <div id="settings">
+        <button @click="$emit('toggleLang')">{{ useEng ? "DE" : "EN" }}</button>
+        <button @click="$emit('toggleTheme')">{{ currentTheme }}</button>
+      </div>
+    </nav>
   </header>
-  <nav class="navigation">
-    <router-link to="/">{{ $t('navigation.home') }}</router-link>
-    <router-link to="/events">{{ $t('navigation.events') }}</router-link>
-    <router-link to="/gallery">{{ $t('navigation.gallery') }}</router-link>
-    <router-link to="/event/edit">{{ $t('navigation.createEvent') }}</router-link>
-  </nav>
 </template>
 
 <script setup lang="ts">
-
+const props = defineProps({
+  currentTheme: String,
+  useEng: Boolean
+})
 </script>
 
 <style scoped lang="scss">
@@ -34,7 +41,7 @@ nav {
   text-shadow: 1px 1px 1px rgba(0 0 0 / 0.5);
 }
 
-nav a {
+nav a, #settings {
   padding: 8px 16px;
   transition: background-color 0.15s;
   text-decoration: none;

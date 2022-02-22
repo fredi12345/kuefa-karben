@@ -43,6 +43,7 @@ const showMap = ref(false);
 }
 
 #findUs{
+  margin-top: 80px;
   padding: 20px;
   background-color: var(--theme-color);
   color: white;

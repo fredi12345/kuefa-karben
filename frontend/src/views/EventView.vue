@@ -5,19 +5,27 @@
       <img :src="event.img"/>
 
       <div id="menu">
-        <p class="menuItem menu__1">{{event.vorspeise}}</p>
-        <p class="menuItem menu__2">{{event.hauptgang}}</p>
-        <p class="menuItem menu__3">{{event.nachtisch}}</p>
+        <p class="menuItem menu__1">{{ event.vorspeise }}</p>
+        <p class="menuItem menu__2">{{ event.hauptgang }}</p>
+        <p class="menuItem menu__3">{{ event.nachtisch }}</p>
       </div>
       <p>{{ event.description }}</p>
+      <div id="images">
+        <h2>Bilder</h2>
+        <ul class="imageContainer">
+          <li v-for="(image, index) in event.images">
+            <img :src="image" @click="viewImage(index)">
+          </li>
+        </ul>
+      </div>
     </main>
     <aside>
       <div id="registration">
         <h2>Anmeldung</h2>
-        <p class="info closing">Anmeldeschluss: {{ event.closingDate}}</p>
+        <p class="info closing">Anmeldeschluss: {{ event.closingDate }}</p>
         <form>
           <input class="name" type="text" placeholder="Name" required><br>
-          <textarea rows="2" name="message" id="participationMessage" type="text"
+          <textarea rows="3" name="message" id="participationMessage" type="text"
                     placeholder="Bemerkung/Nachricht (Optional)"
                     maxlength="1000"></textarea>
           <label class="menuCount"><input type="number" name="classic_count" value="1" min="0">x Klassisch</label>
@@ -28,21 +36,37 @@
           <button type="submit" class="">Teilnehmen</button>
         </form>
       </div>
-    <div id="comments">
-      <h2>Kommentare</h2>
-      <ol>
-        <li v-for="comment in event.comments">
-        <span>{{comment.name}} </span>
-        <span> {{ comment.date}}</span>
-          <p>{{comment.text}}</p>
-        </li>
-      </ol>
-    </div>
+      <div id="comments">
+        <h2>Kommentare</h2>
+        <ol id="commentList">
+          <li class="comment" v-for="comment in event.comments">
+            <span class="comment--author">{{ comment.name }} </span>
+            <span class="comment--date"> {{ comment.date }}</span>
+            <p class="comment--text">{{ comment.text }}</p>
+          </li>
+        </ol>
+        <form id="commentForm">
+          <textarea rows="3" placeholder="Kommentar"></textarea>
+          <button>Senden</button>
+        </form>
+      </div>
     </aside>
+    <div id="imageViewer" v-if="viewerVisible" @click="closeViewer">
+      <div class="actions" @click.stop>
+        <button @click="closeViewer">Close</button>
+        <button @click="changeImage(-1)">Previous</button>
+        <button @click="changeImage(1)">Next</button>
+      </div>
+      <img :src="event.images[bigImgIndex]" @click.stop/>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import {ref} from "vue";
+import {useRoute} from "vue-router";
+import {router} from "../plugins/routes";
+
 const event = {
   title: "Heimische Kräuterküche",
   date: "22.02.2022",
@@ -57,75 +81,190 @@ const event = {
     date: "22.02.2022",
     text: "Aufgrund der Corona-Krise ist die Veranstaltung auf unbestimmte Zeit verschoben und es sind deshalb derzeit auch keine Anmeldungen möglich."
   },
-    {name: "Si.",
-    date: "10.03.2019",
-    text: "Ich möchte auch gern zum Krimidinner kommen. Wann gibt es so etwas nochmal?"}
+    {
+      name: "Si.",
+      date: "10.03.2019",
+      text: "Ich möchte auch gern zum Krimidinner kommen. Wann gibt es so etwas nochmal?"
+    }
 
+  ],
+  images: [
+    "https://unsplash.it/400?random=0",
+    "https://unsplash.it/400?random=1",
+    "https://unsplash.it/400?random=2",
+    "https://unsplash.it/400?random=3",
+    "https://unsplash.it/400?random=4"
   ]
+}
+
+const viewerVisible = ref(false);
+const bigImgIndex = ref(0);
+
+const route = useRoute();
+if (route.query.img && route.query.img !== "") {
+  viewImage(Number(route.query.img));
+}
+
+function viewImage(index: number) {
+  bigImgIndex.value = index;
+  viewerVisible.value = true;
+}
+
+function changeImage(to: number) {
+  //previous to=-1
+  //next to=1
+  bigImgIndex.value += to;
+  if (bigImgIndex.value < 0) bigImgIndex.value = event.images.length - 1;
+  if (bigImgIndex.value >= event.images.length) bigImgIndex.value = 0;
+  //TODO darf man so machen?
+  router.replace({path: route.path, query: {img: bigImgIndex.value.toString()}})
+}
+
+function closeViewer() {
+  viewerVisible.value = false;
+  router.replace(route.path);
 }
 </script>
 
 <style scoped lang="scss">
-section{
+section {
   display: flex;
   flex-direction: row;
   gap: 40px;
   padding-inline: 40px;
-
 }
+
 aside {
-  div{
-    padding-inline: 20px;
-    padding-bottom: 20px;
+  --padding: 20px;
+  div {
+    padding-bottom: var(--padding);
     overflow: auto;
     background-color: var(--card-color);
     text-align: start;
     margin-top: 20px;
   }
-}
-#menu{
-  .menuItem{
-    transform: translate(-50%);
-    position: relative;
-  }
-  .menu__1{
-    left: 25%;
-  }
-  .menu__2{
-    left: 50%;
-  }
-  .menu__3{
-    left: 75%;
-  }
-}
-#registration{
-  input, textarea{
+  input:not(.menuItem), textarea {
     margin-top: 6px;
-  }
-  .name, textarea{
     box-sizing: border-box;
     width: 100%;
-  };
-  textarea{
+  }
+
+  textarea {
     resize: vertical;
     font-family: inherit;
   }
-
-  .menuCount {
-    display: block;
-    padding-inline-start: 20px;
-    input{
-      width: 30px;
-      margin-inline-end: 6px;
-    }
-
+  button{
+    float: right;
   }
 }
 
-#comments{
-  ol{
+#menu {
+  .menuItem {
+    transform: translate(-50%);
+    position: relative;
+  }
+
+  .menu__1 {
+    left: 25%;
+  }
+
+  .menu__2 {
+    left: 50%;
+  }
+
+  .menu__3 {
+    left: 75%;
+  }
+}
+
+#registration {
+  padding-inline: var(--padding);
+  .menuCount {
+    display: block;
+    padding-inline-start: 20px;
+
+    input {
+      width: 50px;
+      margin-inline-end: 6px;
+    }
+  }
+}
+
+#comments {
+  padding-inline: var(--padding);
+  #commentList {
     list-style: none;
     padding: 0;
   };
+
+  .comment{
+    overflow: auto;
+    margin-inline: calc(-1 * var(--padding));
+    padding-inline: calc(var(--padding));
+    padding-top: var(--padding);
+    &:nth-child(even){
+      background-color: rgba(var(--theme-color-rgb) / 0.2);
+    }
+
+    &--author, &--date{
+      opacity: 0.7;
+    }
+    &--date{
+      float: right;
+    }
+  }
+
+  #commentForm{
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+    }
+  }
+}
+
+.imageContainer {
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+
+  li {
+    aspect-ratio: 1;
+    width: 200px;
+    height: 200px;
+    background-color: white;
+    transition: background-color 0.1s ease;
+
+    &:hover {
+      background-color: rgba(var(--theme-color-rgb) / 0.7);
+    }
+
+    img {
+      aspect-ratio: 1;
+      width: 200px;
+      object-fit: cover;
+      mix-blend-mode: multiply;
+    }
+  }
+}
+
+#imageViewer {
+  background-color: rgba(0, 0, 0, 0.9);
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+
+  .actions {
+    position: absolute;
+    top: 0;
+  }
+
+  img {
+    max-width: 90%;
+  }
 }
 </style>

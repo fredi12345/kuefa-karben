@@ -1,0 +1,9 @@
+{
+  "navigation.home": "Homepage",
+  "navigation.events": "Events",
+  "navigation.gallery": "Gallery",
+  "navigation.createEvent": "New event",
+  "navigation.imprint": "Legal & privacy policy",
+  "navigation.login": "Login",
+  "navigation.logout": "Logout",
+}
