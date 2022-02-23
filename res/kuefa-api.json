@@ -1,0 +1,148 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Kuefa-API",
+    "description": "This is the Rest-API specification for server-side API.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001/api",
+      "description": " Server-1"
+    }
+  ],
+  "paths": {
+    "/images": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Some description of response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Some description of error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Some description of error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "UploadImage",
+        "description": "UploadImage allows to upload an image.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "the image to upload"
+                  },
+                  "isTitle": {
+                    "type": "boolean",
+                    "description": "will mark the image as title image for an event"
+                  }
+                },
+                "description": "UploadImageRequest is the request definition for uploading images. It's possible to upload a single image with multipart/form-data encoding."
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "UploadImage"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "required": [
+          "errorCode",
+          "description"
+        ],
+        "properties": {
+          "errorCode": {
+            "type": "string",
+            "description": "Generic code to detect kind of error"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of the error"
+          },
+          "additionalAttributes": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Additional data to describe the error"
+          }
+        },
+        "description": "ErrorResponse is the generic response for all failed API-calls."
+      },
+      "UploadImageRequest": {
+        "type": "object",
+        "required": [
+          "image"
+        ],
+        "properties": {
+          "image": {
+            "type": "string",
+            "format": "binary",
+            "description": "the image to upload"
+          },
+          "isTitle": {
+            "type": "boolean",
+            "description": "will mark the image as title image for an event"
+          }
+        },
+        "description": "UploadImageRequest is the request definition for uploading images. It's possible to upload a single image with multipart/form-data encoding."
+      },
+      "UploadImageResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "imageURL",
+          "thumbnailURL"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "a UUIDv4 to identify the image"
+          },
+          "imageURL": {
+            "type": "string",
+            "description": "relative URL to access the image"
+          },
+          "thumbnailURL": {
+            "type": "string",
+            "description": "relative URL to access a thumbnail of the image"
+          }
+        },
+        "description": "UploadImageResponse is the response after an image was uploaded successfully."
+      }
+    }
+  }
+}

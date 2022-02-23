@@ -16,58 +16,42 @@ import (
 )
 
 type (
-	// swagger:parameters UploadImage
+	// UploadImageRequest is the request definition for uploading images. It's possible to
+	// upload a single image with multipart/form-data encoding.
 	UploadImageRequest struct {
-		// in: formData
-		// required: true
-		// swagger:file
+		// the image to upload
+		// @Required
 		Image *bytes.Buffer `json:"image" form:"image"`
 
-		// in: formData
-		// required: false
+		// will mark the image as title image for an event
 		IsTitle bool `json:"isTitle" form:"isTitle"`
 	}
 
-	UploadImageRequestData struct {
-	}
-
-	// swagger:response UploadImageResponse
+	// UploadImageResponse is the response after an image was uploaded successfully.
 	UploadImageResponse struct {
-		// in: body
-		Body UploadImageResponseData
-	}
-
-	UploadImageResponseData struct {
-		// Generated v4 UUID of the image
-		// Required: true
-		// Example: 13cc859d-a679-49ff-9791-d62f3e761253
+		// a UUIDv4 to identify the image
+		// @Required
 		ID string `json:"id"`
 
-		// Relative URL to access the image
-		// Required: true
-		// Example: /public/image/13cc859d-a679-49ff-9791-d62f3e761253.jpeg
+		// relative URL to access the image
+		// @Required
 		ImageURL string `json:"imageURL"`
 
-		// Relative URL to access the thumbnail
-		// Required: true
-		// Example: /public/thumbnails/13cc859d-a679-49ff-9791-d62f3e761253.jpeg
+		// relative URL to access a thumbnail of the image
+		// @Required
 		ThumbnailURL string `json:"thumbnailURL"`
 	}
 )
 
-// swagger:route POST /images kuefa UploadImage
+// UploadImage allows to upload an image.
 //
-// Upload an image.
-//
-// It is automatically served on /public/images/{id}. There is also a thumbnail being generated on /public/thumbnails/{id}.
-//
-// Consumes:
-//   - multipart/form-data
-//
-// Responses:
-//   200: UploadImageResponse
-// 	 400: ErrorResponse
-// 	 500: ErrorResponse
+// @OperationID UploadImage
+// @Title UploadImage
+// @Param myimage form UploadImageRequest true "Some description of param"
+// @Success 200 object UploadImageResponse "Some description of response"
+// @Failure 400 object ErrorResponse "Some description of error"
+// @Failure 500 object ErrorResponse "Some description of error"
+// @Route /images [post]
 func (s *Server) UploadImage(c echo.Context) error {
 	// TODO return proper error structs
 
@@ -97,7 +81,7 @@ func (s *Server) UploadImage(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, UploadImageResponseData{
+	return c.JSON(http.StatusOK, UploadImageResponse{
 		ID:           imageID,
 		ImageURL:     fmt.Sprintf("/public/images/%s.jpeg", imageID),
 		ThumbnailURL: fmt.Sprintf("/public/thumbnails/%s.jpeg", imageID),

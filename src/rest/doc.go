@@ -1,19 +1,9 @@
-// Package rest Kuefa-API
+// Package rest contains the API handlers for Kuefa-API.
 //
-// This is the Rest-API specification for server-side API.
-//
-//     Schemes: http, https
-//     Host: localhost:3001
-//     BasePath: /api
-//     Version: 1.0.0
-//
-//     Consumes:
-//     - application/json
-//
-//     Produces:
-//     - application/json
-//
-// swagger:meta
+// @Version 1.0.0
+// @Title Kuefa-API
+// @Description This is the Rest-API specification for server-side API.
+// @Server http://localhost:3001/api Server-1
 package rest
 
-//go:generate env SWAGGER_GENERATE_EXTENSION=false swagger generate spec -o ../../res/kuefa-api.yaml
+//go:generate goas --module-path ../../. --output ../../res/kuefa-api.json --main-file-path doc.go --omit-packages

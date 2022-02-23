@@ -6,7 +6,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "generate:api": "openapi-generator-cli generate -g typescript-axios -i ../res/kuefa-api.yaml -o ./src/api/generated"
+    "generate:api": "openapi-generator-cli generate -g typescript-axios -i ../res/kuefa-api.json -o ./src/api/generated"
   },
   "dependencies": {
     "axios": "^0.26.0",
