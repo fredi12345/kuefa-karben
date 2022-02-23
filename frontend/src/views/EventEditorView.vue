@@ -5,17 +5,17 @@
     <ImageUpload v-model="imageID"/>
 
 
-    <!--    <form>-->
-    <!--      <input name="theme" type="text" placeholder="Motto" required>-->
-    <!--      <input name="date" type="date" required>-->
-    <!--      <input name="starter" type="text" placeholder="Vorspeiße" required>-->
-    <!--      <input name="main-dish" type="text" placeholder="Hauptgericht" required>-->
-    <!--      <input name="dessert" type="text" placeholder="Nachtisch" required>-->
-    <!--      <input name="image" type="file" accept="image/*" required>-->
-    <!--      <textarea name="info" placeholder="Beschreibung" rows="6" required></textarea>-->
-    <!--      <label>Anmeldeschluss:<input name="closingDate" required></label>-->
-    <!--      <input class="buttonRight" type="submit" value="Speichern">-->
-    <!--    </form>-->
+    <form id="eventForm">
+      <input id="motto" name="theme" type="text" placeholder="Motto" required>
+      <input id="date" name="date" type="datetime-local" required>
+      <input class="menu" name="starter" type="text" placeholder="Vorspeiße" required>
+      <input class="menu" name="main-dish" type="text" placeholder="Hauptgericht" required>
+      <input class="menu" name="dessert" type="text" placeholder="Nachtisch" required>
+      <textarea name="info" placeholder="Beschreibung" rows="6" required></textarea>
+      <label id="closing">Anmeldeschluss:<input name="closingDate"  type="datetime-local" required></label>
+      <input id="image" name="image" type="file" accept="image/*" required>
+    </form>
+    <button class="buttonRight" type="submit">Speichern</button>
   </section>
 </template>
 
@@ -27,5 +27,56 @@ const imageID = ref('')
 </script>
 
 <style scoped lang="scss">
+section{
+  --gap: 6px;
+  --inp-wdt: 250px;
+  padding-inline: 3%;
+}
+#eventForm{
+  margin-top: 50px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--gap);
 
+  input{
+    height: 40px;
+    box-sizing: border-box;
+  }
+  input, textarea{
+    min-width: var(--inp-wdt);
+    flex-grow: 1;
+  };
+
+  textarea{
+    flex-basis: 100%;
+    text-align: center;
+  }
+
+  #motto, #date, label, #image {
+    flex-basis: 48%;
+  }
+  label{
+    padding-inline-start: 6px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-grow: 1;
+    input{
+      flex-grow: 1;
+      margin-left: 10px;
+    }
+  }
+}
+button{
+  margin-top: var(--gap);
+  display: block;
+  margin-left: auto;
+}
+@media (max-width: 1200px) {
+  .menu{
+    flex-basis: 100%;
+  }
+}
 </style>

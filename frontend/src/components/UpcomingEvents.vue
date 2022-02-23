@@ -3,6 +3,7 @@
     <h2>Aktuelle Veranstaltungen</h2>
     <div id="events">
       <EventCard v-for="event in events" :event="event"></EventCard>
+      <router-link to="/events" id="showAll">></router-link>
     </div>
   </section>
 </template>
@@ -35,6 +36,22 @@ section{
   flex-direction: row;
   gap: 10px;
   justify-content: center;
+}
+
+#showAll{
+  font-size: 3rem;
+  text-decoration: none;
+  border-radius: 50%;
+  color: var(--theme-color);
+  border: 3px solid var(--theme-color);
+  width: 100px;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
 }
 
 </style>

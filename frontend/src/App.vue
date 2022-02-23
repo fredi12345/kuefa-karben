@@ -59,7 +59,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () 
 
   --background-color: #eee;
   --card-color: #fff;
-  --text-color: initial;
+  --text-color: black;
 }
 
 [data-theme=dark] {
@@ -96,5 +96,51 @@ input, textarea {
   background-color: var(--card-color);
   padding: 10px;
   color: inherit;
+}
+textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+button{
+  --btn-clr: var(--theme-color);
+  cursor: pointer;
+  position: relative;
+  background:none;
+  border: 2px solid var(--btn-clr);
+  color: white;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  font-weight: 800;
+  transition: color 0.2s ease;
+  z-index: 1;
+
+  &.light{
+    --btn-clr: white;
+    color: var(--theme-color);
+    &:hover{
+      color: var(--btn-clr);
+    }
+  }
+  &::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--btn-clr);
+    height:100%;
+    z-index: -1;
+    transition: height 0.2s ease;
+  }
+  &:hover{
+    color: var(--btn-clr);
+    &::after{
+      height: 0%;
+    }
+  }
+  &+button{
+    margin-inline-start: 4px;
+  }
 }
 </style>

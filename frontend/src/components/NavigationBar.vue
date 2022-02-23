@@ -7,8 +7,8 @@
       <router-link to="/gallery">{{ $t('navigation.gallery') }}</router-link>
       <router-link to="/event/edit">{{ $t('navigation.createEvent') }}</router-link>
       <div id="settings">
-        <button @click="$emit('toggleLang')">{{ useEng ? "DE" : "EN" }}</button>
-        <button @click="$emit('toggleTheme')">{{ currentTheme }}</button>
+        <button class="light" @click="$emit('toggleLang')">{{ useEng ? "DE" : "EN" }}</button>
+        <button class="light" @click="$emit('toggleTheme')">{{ currentTheme }}</button>
       </div>
     </nav>
   </header>
@@ -31,23 +31,27 @@ header img {
 }
 
 nav {
+  padding-block: 6px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
-  padding: 10px;
+  align-items: center;
   border-radius: 10px;
   background-color: var(--theme-color);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   text-shadow: 1px 1px 1px rgba(0 0 0 / 0.5);
 }
 
-nav a, #settings {
+nav a {
   padding: 8px 16px;
   transition: background-color 0.15s;
   text-decoration: none;
   text-transform: uppercase;
   color: white;
   border-radius: 5px;
+}
+#settings{
+  padding: 0;
 }
 
 nav a:hover, nav a.router-link-active {

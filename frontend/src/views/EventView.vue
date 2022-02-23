@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="event">
     <main>
       <h1>{{ event.title }}</h1>
       <img :src="event.img"/>
@@ -90,9 +90,9 @@ const event = {
   ],
   images: [
     "https://unsplash.it/400?random=0",
-    "https://unsplash.it/400?random=1",
-    "https://unsplash.it/400?random=2",
-    "https://unsplash.it/400?random=3",
+    "https://unsplash.it/500?random=1",
+    "https://unsplash.it/400/200?random=2",
+    "https://unsplash.it/400/800?random=3",
     "https://unsplash.it/400?random=4"
   ]
 }
@@ -127,13 +127,28 @@ function closeViewer() {
 </script>
 
 <style scoped lang="scss">
-section {
+.event {
   display: flex;
   flex-direction: row;
   gap: 40px;
-  padding-inline: 40px;
+  padding-inline: 3%;
+  flex-wrap: wrap;
 }
 
+main, aside{
+  width: 400px;
+}
+main{
+  flex: 4;
+  flex-basis: 500px;
+}
+aside{
+  flex: 1;
+  flex-basis: 350px;
+}
+main img{
+  max-width: 100%;
+}
 aside {
   --padding: 20px;
   div {
@@ -149,10 +164,7 @@ aside {
     width: 100%;
   }
 
-  textarea {
-    resize: vertical;
-    font-family: inherit;
-  }
+
   button{
     float: right;
   }
@@ -160,20 +172,20 @@ aside {
 
 #menu {
   .menuItem {
-    transform: translate(-50%);
-    position: relative;
+
+    padding-inline: 40px;
   }
 
   .menu__1 {
-    left: 25%;
+    text-align: start;
   }
 
   .menu__2 {
-    left: 50%;
+    text-align: center;
   }
 
   .menu__3 {
-    left: 75%;
+    text-align: end;
   }
 }
 
@@ -227,12 +239,14 @@ aside {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 4px;
+  gap: 10px;
+  padding: 0;
 
   li {
+    display: block;
+    position: relative;
+    width: 150px;
     aspect-ratio: 1;
-    width: 200px;
-    height: 200px;
     background-color: white;
     transition: background-color 0.1s ease;
 
@@ -241,8 +255,9 @@ aside {
     }
 
     img {
-      aspect-ratio: 1;
-      width: 200px;
+      display: block;
+      height: 100%;
+      width: 100%;
       object-fit: cover;
       mix-blend-mode: multiply;
     }
