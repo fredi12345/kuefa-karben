@@ -14,6 +14,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
 	"github.com/fredi12345/kuefa-karben/src/ent/predicate"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/fredi12345/kuefa-karben/src/ent/user"
 	"github.com/google/uuid"
 
@@ -33,6 +34,7 @@ const (
 	TypeEvent       = "Event"
 	TypeImage       = "Image"
 	TypeParticipant = "Participant"
+	TypeTitleImage  = "TitleImage"
 	TypeUser        = "User"
 )
 
@@ -539,7 +541,6 @@ type EventMutation struct {
 	created             *time.Time
 	last_modified       *time.Time
 	theme               *string
-	title_image         *string
 	starting_time       *time.Time
 	closing_time        *time.Time
 	starter             *string
@@ -556,6 +557,8 @@ type EventMutation struct {
 	images              map[uuid.UUID]struct{}
 	removedimages       map[uuid.UUID]struct{}
 	clearedimages       bool
+	title_image         *uuid.UUID
+	clearedtitle_image  bool
 	done                bool
 	oldValue            func(context.Context) (*Event, error)
 	predicates          []predicate.Event
@@ -771,42 +774,6 @@ func (m *EventMutation) OldTheme(ctx context.Context) (v string, err error) {
 // ResetTheme resets all changes to the "theme" field.
 func (m *EventMutation) ResetTheme() {
 	m.theme = nil
-}
-
-// SetTitleImage sets the "title_image" field.
-func (m *EventMutation) SetTitleImage(s string) {
-	m.title_image = &s
-}
-
-// TitleImage returns the value of the "title_image" field in the mutation.
-func (m *EventMutation) TitleImage() (r string, exists bool) {
-	v := m.title_image
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTitleImage returns the old "title_image" field's value of the Event entity.
-// If the Event object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EventMutation) OldTitleImage(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTitleImage is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTitleImage requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTitleImage: %w", err)
-	}
-	return oldValue.TitleImage, nil
-}
-
-// ResetTitleImage resets all changes to the "title_image" field.
-func (m *EventMutation) ResetTitleImage() {
-	m.title_image = nil
 }
 
 // SetStartingTime sets the "starting_time" field.
@@ -1187,6 +1154,45 @@ func (m *EventMutation) ResetImages() {
 	m.removedimages = nil
 }
 
+// SetTitleImageID sets the "title_image" edge to the TitleImage entity by id.
+func (m *EventMutation) SetTitleImageID(id uuid.UUID) {
+	m.title_image = &id
+}
+
+// ClearTitleImage clears the "title_image" edge to the TitleImage entity.
+func (m *EventMutation) ClearTitleImage() {
+	m.clearedtitle_image = true
+}
+
+// TitleImageCleared reports if the "title_image" edge to the TitleImage entity was cleared.
+func (m *EventMutation) TitleImageCleared() bool {
+	return m.clearedtitle_image
+}
+
+// TitleImageID returns the "title_image" edge ID in the mutation.
+func (m *EventMutation) TitleImageID() (id uuid.UUID, exists bool) {
+	if m.title_image != nil {
+		return *m.title_image, true
+	}
+	return
+}
+
+// TitleImageIDs returns the "title_image" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TitleImageID instead. It exists only for internal usage by the builders.
+func (m *EventMutation) TitleImageIDs() (ids []uuid.UUID) {
+	if id := m.title_image; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTitleImage resets all changes to the "title_image" edge.
+func (m *EventMutation) ResetTitleImage() {
+	m.title_image = nil
+	m.clearedtitle_image = false
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -1206,7 +1212,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.created != nil {
 		fields = append(fields, event.FieldCreated)
 	}
@@ -1215,9 +1221,6 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.theme != nil {
 		fields = append(fields, event.FieldTheme)
-	}
-	if m.title_image != nil {
-		fields = append(fields, event.FieldTitleImage)
 	}
 	if m.starting_time != nil {
 		fields = append(fields, event.FieldStartingTime)
@@ -1251,8 +1254,6 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModified()
 	case event.FieldTheme:
 		return m.Theme()
-	case event.FieldTitleImage:
-		return m.TitleImage()
 	case event.FieldStartingTime:
 		return m.StartingTime()
 	case event.FieldClosingTime:
@@ -1280,8 +1281,6 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastModified(ctx)
 	case event.FieldTheme:
 		return m.OldTheme(ctx)
-	case event.FieldTitleImage:
-		return m.OldTitleImage(ctx)
 	case event.FieldStartingTime:
 		return m.OldStartingTime(ctx)
 	case event.FieldClosingTime:
@@ -1323,13 +1322,6 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTheme(v)
-		return nil
-	case event.FieldTitleImage:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTitleImage(v)
 		return nil
 	case event.FieldStartingTime:
 		v, ok := value.(time.Time)
@@ -1431,9 +1423,6 @@ func (m *EventMutation) ResetField(name string) error {
 	case event.FieldTheme:
 		m.ResetTheme()
 		return nil
-	case event.FieldTitleImage:
-		m.ResetTitleImage()
-		return nil
 	case event.FieldStartingTime:
 		m.ResetStartingTime()
 		return nil
@@ -1458,7 +1447,7 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.participants != nil {
 		edges = append(edges, event.EdgeParticipants)
 	}
@@ -1467,6 +1456,9 @@ func (m *EventMutation) AddedEdges() []string {
 	}
 	if m.images != nil {
 		edges = append(edges, event.EdgeImages)
+	}
+	if m.title_image != nil {
+		edges = append(edges, event.EdgeTitleImage)
 	}
 	return edges
 }
@@ -1493,13 +1485,17 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeTitleImage:
+		if id := m.title_image; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedparticipants != nil {
 		edges = append(edges, event.EdgeParticipants)
 	}
@@ -1540,7 +1536,7 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedparticipants {
 		edges = append(edges, event.EdgeParticipants)
 	}
@@ -1549,6 +1545,9 @@ func (m *EventMutation) ClearedEdges() []string {
 	}
 	if m.clearedimages {
 		edges = append(edges, event.EdgeImages)
+	}
+	if m.clearedtitle_image {
+		edges = append(edges, event.EdgeTitleImage)
 	}
 	return edges
 }
@@ -1563,6 +1562,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.clearedcomments
 	case event.EdgeImages:
 		return m.clearedimages
+	case event.EdgeTitleImage:
+		return m.clearedtitle_image
 	}
 	return false
 }
@@ -1571,6 +1572,9 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *EventMutation) ClearEdge(name string) error {
 	switch name {
+	case event.EdgeTitleImage:
+		m.ClearTitleImage()
+		return nil
 	}
 	return fmt.Errorf("unknown Event unique edge %s", name)
 }
@@ -1588,6 +1592,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 	case event.EdgeImages:
 		m.ResetImages()
 		return nil
+	case event.EdgeTitleImage:
+		m.ResetTitleImage()
+		return nil
 	}
 	return fmt.Errorf("unknown Event edge %s", name)
 }
@@ -1599,7 +1606,6 @@ type ImageMutation struct {
 	typ           string
 	id            *uuid.UUID
 	created       *time.Time
-	file_name     *string
 	clearedFields map[string]struct{}
 	event         *uuid.UUID
 	clearedevent  bool
@@ -1748,42 +1754,6 @@ func (m *ImageMutation) ResetCreated() {
 	m.created = nil
 }
 
-// SetFileName sets the "file_name" field.
-func (m *ImageMutation) SetFileName(s string) {
-	m.file_name = &s
-}
-
-// FileName returns the value of the "file_name" field in the mutation.
-func (m *ImageMutation) FileName() (r string, exists bool) {
-	v := m.file_name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFileName returns the old "file_name" field's value of the Image entity.
-// If the Image object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ImageMutation) OldFileName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFileName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFileName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFileName: %w", err)
-	}
-	return oldValue.FileName, nil
-}
-
-// ResetFileName resets all changes to the "file_name" field.
-func (m *ImageMutation) ResetFileName() {
-	m.file_name = nil
-}
-
 // SetEventID sets the "event" edge to the Event entity by id.
 func (m *ImageMutation) SetEventID(id uuid.UUID) {
 	m.event = &id
@@ -1842,12 +1812,9 @@ func (m *ImageMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ImageMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 1)
 	if m.created != nil {
 		fields = append(fields, image.FieldCreated)
-	}
-	if m.file_name != nil {
-		fields = append(fields, image.FieldFileName)
 	}
 	return fields
 }
@@ -1859,8 +1826,6 @@ func (m *ImageMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case image.FieldCreated:
 		return m.Created()
-	case image.FieldFileName:
-		return m.FileName()
 	}
 	return nil, false
 }
@@ -1872,8 +1837,6 @@ func (m *ImageMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case image.FieldCreated:
 		return m.OldCreated(ctx)
-	case image.FieldFileName:
-		return m.OldFileName(ctx)
 	}
 	return nil, fmt.Errorf("unknown Image field %s", name)
 }
@@ -1889,13 +1852,6 @@ func (m *ImageMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreated(v)
-		return nil
-	case image.FieldFileName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFileName(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Image field %s", name)
@@ -1948,9 +1904,6 @@ func (m *ImageMutation) ResetField(name string) error {
 	switch name {
 	case image.FieldCreated:
 		m.ResetCreated()
-		return nil
-	case image.FieldFileName:
-		m.ResetFileName()
 		return nil
 	}
 	return fmt.Errorf("unknown Image field %s", name)
@@ -2788,6 +2741,392 @@ func (m *ParticipantMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Participant edge %s", name)
+}
+
+// TitleImageMutation represents an operation that mutates the TitleImage nodes in the graph.
+type TitleImageMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uuid.UUID
+	created       *time.Time
+	clearedFields map[string]struct{}
+	event         *uuid.UUID
+	clearedevent  bool
+	done          bool
+	oldValue      func(context.Context) (*TitleImage, error)
+	predicates    []predicate.TitleImage
+}
+
+var _ ent.Mutation = (*TitleImageMutation)(nil)
+
+// titleimageOption allows management of the mutation configuration using functional options.
+type titleimageOption func(*TitleImageMutation)
+
+// newTitleImageMutation creates new mutation for the TitleImage entity.
+func newTitleImageMutation(c config, op Op, opts ...titleimageOption) *TitleImageMutation {
+	m := &TitleImageMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTitleImage,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTitleImageID sets the ID field of the mutation.
+func withTitleImageID(id uuid.UUID) titleimageOption {
+	return func(m *TitleImageMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TitleImage
+		)
+		m.oldValue = func(ctx context.Context) (*TitleImage, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TitleImage.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTitleImage sets the old TitleImage of the mutation.
+func withTitleImage(node *TitleImage) titleimageOption {
+	return func(m *TitleImageMutation) {
+		m.oldValue = func(context.Context) (*TitleImage, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TitleImageMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TitleImageMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TitleImage entities.
+func (m *TitleImageMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TitleImageMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TitleImageMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TitleImage.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreated sets the "created" field.
+func (m *TitleImageMutation) SetCreated(t time.Time) {
+	m.created = &t
+}
+
+// Created returns the value of the "created" field in the mutation.
+func (m *TitleImageMutation) Created() (r time.Time, exists bool) {
+	v := m.created
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreated returns the old "created" field's value of the TitleImage entity.
+// If the TitleImage object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TitleImageMutation) OldCreated(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreated is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreated requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreated: %w", err)
+	}
+	return oldValue.Created, nil
+}
+
+// ResetCreated resets all changes to the "created" field.
+func (m *TitleImageMutation) ResetCreated() {
+	m.created = nil
+}
+
+// SetEventID sets the "event" edge to the Event entity by id.
+func (m *TitleImageMutation) SetEventID(id uuid.UUID) {
+	m.event = &id
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *TitleImageMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *TitleImageMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventID returns the "event" edge ID in the mutation.
+func (m *TitleImageMutation) EventID() (id uuid.UUID, exists bool) {
+	if m.event != nil {
+		return *m.event, true
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *TitleImageMutation) EventIDs() (ids []uuid.UUID) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *TitleImageMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+}
+
+// Where appends a list predicates to the TitleImageMutation builder.
+func (m *TitleImageMutation) Where(ps ...predicate.TitleImage) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TitleImageMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TitleImage).
+func (m *TitleImageMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TitleImageMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.created != nil {
+		fields = append(fields, titleimage.FieldCreated)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TitleImageMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case titleimage.FieldCreated:
+		return m.Created()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TitleImageMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case titleimage.FieldCreated:
+		return m.OldCreated(ctx)
+	}
+	return nil, fmt.Errorf("unknown TitleImage field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TitleImageMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case titleimage.FieldCreated:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreated(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TitleImage field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TitleImageMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TitleImageMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TitleImageMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TitleImage numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TitleImageMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TitleImageMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TitleImageMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TitleImage nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TitleImageMutation) ResetField(name string) error {
+	switch name {
+	case titleimage.FieldCreated:
+		m.ResetCreated()
+		return nil
+	}
+	return fmt.Errorf("unknown TitleImage field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TitleImageMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.event != nil {
+		edges = append(edges, titleimage.EdgeEvent)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TitleImageMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case titleimage.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TitleImageMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TitleImageMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TitleImageMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedevent {
+		edges = append(edges, titleimage.EdgeEvent)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TitleImageMutation) EdgeCleared(name string) bool {
+	switch name {
+	case titleimage.EdgeEvent:
+		return m.clearedevent
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TitleImageMutation) ClearEdge(name string) error {
+	switch name {
+	case titleimage.EdgeEvent:
+		m.ClearEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown TitleImage unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TitleImageMutation) ResetEdge(name string) error {
+	switch name {
+	case titleimage.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	}
+	return fmt.Errorf("unknown TitleImage edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.

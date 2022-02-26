@@ -17,6 +17,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
 	"github.com/fredi12345/kuefa-karben/src/ent/predicate"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
 )
 
@@ -33,6 +34,7 @@ type EventQuery struct {
 	withParticipants *ParticipantQuery
 	withComments     *CommentQuery
 	withImages       *ImageQuery
+	withTitleImage   *TitleImageQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -128,6 +130,28 @@ func (eq *EventQuery) QueryImages() *ImageQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(image.Table, image.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, event.ImagesTable, event.ImagesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTitleImage chains the current query on the "title_image" edge.
+func (eq *EventQuery) QueryTitleImage() *TitleImageQuery {
+	query := &TitleImageQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(titleimage.Table, titleimage.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, event.TitleImageTable, event.TitleImageColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,6 +343,7 @@ func (eq *EventQuery) Clone() *EventQuery {
 		withParticipants: eq.withParticipants.Clone(),
 		withComments:     eq.withComments.Clone(),
 		withImages:       eq.withImages.Clone(),
+		withTitleImage:   eq.withTitleImage.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -355,6 +380,17 @@ func (eq *EventQuery) WithImages(opts ...func(*ImageQuery)) *EventQuery {
 		opt(query)
 	}
 	eq.withImages = query
+	return eq
+}
+
+// WithTitleImage tells the query-builder to eager-load the nodes that are connected to
+// the "title_image" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithTitleImage(opts ...func(*TitleImageQuery)) *EventQuery {
+	query := &TitleImageQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withTitleImage = query
 	return eq
 }
 
@@ -423,10 +459,11 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 	var (
 		nodes       = []*Event{}
 		_spec       = eq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			eq.withParticipants != nil,
 			eq.withComments != nil,
 			eq.withImages != nil,
+			eq.withTitleImage != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -533,6 +570,34 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "event_images" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Images = append(node.Edges.Images, n)
+		}
+	}
+
+	if query := eq.withTitleImage; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uuid.UUID]*Event)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.withFKs = true
+		query.Where(predicate.TitleImage(func(s *sql.Selector) {
+			s.Where(sql.InValues(event.TitleImageColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.event_title_image
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "event_title_image" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "event_title_image" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.TitleImage = n
 		}
 	}
 

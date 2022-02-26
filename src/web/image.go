@@ -36,7 +36,8 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 
 	for i := range files {
 
-		filename := getUniqueFileName()
+		filename, err := s.db.CreateImage(eventId)
+
 		file, err := files[i].Open()
 		if err != nil {
 			return errors.WithStack(err)
@@ -54,7 +55,6 @@ func (s *Server) AddImage(w http.ResponseWriter, r *http.Request, sess *sessions
 			}
 		}
 
-		err = s.db.CreateImage(filename, eventId)
 		if err != nil {
 			return errors.WithMessage(err, "cannot create image")
 		}

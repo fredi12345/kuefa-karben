@@ -11,7 +11,6 @@ import (
 	"path"
 
 	"github.com/disintegration/imaging"
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -46,11 +45,11 @@ type (
 // UploadImage allows to upload an image.
 //
 // @OperationID UploadImage
-// @Title UploadImage
-// @Param myimage form UploadImageRequest true "Some description of param"
-// @Success 200 object UploadImageResponse "Some description of response"
-// @Failure 400 object ErrorResponse "Some description of error"
-// @Failure 500 object ErrorResponse "Some description of error"
+// @Title upload an image
+// @Param myimage form UploadImageRequest true "UploadImageRequest"
+// @Success 200 object UploadImageResponse "Successfully uploaded the image"
+// @Failure 400 object ErrorResponse "Error while uploading the image"
+// @Failure 500 object ErrorResponse "Error while uploading the image"
 // @Route /images [post]
 func (s *Server) UploadImage(c echo.Context) error {
 	// TODO return proper error structs
@@ -68,9 +67,13 @@ func (s *Server) UploadImage(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
-	imageID := uuid.NewString()
-	thumbnailImage := imaging.Fit(fullSizeImage, 400, 400, imaging.Lanczos)
+	imageID, err := s.db.CreateTitleImage()
+	if err != nil {
+		log.Printf("could not create title image: %v", err)
+		return echo.ErrInternalServerError
+	}
 
+	thumbnailImage := imaging.Fit(fullSizeImage, 400, 400, imaging.Lanczos)
 	err = s.saveImage(thumbnailImage, path.Join(s.thumbnailPath, imageID))
 	if err != nil {
 		return err

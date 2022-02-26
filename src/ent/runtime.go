@@ -10,6 +10,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
 	"github.com/fredi12345/kuefa-karben/src/ent/schema"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/fredi12345/kuefa-karben/src/ent/user"
 	"github.com/google/uuid"
 )
@@ -53,19 +54,19 @@ func init() {
 	// event.ThemeValidator is a validator for the "theme" field. It is called by the builders before save.
 	event.ThemeValidator = eventDescTheme.Validators[0].(func(string) error)
 	// eventDescStarter is the schema descriptor for starter field.
-	eventDescStarter := eventFields[7].Descriptor()
+	eventDescStarter := eventFields[6].Descriptor()
 	// event.StarterValidator is a validator for the "starter" field. It is called by the builders before save.
 	event.StarterValidator = eventDescStarter.Validators[0].(func(string) error)
 	// eventDescMainDish is the schema descriptor for main_dish field.
-	eventDescMainDish := eventFields[8].Descriptor()
+	eventDescMainDish := eventFields[7].Descriptor()
 	// event.MainDishValidator is a validator for the "main_dish" field. It is called by the builders before save.
 	event.MainDishValidator = eventDescMainDish.Validators[0].(func(string) error)
 	// eventDescDessert is the schema descriptor for dessert field.
-	eventDescDessert := eventFields[9].Descriptor()
+	eventDescDessert := eventFields[8].Descriptor()
 	// event.DessertValidator is a validator for the "dessert" field. It is called by the builders before save.
 	event.DessertValidator = eventDescDessert.Validators[0].(func(string) error)
 	// eventDescDescription is the schema descriptor for description field.
-	eventDescDescription := eventFields[10].Descriptor()
+	eventDescDescription := eventFields[9].Descriptor()
 	// event.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	event.DescriptionValidator = eventDescDescription.Validators[0].(func(string) error)
 	// eventDescID is the schema descriptor for id field.
@@ -78,10 +79,6 @@ func init() {
 	imageDescCreated := imageFields[1].Descriptor()
 	// image.DefaultCreated holds the default value on creation for the created field.
 	image.DefaultCreated = imageDescCreated.Default.(func() time.Time)
-	// imageDescFileName is the schema descriptor for file_name field.
-	imageDescFileName := imageFields[2].Descriptor()
-	// image.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	image.FileNameValidator = imageDescFileName.Validators[0].(func(string) error)
 	// imageDescID is the schema descriptor for id field.
 	imageDescID := imageFields[0].Descriptor()
 	// image.DefaultID holds the default value on creation for the id field.
@@ -116,6 +113,16 @@ func init() {
 	participantDescID := participantFields[0].Descriptor()
 	// participant.DefaultID holds the default value on creation for the id field.
 	participant.DefaultID = participantDescID.Default.(func() uuid.UUID)
+	titleimageFields := schema.TitleImage{}.Fields()
+	_ = titleimageFields
+	// titleimageDescCreated is the schema descriptor for created field.
+	titleimageDescCreated := titleimageFields[1].Descriptor()
+	// titleimage.DefaultCreated holds the default value on creation for the created field.
+	titleimage.DefaultCreated = titleimageDescCreated.Default.(func() time.Time)
+	// titleimageDescID is the schema descriptor for id field.
+	titleimageDescID := titleimageFields[0].Descriptor()
+	// titleimage.DefaultID holds the default value on creation for the id field.
+	titleimage.DefaultID = titleimageDescID.Default.(func() uuid.UUID)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescCreated is the schema descriptor for created field.

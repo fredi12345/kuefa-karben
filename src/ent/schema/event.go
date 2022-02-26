@@ -22,7 +22,6 @@ func (Event) Fields() []ent.Field {
 		field.Time("created").Default(time.Now).Immutable(),
 		field.Time("last_modified").Default(time.Now).UpdateDefault(time.Now),
 		field.String("theme").MaxLen(256),
-		field.String("title_image"),
 		field.Time("starting_time"),
 		field.Time("closing_time"),
 		field.String("starter").MaxLen(512),
@@ -41,5 +40,8 @@ func (Event) Edges() []ent.Edge {
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
 		edge.To("images", Image.Type).
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}),
+		edge.To("title_image", TitleImage.Type).
+			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
+			Unique(),
 	}
 }

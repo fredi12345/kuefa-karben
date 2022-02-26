@@ -36,12 +36,6 @@ func (ic *ImageCreate) SetNillableCreated(t *time.Time) *ImageCreate {
 	return ic
 }
 
-// SetFileName sets the "file_name" field.
-func (ic *ImageCreate) SetFileName(s string) *ImageCreate {
-	ic.mutation.SetFileName(s)
-	return ic
-}
-
 // SetID sets the "id" field.
 func (ic *ImageCreate) SetID(u uuid.UUID) *ImageCreate {
 	ic.mutation.SetID(u)
@@ -59,14 +53,6 @@ func (ic *ImageCreate) SetNillableID(u *uuid.UUID) *ImageCreate {
 // SetEventID sets the "event" edge to the Event entity by ID.
 func (ic *ImageCreate) SetEventID(id uuid.UUID) *ImageCreate {
 	ic.mutation.SetEventID(id)
-	return ic
-}
-
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (ic *ImageCreate) SetNillableEventID(id *uuid.UUID) *ImageCreate {
-	if id != nil {
-		ic = ic.SetEventID(*id)
-	}
 	return ic
 }
 
@@ -161,13 +147,8 @@ func (ic *ImageCreate) check() error {
 	if _, ok := ic.mutation.Created(); !ok {
 		return &ValidationError{Name: "created", err: errors.New(`ent: missing required field "Image.created"`)}
 	}
-	if _, ok := ic.mutation.FileName(); !ok {
-		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Image.file_name"`)}
-	}
-	if v, ok := ic.mutation.FileName(); ok {
-		if err := image.FileNameValidator(v); err != nil {
-			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Image.file_name": %w`, err)}
-		}
+	if _, ok := ic.mutation.EventID(); !ok {
+		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "Image.event"`)}
 	}
 	return nil
 }
@@ -212,14 +193,6 @@ func (ic *ImageCreate) createSpec() (*Image, *sqlgraph.CreateSpec) {
 			Column: image.FieldCreated,
 		})
 		_node.Created = value
-	}
-	if value, ok := ic.mutation.FileName(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: image.FieldFileName,
-		})
-		_node.FileName = value
 	}
 	if nodes := ic.mutation.EventIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

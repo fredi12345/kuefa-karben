@@ -35,14 +35,6 @@ func (iu *ImageUpdate) SetEventID(id uuid.UUID) *ImageUpdate {
 	return iu
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (iu *ImageUpdate) SetNillableEventID(id *uuid.UUID) *ImageUpdate {
-	if id != nil {
-		iu = iu.SetEventID(*id)
-	}
-	return iu
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (iu *ImageUpdate) SetEvent(e *Event) *ImageUpdate {
 	return iu.SetEventID(e.ID)
@@ -66,12 +58,18 @@ func (iu *ImageUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(iu.hooks) == 0 {
+		if err = iu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = iu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ImageMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = iu.check(); err != nil {
+				return 0, err
 			}
 			iu.mutation = mutation
 			affected, err = iu.sqlSave(ctx)
@@ -111,6 +109,14 @@ func (iu *ImageUpdate) ExecX(ctx context.Context) {
 	if err := iu.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (iu *ImageUpdate) check() error {
+	if _, ok := iu.mutation.EventID(); iu.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Image.event"`)
+	}
+	return nil
 }
 
 func (iu *ImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -191,14 +197,6 @@ func (iuo *ImageUpdateOne) SetEventID(id uuid.UUID) *ImageUpdateOne {
 	return iuo
 }
 
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (iuo *ImageUpdateOne) SetNillableEventID(id *uuid.UUID) *ImageUpdateOne {
-	if id != nil {
-		iuo = iuo.SetEventID(*id)
-	}
-	return iuo
-}
-
 // SetEvent sets the "event" edge to the Event entity.
 func (iuo *ImageUpdateOne) SetEvent(e *Event) *ImageUpdateOne {
 	return iuo.SetEventID(e.ID)
@@ -229,12 +227,18 @@ func (iuo *ImageUpdateOne) Save(ctx context.Context) (*Image, error) {
 		node *Image
 	)
 	if len(iuo.hooks) == 0 {
+		if err = iuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = iuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ImageMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = iuo.check(); err != nil {
+				return nil, err
 			}
 			iuo.mutation = mutation
 			node, err = iuo.sqlSave(ctx)
@@ -274,6 +278,14 @@ func (iuo *ImageUpdateOne) ExecX(ctx context.Context) {
 	if err := iuo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (iuo *ImageUpdateOne) check() error {
+	if _, ok := iuo.mutation.EventID(); iuo.mutation.EventCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Image.event"`)
+	}
+	return nil
 }
 
 func (iuo *ImageUpdateOne) sqlSave(ctx context.Context) (_node *Image, err error) {

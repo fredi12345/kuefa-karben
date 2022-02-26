@@ -12,21 +12,21 @@
     }
   ],
   "paths": {
-    "/images": {
+    "/events": {
       "post": {
         "responses": {
           "200": {
-            "description": "Some description of response",
+            "description": "Successfully created the event",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UploadImageResponse"
+                  "$ref": "#/components/schemas/CreateEventResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Some description of error",
+            "description": "Error while creating the event",
             "content": {
               "application/json": {
                 "schema": {
@@ -36,7 +36,7 @@
             }
           },
           "500": {
-            "description": "Some description of error",
+            "description": "Error while creating the event",
             "content": {
               "application/json": {
                 "schema": {
@@ -46,7 +46,56 @@
             }
           }
         },
-        "summary": "UploadImage",
+        "summary": "create an event",
+        "description": "CreateEvent allows to create an event.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEventRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "operationId": "CreateEvent"
+      }
+    },
+    "/images": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Successfully uploaded the image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadImageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error while uploading the image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error while uploading the image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "upload an image",
         "description": "UploadImage allows to upload an image.",
         "requestBody": {
           "content": {
@@ -79,6 +128,69 @@
   },
   "components": {
     "schemas": {
+      "CreateEventRequest": {
+        "type": "object",
+        "required": [
+          "theme",
+          "imageID",
+          "startingDate",
+          "closingDate",
+          "starter",
+          "mainDish",
+          "dessert",
+          "description"
+        ],
+        "properties": {
+          "theme": {
+            "type": "string",
+            "description": "the topic of the event"
+          },
+          "imageID": {
+            "type": "string",
+            "description": "the topic of the event"
+          },
+          "startingDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "the date when the event begins"
+          },
+          "closingDate": {
+            "type": "string",
+            "format": "date-time",
+            "description": "the closing date for signing up to the event"
+          },
+          "starter": {
+            "type": "string",
+            "description": "the starter of the event"
+          },
+          "mainDish": {
+            "type": "string",
+            "description": "the main dish of the event"
+          },
+          "dessert": {
+            "type": "string",
+            "description": "the dessert of the event"
+          },
+          "description": {
+            "type": "string",
+            "description": "the description of the event"
+          }
+        },
+        "description": "CreateEventRequest is the request definition for creating events"
+      },
+      "CreateEventResponse": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "a UUIDv4 to identify the event"
+          }
+        },
+        "description": "CreateEventResponse is the response after an event was created successfully"
+      },
       "ErrorResponse": {
         "type": "object",
         "required": [

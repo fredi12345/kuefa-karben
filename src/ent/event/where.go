@@ -115,13 +115,6 @@ func Theme(v string) predicate.Event {
 	})
 }
 
-// TitleImage applies equality check predicate on the "title_image" field. It's identical to TitleImageEQ.
-func TitleImage(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTitleImage), v))
-	})
-}
-
 // StartingTime applies equality check predicate on the "starting_time" field. It's identical to StartingTimeEQ.
 func StartingTime(v time.Time) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
@@ -424,117 +417,6 @@ func ThemeEqualFold(v string) predicate.Event {
 func ThemeContainsFold(v string) predicate.Event {
 	return predicate.Event(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTheme), v))
-	})
-}
-
-// TitleImageEQ applies the EQ predicate on the "title_image" field.
-func TitleImageEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageNEQ applies the NEQ predicate on the "title_image" field.
-func TitleImageNEQ(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageIn applies the In predicate on the "title_image" field.
-func TitleImageIn(vs ...string) predicate.Event {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldTitleImage), v...))
-	})
-}
-
-// TitleImageNotIn applies the NotIn predicate on the "title_image" field.
-func TitleImageNotIn(vs ...string) predicate.Event {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Event(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldTitleImage), v...))
-	})
-}
-
-// TitleImageGT applies the GT predicate on the "title_image" field.
-func TitleImageGT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageGTE applies the GTE predicate on the "title_image" field.
-func TitleImageGTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageLT applies the LT predicate on the "title_image" field.
-func TitleImageLT(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageLTE applies the LTE predicate on the "title_image" field.
-func TitleImageLTE(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageContains applies the Contains predicate on the "title_image" field.
-func TitleImageContains(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageHasPrefix applies the HasPrefix predicate on the "title_image" field.
-func TitleImageHasPrefix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageHasSuffix applies the HasSuffix predicate on the "title_image" field.
-func TitleImageHasSuffix(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageEqualFold applies the EqualFold predicate on the "title_image" field.
-func TitleImageEqualFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldTitleImage), v))
-	})
-}
-
-// TitleImageContainsFold applies the ContainsFold predicate on the "title_image" field.
-func TitleImageContainsFold(v string) predicate.Event {
-	return predicate.Event(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldTitleImage), v))
 	})
 }
 
@@ -1209,6 +1091,34 @@ func HasImagesWith(preds ...predicate.Image) predicate.Event {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(ImagesInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, ImagesTable, ImagesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTitleImage applies the HasEdge predicate on the "title_image" edge.
+func HasTitleImage() predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TitleImageTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, TitleImageTable, TitleImageColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTitleImageWith applies the HasEdge predicate on the "title_image" edge with a given conditions (other predicates).
+func HasTitleImageWith(preds ...predicate.TitleImage) predicate.Event {
+	return predicate.Event(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TitleImageInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, TitleImageTable, TitleImageColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

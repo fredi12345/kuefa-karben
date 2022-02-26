@@ -20,6 +20,8 @@ type Tx struct {
 	Image *ImageClient
 	// Participant is the client for interacting with the Participant builders.
 	Participant *ParticipantClient
+	// TitleImage is the client for interacting with the TitleImage builders.
+	TitleImage *TitleImageClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -161,6 +163,7 @@ func (tx *Tx) init() {
 	tx.Event = NewEventClient(tx.config)
 	tx.Image = NewImageClient(tx.config)
 	tx.Participant = NewParticipantClient(tx.config)
+	tx.TitleImage = NewTitleImageClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

@@ -36,7 +36,6 @@ var (
 		{Name: "created", Type: field.TypeTime},
 		{Name: "last_modified", Type: field.TypeTime},
 		{Name: "theme", Type: field.TypeString, Size: 256},
-		{Name: "title_image", Type: field.TypeString},
 		{Name: "starting_time", Type: field.TypeTime},
 		{Name: "closing_time", Type: field.TypeTime},
 		{Name: "starter", Type: field.TypeString, Size: 512},
@@ -54,7 +53,6 @@ var (
 	ImagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "created", Type: field.TypeTime},
-		{Name: "file_name", Type: field.TypeString, Size: 256},
 		{Name: "event_images", Type: field.TypeUUID, Nullable: true},
 	}
 	// ImagesTable holds the schema information for the "images" table.
@@ -65,7 +63,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "images_events_images",
-				Columns:    []*schema.Column{ImagesColumns[3]},
+				Columns:    []*schema.Column{ImagesColumns[2]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -96,6 +94,26 @@ var (
 			},
 		},
 	}
+	// TitleImagesColumns holds the columns for the "title_images" table.
+	TitleImagesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+		{Name: "created", Type: field.TypeTime},
+		{Name: "event_title_image", Type: field.TypeUUID, Unique: true, Nullable: true},
+	}
+	// TitleImagesTable holds the schema information for the "title_images" table.
+	TitleImagesTable = &schema.Table{
+		Name:       "title_images",
+		Columns:    TitleImagesColumns,
+		PrimaryKey: []*schema.Column{TitleImagesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "title_images_events_title_image",
+				Columns:    []*schema.Column{TitleImagesColumns[2]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
@@ -115,6 +133,7 @@ var (
 		EventsTable,
 		ImagesTable,
 		ParticipantsTable,
+		TitleImagesTable,
 		UsersTable,
 	}
 )
@@ -123,4 +142,5 @@ func init() {
 	CommentsTable.ForeignKeys[0].RefTable = EventsTable
 	ImagesTable.ForeignKeys[0].RefTable = EventsTable
 	ParticipantsTable.ForeignKeys[0].RefTable = EventsTable
+	TitleImagesTable.ForeignKeys[0].RefTable = EventsTable
 }

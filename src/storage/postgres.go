@@ -44,6 +44,7 @@ func (p *PostgresBackend) Migrate(ctx context.Context) error {
 }
 
 func (p *PostgresBackend) CreateEvent(event Event) (string, error) {
+	imageUUID, _ := uuid.Parse(event.ImageID)
 	e, err := p.client.Event.Create().
 		SetTheme(event.Theme).
 		SetStartingTime(event.EventDate).
@@ -52,7 +53,7 @@ func (p *PostgresBackend) CreateEvent(event Event) (string, error) {
 		SetMainDish(event.MainDish).
 		SetDessert(event.Dessert).
 		SetDescription(event.InfoText).
-		SetTitleImage(event.ImageName).
+		SetTitleImageID(imageUUID).
 		Save(context.TODO())
 	if err != nil {
 		return "", fmt.Errorf("could not create event: %w", err)
@@ -92,17 +93,26 @@ func (p *PostgresBackend) CreateComment(comment Comment) error {
 	return nil
 }
 
-func (p *PostgresBackend) CreateImage(fileName string, eventID string) error {
+func (p *PostgresBackend) CreateImage(eventID string) (string, error) {
 	eventUUID, _ := uuid.Parse(eventID)
-	err := p.client.Image.Create().
-		SetFileName(fileName).
+	img, err := p.client.Image.Create().
 		SetEventID(eventUUID).
-		Exec(context.TODO())
+		Save(context.TODO())
 	if err != nil {
-		return fmt.Errorf("could not save image for event %s: %w", eventUUID.String(), err)
+		return "", fmt.Errorf("could not save image for event %s: %w", eventUUID.String(), err)
 	}
 
-	return nil
+	return img.ID.String(), nil
+}
+
+func (p *PostgresBackend) CreateTitleImage() (string, error) {
+	img, err := p.client.TitleImage.Create().
+		Save(context.TODO())
+	if err != nil {
+		return "", fmt.Errorf("could not save new image: %w", err)
+	}
+
+	return img.ID.String(), nil
 }
 
 func (p *PostgresBackend) GetEvent(id string) (*Event, error) {
@@ -123,7 +133,7 @@ func (p *PostgresBackend) GetEvent(id string) (*Event, error) {
 		MainDish:    ev.MainDish,
 		Dessert:     ev.Dessert,
 		InfoText:    ev.Description,
-		ImageName:   ev.TitleImage,
+		ImageName:   ev.Edges.TitleImage.ID.String(),
 	}, nil
 }
 
@@ -177,7 +187,7 @@ func (p *PostgresBackend) GetImages(eventID string) ([]*Image, error) {
 	for _, i := range dbImages {
 		images = append(images, &Image{
 			ID:      i.ID.String(),
-			Name:    i.FileName,
+			Name:    i.ID.String(),
 			EventID: i.Edges.Event.ID.String(),
 		})
 	}
@@ -200,7 +210,7 @@ func (p *PostgresBackend) GetAllImages(page int, imagesPerSite int) ([]*Image, e
 	for _, i := range dbImages {
 		images = append(images, &Image{
 			ID:        i.ID.String(),
-			Name:      i.FileName,
+			Name:      i.ID.String(),
 			EventID:   i.Edges.Event.ID.String(),
 			EventName: i.Edges.Event.Theme,
 		})
@@ -263,7 +273,7 @@ func (p *PostgresBackend) GetEventList(page int, eventsPerPage int) ([]*Event, e
 			Theme:     e.Theme,
 			Created:   e.Created,
 			EventDate: e.StartingTime,
-			ImageName: e.TitleImage,
+			ImageName: e.Edges.TitleImage.ID.String(),
 		})
 	}
 
@@ -330,6 +340,7 @@ func (p *PostgresBackend) GetNewParticipants(limit int) ([]*Participant, error) 
 
 func (p *PostgresBackend) UpdateEvent(event Event) error {
 	eventUUID, _ := uuid.Parse(event.ID)
+	imageUUID, _ := uuid.Parse(event.ImageID)
 	_, err := p.client.Event.UpdateOneID(eventUUID).
 		SetTheme(event.Theme).
 		SetStartingTime(event.EventDate).
@@ -338,7 +349,7 @@ func (p *PostgresBackend) UpdateEvent(event Event) error {
 		SetMainDish(event.MainDish).
 		SetDessert(event.Dessert).
 		SetDescription(event.InfoText).
-		SetTitleImage(event.ImageName).
+		SetTitleImageID(imageUUID).
 		Save(context.TODO())
 	if err != nil {
 		return fmt.Errorf("could not update event %s: %w", eventUUID.String(), err)
@@ -369,7 +380,7 @@ func (p *PostgresBackend) DeleteImage(id string) (string, error) {
 		return "", fmt.Errorf("could not delete image %s: %w", id, err)
 	}
 
-	return img.FileName, nil
+	return img.ID.String(), nil
 }
 
 func (p *PostgresBackend) DeleteParticipant(id string) error {

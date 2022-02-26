@@ -19,8 +19,6 @@ const (
 	FieldLastModified = "last_modified"
 	// FieldTheme holds the string denoting the theme field in the database.
 	FieldTheme = "theme"
-	// FieldTitleImage holds the string denoting the title_image field in the database.
-	FieldTitleImage = "title_image"
 	// FieldStartingTime holds the string denoting the starting_time field in the database.
 	FieldStartingTime = "starting_time"
 	// FieldClosingTime holds the string denoting the closing_time field in the database.
@@ -39,6 +37,8 @@ const (
 	EdgeComments = "comments"
 	// EdgeImages holds the string denoting the images edge name in mutations.
 	EdgeImages = "images"
+	// EdgeTitleImage holds the string denoting the title_image edge name in mutations.
+	EdgeTitleImage = "title_image"
 	// Table holds the table name of the event in the database.
 	Table = "events"
 	// ParticipantsTable is the table that holds the participants relation/edge.
@@ -62,6 +62,13 @@ const (
 	ImagesInverseTable = "images"
 	// ImagesColumn is the table column denoting the images relation/edge.
 	ImagesColumn = "event_images"
+	// TitleImageTable is the table that holds the title_image relation/edge.
+	TitleImageTable = "title_images"
+	// TitleImageInverseTable is the table name for the TitleImage entity.
+	// It exists in this package in order to avoid circular dependency with the "titleimage" package.
+	TitleImageInverseTable = "title_images"
+	// TitleImageColumn is the table column denoting the title_image relation/edge.
+	TitleImageColumn = "event_title_image"
 )
 
 // Columns holds all SQL columns for event fields.
@@ -70,7 +77,6 @@ var Columns = []string{
 	FieldCreated,
 	FieldLastModified,
 	FieldTheme,
-	FieldTitleImage,
 	FieldStartingTime,
 	FieldClosingTime,
 	FieldStarter,

@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/fredi12345/kuefa-karben/src/ent/event"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
 )
 
@@ -23,8 +24,6 @@ type Event struct {
 	LastModified time.Time `json:"last_modified,omitempty"`
 	// Theme holds the value of the "theme" field.
 	Theme string `json:"theme,omitempty"`
-	// TitleImage holds the value of the "title_image" field.
-	TitleImage string `json:"title_image,omitempty"`
 	// StartingTime holds the value of the "starting_time" field.
 	StartingTime time.Time `json:"starting_time,omitempty"`
 	// ClosingTime holds the value of the "closing_time" field.
@@ -50,9 +49,11 @@ type EventEdges struct {
 	Comments []*Comment `json:"comments,omitempty"`
 	// Images holds the value of the images edge.
 	Images []*Image `json:"images,omitempty"`
+	// TitleImage holds the value of the title_image edge.
+	TitleImage *TitleImage `json:"title_image,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ParticipantsOrErr returns the Participants value or an error if the edge
@@ -82,12 +83,26 @@ func (e EventEdges) ImagesOrErr() ([]*Image, error) {
 	return nil, &NotLoadedError{edge: "images"}
 }
 
+// TitleImageOrErr returns the TitleImage value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EventEdges) TitleImageOrErr() (*TitleImage, error) {
+	if e.loadedTypes[3] {
+		if e.TitleImage == nil {
+			// The edge title_image was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: titleimage.Label}
+		}
+		return e.TitleImage, nil
+	}
+	return nil, &NotLoadedError{edge: "title_image"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Event) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldTheme, event.FieldTitleImage, event.FieldStarter, event.FieldMainDish, event.FieldDessert, event.FieldDescription:
+		case event.FieldTheme, event.FieldStarter, event.FieldMainDish, event.FieldDessert, event.FieldDescription:
 			values[i] = new(sql.NullString)
 		case event.FieldCreated, event.FieldLastModified, event.FieldStartingTime, event.FieldClosingTime:
 			values[i] = new(sql.NullTime)
@@ -131,12 +146,6 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field theme", values[i])
 			} else if value.Valid {
 				e.Theme = value.String
-			}
-		case event.FieldTitleImage:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field title_image", values[i])
-			} else if value.Valid {
-				e.TitleImage = value.String
 			}
 		case event.FieldStartingTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -194,6 +203,11 @@ func (e *Event) QueryImages() *ImageQuery {
 	return (&EventClient{config: e.config}).QueryImages(e)
 }
 
+// QueryTitleImage queries the "title_image" edge of the Event entity.
+func (e *Event) QueryTitleImage() *TitleImageQuery {
+	return (&EventClient{config: e.config}).QueryTitleImage(e)
+}
+
 // Update returns a builder for updating this Event.
 // Note that you need to call Event.Unwrap() before calling this method if this Event
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -223,8 +237,6 @@ func (e *Event) String() string {
 	builder.WriteString(e.LastModified.Format(time.ANSIC))
 	builder.WriteString(", theme=")
 	builder.WriteString(e.Theme)
-	builder.WriteString(", title_image=")
-	builder.WriteString(e.TitleImage)
 	builder.WriteString(", starting_time=")
 	builder.WriteString(e.StartingTime.Format(time.ANSIC))
 	builder.WriteString(", closing_time=")

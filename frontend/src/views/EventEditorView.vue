@@ -2,28 +2,63 @@
   <section id="createEvent">
     <h4>{{ $t('eventEditor.title.new') }}</h4>
 
-    <ImageUpload v-model="imageID"/>
-
-
     <form id="eventForm">
-      <input id="motto" name="theme" type="text" placeholder="Motto" required>
-      <input id="date" name="date" type="datetime-local" required>
-      <input class="menu" name="starter" type="text" placeholder="Vorspeiße" required>
-      <input class="menu" name="main-dish" type="text" placeholder="Hauptgericht" required>
-      <input class="menu" name="dessert" type="text" placeholder="Nachtisch" required>
-      <textarea name="info" placeholder="Beschreibung" rows="6" required></textarea>
-      <label id="closing">Anmeldeschluss:<input name="closingDate"  type="datetime-local" required></label>
-      <input id="image" name="image" type="file" accept="image/*" required>
+      <input id="motto" name="theme" type="text" placeholder="Motto" required v-model="form.theme">
+      <input id="date" name="date" type="datetime-local" required v-model="form.startingDate">
+      <input class="menu" name="starter" type="text" placeholder="Vorspeiße" required v-model="form.starter">
+      <input class="menu" name="main-dish" type="text" placeholder="Hauptgericht" required v-model="form.mainDish">
+      <input class="menu" name="dessert" type="text" placeholder="Nachtisch" required v-model="form.dessert">
+      <ImageUpload id="image" v-model="form.imageID"/>
+      <textarea name="info" placeholder="Beschreibung" rows="6" required v-model="form.description"></textarea>
+      <label id="closing">Anmeldeschluss:<input name="closingDate" type="datetime-local" required v-model="form.closingDate"></label>
     </form>
-    <button class="buttonRight" type="submit">Speichern</button>
+
+    <button class="buttonRight" type="submit" @click.prevent="onFormSubmit">Speichern</button>
   </section>
 </template>
 
 <script setup lang="ts">
 import ImageUpload from "../components/ImageUpload.vue";
-import {ref} from "vue";
+import {reactive} from "vue";
+import {client} from "../api/client";
 
-const imageID = ref('')
+const form = reactive({
+  theme: '',
+  imageID: '',
+  startingDate: '',
+  closingDate: '',
+  starter: '',
+  mainDish: '',
+  dessert: '',
+  description: '',
+})
+
+function clearForm() {
+  form.theme = ''
+  form.imageID = ''
+  form.startingDate = ''
+  form.closingDate = ''
+  form.starter = ''
+  form.mainDish = ''
+  form.dessert = ''
+  form.description = ''
+}
+
+async function onFormSubmit() {
+  const resp = await client.createEvent({
+    'theme': form.theme,
+    'imageID': form.imageID,
+    'startingDate': new Date(form.startingDate).toISOString(),
+    'closingDate': new Date(form.closingDate).toISOString(),
+    'starter': form.starter,
+    'mainDish': form.mainDish,
+    'dessert': form.dessert,
+    'description': form.description,
+  })
+
+  clearForm()
+  console.log(resp.data.id)
+}
 </script>
 
 <style scoped lang="scss">

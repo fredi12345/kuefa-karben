@@ -10,24 +10,24 @@ import (
 	"github.com/google/uuid"
 )
 
-// Image holds the schema definition for the Image entity.
-type Image struct {
+// TitleImage holds the schema definition for the TitleImage entity.
+type TitleImage struct {
 	ent.Schema
 }
 
-// Fields of the Image.
-func (Image) Fields() []ent.Field {
+// Fields of the TitleImage.
+func (TitleImage) Fields() []ent.Field {
 	return []ent.Field{
 		field.UUID("id", uuid.UUID{}).Immutable().Default(uuid.New),
 		field.Time("created").Default(time.Now).Immutable(),
 	}
 }
 
-// Edges of the Image.
-func (Image) Edges() []ent.Edge {
+// Edges of the TitleImage.
+func (TitleImage) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("event", Event.Type).Ref("images").
+		edge.From("event", Event.Type).Ref("title_image").
 			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
-			Required().Unique(),
+			Unique(),
 	}
 }

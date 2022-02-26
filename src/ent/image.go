@@ -20,8 +20,6 @@ type Image struct {
 	ID uuid.UUID `json:"id,omitempty"`
 	// Created holds the value of the "created" field.
 	Created time.Time `json:"created,omitempty"`
-	// FileName holds the value of the "file_name" field.
-	FileName string `json:"file_name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ImageQuery when eager-loading is set.
 	Edges        ImageEdges `json:"edges"`
@@ -56,8 +54,6 @@ func (*Image) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case image.FieldFileName:
-			values[i] = new(sql.NullString)
 		case image.FieldCreated:
 			values[i] = new(sql.NullTime)
 		case image.FieldID:
@@ -90,12 +86,6 @@ func (i *Image) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field created", values[j])
 			} else if value.Valid {
 				i.Created = value.Time
-			}
-		case image.FieldFileName:
-			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field file_name", values[j])
-			} else if value.Valid {
-				i.FileName = value.String
 			}
 		case image.ForeignKeys[0]:
 			if value, ok := values[j].(*sql.NullScanner); !ok {
@@ -139,8 +129,6 @@ func (i *Image) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", i.ID))
 	builder.WriteString(", created=")
 	builder.WriteString(i.Created.Format(time.ANSIC))
-	builder.WriteString(", file_name=")
-	builder.WriteString(i.FileName)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/fredi12345/kuefa-karben/src/ent/user"
 )
 
@@ -37,6 +38,7 @@ func columnChecker(table string) func(string) error {
 		event.Table:       event.ValidColumn,
 		image.Table:       image.ValidColumn,
 		participant.Table: participant.ValidColumn,
+		titleimage.Table:  titleimage.ValidColumn,
 		user.Table:        user.ValidColumn,
 	}
 	check, ok := checks[table]

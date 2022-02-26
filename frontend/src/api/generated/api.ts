@@ -22,67 +22,190 @@ import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObj
 import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } from './base';
 
 /**
- * 
+ * CreateEventRequest is the request definition for creating events
  * @export
- * @interface ErrorResponseData
+ * @interface CreateEventRequest
  */
-export interface ErrorResponseData {
+export interface CreateEventRequest {
     /**
-     * Additional data to describe the error
-     * @type {{ [key: string]: object; }}
-     * @memberof ErrorResponseData
-     */
-    'additionalAttributes'?: { [key: string]: object; };
-    /**
-     * Human-readable description of the error
+     * the topic of the event
      * @type {string}
-     * @memberof ErrorResponseData
+     * @memberof CreateEventRequest
+     */
+    'theme': string;
+    /**
+     * the topic of the event
+     * @type {string}
+     * @memberof CreateEventRequest
+     */
+    'imageID': string;
+    /**
+     * the date when the event begins
+     * @type {string}
+     * @memberof CreateEventRequest
+     */
+    'startingDate': string;
+    /**
+     * the closing date for signing up to the event
+     * @type {string}
+     * @memberof CreateEventRequest
+     */
+    'closingDate': string;
+    /**
+     * the starter of the event
+     * @type {string}
+     * @memberof CreateEventRequest
+     */
+    'starter': string;
+    /**
+     * the main dish of the event
+     * @type {string}
+     * @memberof CreateEventRequest
+     */
+    'mainDish': string;
+    /**
+     * the dessert of the event
+     * @type {string}
+     * @memberof CreateEventRequest
+     */
+    'dessert': string;
+    /**
+     * the description of the event
+     * @type {string}
+     * @memberof CreateEventRequest
      */
     'description': string;
+}
+/**
+ * CreateEventResponse is the response after an event was created successfully
+ * @export
+ * @interface CreateEventResponse
+ */
+export interface CreateEventResponse {
+    /**
+     * a UUIDv4 to identify the event
+     * @type {string}
+     * @memberof CreateEventResponse
+     */
+    'id': string;
+}
+/**
+ * ErrorResponse is the generic response for all failed API-calls.
+ * @export
+ * @interface ErrorResponse
+ */
+export interface ErrorResponse {
     /**
      * Generic code to detect kind of error
      * @type {string}
-     * @memberof ErrorResponseData
+     * @memberof ErrorResponse
      */
     'errorCode': string;
+    /**
+     * Human-readable description of the error
+     * @type {string}
+     * @memberof ErrorResponse
+     */
+    'description': string;
+    /**
+     * Additional data to describe the error
+     * @type {{ [key: string]: any; }}
+     * @memberof ErrorResponse
+     */
+    'additionalAttributes'?: { [key: string]: any; };
 }
 /**
- * 
+ * UploadImageRequest is the request definition for uploading images. It\'s possible to upload a single image with multipart/form-data encoding.
  * @export
- * @interface UploadImageResponseData
+ * @interface UploadImageRequest
  */
-export interface UploadImageResponseData {
+export interface UploadImageRequest {
     /**
-     * Generated v4 UUID of the image
+     * the image to upload
+     * @type {any}
+     * @memberof UploadImageRequest
+     */
+    'image': any;
+    /**
+     * will mark the image as title image for an event
+     * @type {boolean}
+     * @memberof UploadImageRequest
+     */
+    'isTitle'?: boolean;
+}
+/**
+ * UploadImageResponse is the response after an image was uploaded successfully.
+ * @export
+ * @interface UploadImageResponse
+ */
+export interface UploadImageResponse {
+    /**
+     * a UUIDv4 to identify the image
      * @type {string}
-     * @memberof UploadImageResponseData
+     * @memberof UploadImageResponse
      */
     'id': string;
     /**
-     * Relative URL to access the image
+     * relative URL to access the image
      * @type {string}
-     * @memberof UploadImageResponseData
+     * @memberof UploadImageResponse
      */
     'imageURL': string;
     /**
-     * Relative URL to access the thumbnail
+     * relative URL to access a thumbnail of the image
      * @type {string}
-     * @memberof UploadImageResponseData
+     * @memberof UploadImageResponse
      */
     'thumbnailURL': string;
 }
 
 /**
- * KuefaApi - axios parameter creator
+ * DefaultApi - axios parameter creator
  * @export
  */
-export const KuefaApiAxiosParamCreator = function (configuration?: Configuration) {
+export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * It is automatically served on /public/images/{id}. There is also a thumbnail being generated on /public/thumbnails/{id}.
-         * @summary Upload an image.
-         * @param {any} image 
-         * @param {boolean} [isTitle] 
+         * CreateEvent allows to create an event.
+         * @summary create an event
+         * @param {CreateEventRequest} createEventRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createEvent: async (createEventRequest: CreateEventRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createEventRequest' is not null or undefined
+            assertParamExists('createEvent', 'createEventRequest', createEventRequest)
+            const localVarPath = `/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createEventRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * UploadImage allows to upload an image.
+         * @summary upload an image
+         * @param {any} image the image to upload
+         * @param {boolean} [isTitle] will mark the image as title image for an event
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -128,21 +251,32 @@ export const KuefaApiAxiosParamCreator = function (configuration?: Configuration
 };
 
 /**
- * KuefaApi - functional programming interface
+ * DefaultApi - functional programming interface
  * @export
  */
-export const KuefaApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = KuefaApiAxiosParamCreator(configuration)
+export const DefaultApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
         /**
-         * It is automatically served on /public/images/{id}. There is also a thumbnail being generated on /public/thumbnails/{id}.
-         * @summary Upload an image.
-         * @param {any} image 
-         * @param {boolean} [isTitle] 
+         * CreateEvent allows to create an event.
+         * @summary create an event
+         * @param {CreateEventRequest} createEventRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async uploadImage(image: any, isTitle?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadImageResponseData>> {
+        async createEvent(createEventRequest: CreateEventRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateEventResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createEvent(createEventRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * UploadImage allows to upload an image.
+         * @summary upload an image
+         * @param {any} image the image to upload
+         * @param {boolean} [isTitle] will mark the image as title image for an event
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async uploadImage(image: any, isTitle?: boolean, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UploadImageResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.uploadImage(image, isTitle, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -150,44 +284,66 @@ export const KuefaApiFp = function(configuration?: Configuration) {
 };
 
 /**
- * KuefaApi - factory interface
+ * DefaultApi - factory interface
  * @export
  */
-export const KuefaApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = KuefaApiFp(configuration)
+export const DefaultApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = DefaultApiFp(configuration)
     return {
         /**
-         * It is automatically served on /public/images/{id}. There is also a thumbnail being generated on /public/thumbnails/{id}.
-         * @summary Upload an image.
-         * @param {any} image 
-         * @param {boolean} [isTitle] 
+         * CreateEvent allows to create an event.
+         * @summary create an event
+         * @param {CreateEventRequest} createEventRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadImage(image: any, isTitle?: boolean, options?: any): AxiosPromise<UploadImageResponseData> {
+        createEvent(createEventRequest: CreateEventRequest, options?: any): AxiosPromise<CreateEventResponse> {
+            return localVarFp.createEvent(createEventRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * UploadImage allows to upload an image.
+         * @summary upload an image
+         * @param {any} image the image to upload
+         * @param {boolean} [isTitle] will mark the image as title image for an event
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadImage(image: any, isTitle?: boolean, options?: any): AxiosPromise<UploadImageResponse> {
             return localVarFp.uploadImage(image, isTitle, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * KuefaApi - object-oriented interface
+ * DefaultApi - object-oriented interface
  * @export
- * @class KuefaApi
+ * @class DefaultApi
  * @extends {BaseAPI}
  */
-export class KuefaApi extends BaseAPI {
+export class DefaultApi extends BaseAPI {
     /**
-     * It is automatically served on /public/images/{id}. There is also a thumbnail being generated on /public/thumbnails/{id}.
-     * @summary Upload an image.
-     * @param {any} image 
-     * @param {boolean} [isTitle] 
+     * CreateEvent allows to create an event.
+     * @summary create an event
+     * @param {CreateEventRequest} createEventRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof KuefaApi
+     * @memberof DefaultApi
+     */
+    public createEvent(createEventRequest: CreateEventRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createEvent(createEventRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * UploadImage allows to upload an image.
+     * @summary upload an image
+     * @param {any} image the image to upload
+     * @param {boolean} [isTitle] will mark the image as title image for an event
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
      */
     public uploadImage(image: any, isTitle?: boolean, options?: AxiosRequestConfig) {
-        return KuefaApiFp(this.configuration).uploadImage(image, isTitle, options).then((request) => request(this.axios, this.basePath));
+        return DefaultApiFp(this.configuration).uploadImage(image, isTitle, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

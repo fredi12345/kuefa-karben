@@ -14,6 +14,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
 )
 
@@ -55,12 +56,6 @@ func (ec *EventCreate) SetNillableLastModified(t *time.Time) *EventCreate {
 // SetTheme sets the "theme" field.
 func (ec *EventCreate) SetTheme(s string) *EventCreate {
 	ec.mutation.SetTheme(s)
-	return ec
-}
-
-// SetTitleImage sets the "title_image" field.
-func (ec *EventCreate) SetTitleImage(s string) *EventCreate {
-	ec.mutation.SetTitleImage(s)
 	return ec
 }
 
@@ -157,6 +152,25 @@ func (ec *EventCreate) AddImages(i ...*Image) *EventCreate {
 		ids[j] = i[j].ID
 	}
 	return ec.AddImageIDs(ids...)
+}
+
+// SetTitleImageID sets the "title_image" edge to the TitleImage entity by ID.
+func (ec *EventCreate) SetTitleImageID(id uuid.UUID) *EventCreate {
+	ec.mutation.SetTitleImageID(id)
+	return ec
+}
+
+// SetNillableTitleImageID sets the "title_image" edge to the TitleImage entity by ID if the given value is not nil.
+func (ec *EventCreate) SetNillableTitleImageID(id *uuid.UUID) *EventCreate {
+	if id != nil {
+		ec = ec.SetTitleImageID(*id)
+	}
+	return ec
+}
+
+// SetTitleImage sets the "title_image" edge to the TitleImage entity.
+func (ec *EventCreate) SetTitleImage(t *TitleImage) *EventCreate {
+	return ec.SetTitleImageID(t.ID)
 }
 
 // Mutation returns the EventMutation object of the builder.
@@ -260,9 +274,6 @@ func (ec *EventCreate) check() error {
 			return &ValidationError{Name: "theme", err: fmt.Errorf(`ent: validator failed for field "Event.theme": %w`, err)}
 		}
 	}
-	if _, ok := ec.mutation.TitleImage(); !ok {
-		return &ValidationError{Name: "title_image", err: errors.New(`ent: missing required field "Event.title_image"`)}
-	}
 	if _, ok := ec.mutation.StartingTime(); !ok {
 		return &ValidationError{Name: "starting_time", err: errors.New(`ent: missing required field "Event.starting_time"`)}
 	}
@@ -361,14 +372,6 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 		})
 		_node.Theme = value
 	}
-	if value, ok := ec.mutation.TitleImage(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldTitleImage,
-		})
-		_node.TitleImage = value
-	}
 	if value, ok := ec.mutation.StartingTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -466,6 +469,25 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: image.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.TitleImageIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.TitleImageTable,
+			Columns: []string{event.TitleImageColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: titleimage.FieldID,
 				},
 			},
 		}

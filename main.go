@@ -103,6 +103,7 @@ func createEchoHandler(server *rest.Server) *echo.Echo {
 
 	api := e.Group("api")
 	api.POST("/images", server.UploadImage)
+	api.POST("/events", server.CreateEvent)
 	return e
 }
 

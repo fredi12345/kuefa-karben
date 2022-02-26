@@ -61,6 +61,19 @@ func (f ParticipantFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return f(ctx, mv)
 }
 
+// The TitleImageFunc type is an adapter to allow the use of ordinary
+// function as TitleImage mutator.
+type TitleImageFunc func(context.Context, *ent.TitleImageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TitleImageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TitleImageMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TitleImageMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

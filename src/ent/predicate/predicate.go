@@ -18,5 +18,8 @@ type Image func(*sql.Selector)
 // Participant is the predicate function for participant builders.
 type Participant func(*sql.Selector)
 
+// TitleImage is the predicate function for titleimage builders.
+type TitleImage func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

@@ -14,6 +14,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/fredi12345/kuefa-karben/src/ent/user"
 
 	"entgo.io/ent/dialect"
@@ -34,6 +35,8 @@ type Client struct {
 	Image *ImageClient
 	// Participant is the client for interacting with the Participant builders.
 	Participant *ParticipantClient
+	// TitleImage is the client for interacting with the TitleImage builders.
+	TitleImage *TitleImageClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -53,6 +56,7 @@ func (c *Client) init() {
 	c.Event = NewEventClient(c.config)
 	c.Image = NewImageClient(c.config)
 	c.Participant = NewParticipantClient(c.config)
+	c.TitleImage = NewTitleImageClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -91,6 +95,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Event:       NewEventClient(cfg),
 		Image:       NewImageClient(cfg),
 		Participant: NewParticipantClient(cfg),
+		TitleImage:  NewTitleImageClient(cfg),
 		User:        NewUserClient(cfg),
 	}, nil
 }
@@ -115,6 +120,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Event:       NewEventClient(cfg),
 		Image:       NewImageClient(cfg),
 		Participant: NewParticipantClient(cfg),
+		TitleImage:  NewTitleImageClient(cfg),
 		User:        NewUserClient(cfg),
 	}, nil
 }
@@ -149,6 +155,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Event.Use(hooks...)
 	c.Image.Use(hooks...)
 	c.Participant.Use(hooks...)
+	c.TitleImage.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
@@ -391,6 +398,22 @@ func (c *EventClient) QueryImages(e *Event) *ImageQuery {
 	return query
 }
 
+// QueryTitleImage queries the title_image edge of a Event.
+func (c *EventClient) QueryTitleImage(e *Event) *TitleImageQuery {
+	query := &TitleImageQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(titleimage.Table, titleimage.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, event.TitleImageTable, event.TitleImageColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EventClient) Hooks() []Hook {
 	return c.hooks.Event
@@ -606,6 +629,112 @@ func (c *ParticipantClient) QueryEvent(pa *Participant) *EventQuery {
 // Hooks returns the client hooks.
 func (c *ParticipantClient) Hooks() []Hook {
 	return c.hooks.Participant
+}
+
+// TitleImageClient is a client for the TitleImage schema.
+type TitleImageClient struct {
+	config
+}
+
+// NewTitleImageClient returns a client for the TitleImage from the given config.
+func NewTitleImageClient(c config) *TitleImageClient {
+	return &TitleImageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `titleimage.Hooks(f(g(h())))`.
+func (c *TitleImageClient) Use(hooks ...Hook) {
+	c.hooks.TitleImage = append(c.hooks.TitleImage, hooks...)
+}
+
+// Create returns a create builder for TitleImage.
+func (c *TitleImageClient) Create() *TitleImageCreate {
+	mutation := newTitleImageMutation(c.config, OpCreate)
+	return &TitleImageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TitleImage entities.
+func (c *TitleImageClient) CreateBulk(builders ...*TitleImageCreate) *TitleImageCreateBulk {
+	return &TitleImageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TitleImage.
+func (c *TitleImageClient) Update() *TitleImageUpdate {
+	mutation := newTitleImageMutation(c.config, OpUpdate)
+	return &TitleImageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TitleImageClient) UpdateOne(ti *TitleImage) *TitleImageUpdateOne {
+	mutation := newTitleImageMutation(c.config, OpUpdateOne, withTitleImage(ti))
+	return &TitleImageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TitleImageClient) UpdateOneID(id uuid.UUID) *TitleImageUpdateOne {
+	mutation := newTitleImageMutation(c.config, OpUpdateOne, withTitleImageID(id))
+	return &TitleImageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TitleImage.
+func (c *TitleImageClient) Delete() *TitleImageDelete {
+	mutation := newTitleImageMutation(c.config, OpDelete)
+	return &TitleImageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TitleImageClient) DeleteOne(ti *TitleImage) *TitleImageDeleteOne {
+	return c.DeleteOneID(ti.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TitleImageClient) DeleteOneID(id uuid.UUID) *TitleImageDeleteOne {
+	builder := c.Delete().Where(titleimage.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TitleImageDeleteOne{builder}
+}
+
+// Query returns a query builder for TitleImage.
+func (c *TitleImageClient) Query() *TitleImageQuery {
+	return &TitleImageQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TitleImage entity by its id.
+func (c *TitleImageClient) Get(ctx context.Context, id uuid.UUID) (*TitleImage, error) {
+	return c.Query().Where(titleimage.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TitleImageClient) GetX(ctx context.Context, id uuid.UUID) *TitleImage {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEvent queries the event edge of a TitleImage.
+func (c *TitleImageClient) QueryEvent(ti *TitleImage) *EventQuery {
+	query := &EventQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ti.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(titleimage.Table, titleimage.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, titleimage.EventTable, titleimage.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(ti.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TitleImageClient) Hooks() []Hook {
+	return c.hooks.TitleImage
 }
 
 // UserClient is a client for the User schema.

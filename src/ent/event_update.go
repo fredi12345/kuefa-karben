@@ -16,6 +16,7 @@ import (
 	"github.com/fredi12345/kuefa-karben/src/ent/image"
 	"github.com/fredi12345/kuefa-karben/src/ent/participant"
 	"github.com/fredi12345/kuefa-karben/src/ent/predicate"
+	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
 )
 
@@ -41,12 +42,6 @@ func (eu *EventUpdate) SetLastModified(t time.Time) *EventUpdate {
 // SetTheme sets the "theme" field.
 func (eu *EventUpdate) SetTheme(s string) *EventUpdate {
 	eu.mutation.SetTheme(s)
-	return eu
-}
-
-// SetTitleImage sets the "title_image" field.
-func (eu *EventUpdate) SetTitleImage(s string) *EventUpdate {
-	eu.mutation.SetTitleImage(s)
 	return eu
 }
 
@@ -131,6 +126,25 @@ func (eu *EventUpdate) AddImages(i ...*Image) *EventUpdate {
 	return eu.AddImageIDs(ids...)
 }
 
+// SetTitleImageID sets the "title_image" edge to the TitleImage entity by ID.
+func (eu *EventUpdate) SetTitleImageID(id uuid.UUID) *EventUpdate {
+	eu.mutation.SetTitleImageID(id)
+	return eu
+}
+
+// SetNillableTitleImageID sets the "title_image" edge to the TitleImage entity by ID if the given value is not nil.
+func (eu *EventUpdate) SetNillableTitleImageID(id *uuid.UUID) *EventUpdate {
+	if id != nil {
+		eu = eu.SetTitleImageID(*id)
+	}
+	return eu
+}
+
+// SetTitleImage sets the "title_image" edge to the TitleImage entity.
+func (eu *EventUpdate) SetTitleImage(t *TitleImage) *EventUpdate {
+	return eu.SetTitleImageID(t.ID)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (eu *EventUpdate) Mutation() *EventMutation {
 	return eu.mutation
@@ -197,6 +211,12 @@ func (eu *EventUpdate) RemoveImages(i ...*Image) *EventUpdate {
 		ids[j] = i[j].ID
 	}
 	return eu.RemoveImageIDs(ids...)
+}
+
+// ClearTitleImage clears the "title_image" edge to the TitleImage entity.
+func (eu *EventUpdate) ClearTitleImage() *EventUpdate {
+	eu.mutation.ClearTitleImage()
+	return eu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -328,13 +348,6 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: event.FieldTheme,
-		})
-	}
-	if value, ok := eu.mutation.TitleImage(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldTitleImage,
 		})
 	}
 	if value, ok := eu.mutation.StartingTime(); ok {
@@ -541,6 +554,41 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.TitleImageCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.TitleImageTable,
+			Columns: []string{event.TitleImageColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: titleimage.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.TitleImageIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.TitleImageTable,
+			Columns: []string{event.TitleImageColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: titleimage.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{event.Label}
@@ -569,12 +617,6 @@ func (euo *EventUpdateOne) SetLastModified(t time.Time) *EventUpdateOne {
 // SetTheme sets the "theme" field.
 func (euo *EventUpdateOne) SetTheme(s string) *EventUpdateOne {
 	euo.mutation.SetTheme(s)
-	return euo
-}
-
-// SetTitleImage sets the "title_image" field.
-func (euo *EventUpdateOne) SetTitleImage(s string) *EventUpdateOne {
-	euo.mutation.SetTitleImage(s)
 	return euo
 }
 
@@ -659,6 +701,25 @@ func (euo *EventUpdateOne) AddImages(i ...*Image) *EventUpdateOne {
 	return euo.AddImageIDs(ids...)
 }
 
+// SetTitleImageID sets the "title_image" edge to the TitleImage entity by ID.
+func (euo *EventUpdateOne) SetTitleImageID(id uuid.UUID) *EventUpdateOne {
+	euo.mutation.SetTitleImageID(id)
+	return euo
+}
+
+// SetNillableTitleImageID sets the "title_image" edge to the TitleImage entity by ID if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableTitleImageID(id *uuid.UUID) *EventUpdateOne {
+	if id != nil {
+		euo = euo.SetTitleImageID(*id)
+	}
+	return euo
+}
+
+// SetTitleImage sets the "title_image" edge to the TitleImage entity.
+func (euo *EventUpdateOne) SetTitleImage(t *TitleImage) *EventUpdateOne {
+	return euo.SetTitleImageID(t.ID)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (euo *EventUpdateOne) Mutation() *EventMutation {
 	return euo.mutation
@@ -725,6 +786,12 @@ func (euo *EventUpdateOne) RemoveImages(i ...*Image) *EventUpdateOne {
 		ids[j] = i[j].ID
 	}
 	return euo.RemoveImageIDs(ids...)
+}
+
+// ClearTitleImage clears the "title_image" edge to the TitleImage entity.
+func (euo *EventUpdateOne) ClearTitleImage() *EventUpdateOne {
+	euo.mutation.ClearTitleImage()
+	return euo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -880,13 +947,6 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: event.FieldTheme,
-		})
-	}
-	if value, ok := euo.mutation.TitleImage(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: event.FieldTitleImage,
 		})
 	}
 	if value, ok := euo.mutation.StartingTime(); ok {
@@ -1085,6 +1145,41 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUUID,
 					Column: image.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.TitleImageCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.TitleImageTable,
+			Columns: []string{event.TitleImageColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: titleimage.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.TitleImageIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   event.TitleImageTable,
+			Columns: []string{event.TitleImageColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUUID,
+					Column: titleimage.FieldID,
 				},
 			},
 		}

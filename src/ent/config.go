@@ -28,6 +28,7 @@ type hooks struct {
 	Event       []ent.Hook
 	Image       []ent.Hook
 	Participant []ent.Hook
+	TitleImage  []ent.Hook
 	User        []ent.Hook
 }
 

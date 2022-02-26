@@ -9,7 +9,8 @@ type Service interface {
 	CreateEvent(event Event) (string, error)
 	CreateParticipant(participant Participant) error
 	CreateComment(comment Comment) error
-	CreateImage(fileName string, eventID string) error
+	CreateImage(eventID string) (string, error)
+	CreateTitleImage() (string, error)
 	CreateUser(name, password string) error
 
 	GetEvent(id string) (*Event, error)
@@ -56,7 +57,9 @@ type Event struct {
 	MainDish    string
 	Dessert     string
 	InfoText    string
-	ImageName   string
+	// Deprecated: use ImageID instead
+	ImageName string
+	ImageID   string
 }
 
 type Participant struct {
