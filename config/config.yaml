@@ -2,6 +2,8 @@
 # Use uppercase values delimited by _ and prefixed with KUEFA.
 # e.g. KUEFA_POSTGRES_HOST
 
+debug: false
+
 postgres:
   host: localhost
   port: 5432

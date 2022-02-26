@@ -1,12 +1,12 @@
 package rest
 
 import (
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/fredi12345/kuefa-karben/src/storage"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 type (
@@ -66,7 +66,7 @@ func (s *Server) CreateEvent(c echo.Context) error {
 	var request CreateEventRequest
 	err := c.Bind(&request)
 	if err != nil {
-		log.Printf("could not bind request: %v", err)
+		s.l.Error("could not bind request", zap.Error(err))
 		return echo.ErrBadRequest
 	}
 
@@ -81,7 +81,7 @@ func (s *Server) CreateEvent(c echo.Context) error {
 		ImageID:     request.ImageID,
 	})
 	if err != nil {
-		log.Printf("could not create event: %v", err)
+		s.l.Error("could not create event", zap.Error(err))
 		return echo.ErrInternalServerError
 	}
 

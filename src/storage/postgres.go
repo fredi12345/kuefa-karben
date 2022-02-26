@@ -3,7 +3,6 @@ package storage
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/fredi12345/kuefa-karben/src/ent"
@@ -15,28 +14,37 @@ import (
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type PostgresBackend struct {
 	client *ent.Client
+	l      *zap.Logger
 }
 
-func NewPostgresBackend() (*PostgresBackend, error) {
-	user := viper.GetString("postgres.user")
-	password := viper.GetString("postgres.password")
+func NewPostgresBackend(logger *zap.Logger) (*PostgresBackend, error) {
+	logger = logger.Named("postgres")
+
+	pgUser := viper.GetString("postgres.user")
+	pgPassword := viper.GetString("postgres.password")
 	host := viper.GetString("postgres.host")
 	port := viper.GetInt("postgres.port")
 	database := viper.GetString("postgres.database")
 	options := viper.GetStringSlice("postgres.options")
-	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?%s", user, password, host, port, database, strings.Join(options, "&"))
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?%s", pgUser, pgPassword, host, port, database, strings.Join(options, "&"))
 
-	client, err := ent.Open("postgres", dsn)
+	client, err := ent.Open("postgres", dsn, ent.Log(func(i ...interface{}) {
+		logger.Sugar().Debug(i...)
+	}))
 	if err != nil {
 		return nil, fmt.Errorf("could not initialize database client: %w", err)
 	}
 
-	return &PostgresBackend{client: client}, nil
+	return &PostgresBackend{
+		client: client,
+		l:      logger,
+	}, nil
 }
 
 func (p *PostgresBackend) Migrate(ctx context.Context) error {
@@ -415,14 +423,14 @@ func (p *PostgresBackend) CreateUser(name, password string) error {
 		Exec(context.TODO())
 	if err != nil {
 		if ent.IsConstraintError(err) {
-			log.Printf("skip create user %s: %v\n", name, err)
+			p.l.Info(fmt.Sprintf("skip create user %s", name), zap.Error(err))
 			return nil
 		}
 
 		return fmt.Errorf("failed to create user %s: %w", name, err)
 	}
 
-	log.Printf("user %s created successfully\n", name)
+	p.l.Info(fmt.Sprintf("user %s created successfully", name))
 	return nil
 }
 
@@ -432,7 +440,7 @@ func (p *PostgresBackend) CheckCredentials(name, password string) (bool, error) 
 		Only(context.TODO())
 	if err != nil {
 		if ent.IsNotFound(err) {
-			log.Printf("credential check for non-existing user %s failed\n", name)
+			p.l.Info(fmt.Sprintf("credential check for non-existing user %s failed", name))
 			return false, nil
 		}
 

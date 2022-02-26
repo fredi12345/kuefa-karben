@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
-	"log"
 	"net/http"
 	"os"
 	"path"
 
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
 type (
@@ -57,31 +57,33 @@ func (s *Server) UploadImage(c echo.Context) error {
 	var request UploadImageRequest
 	err := c.Bind(&request)
 	if err != nil {
-		log.Printf("could not bind request: %v", err)
+		s.l.Error("could not bind request", zap.Error(err))
 		return echo.ErrBadRequest
 	}
 
 	fullSizeImage, err := imaging.Decode(request.Image, imaging.AutoOrientation(true))
 	if err != nil {
-		log.Printf("could not open form file: %v", err)
+		s.l.Error("could not open form file", zap.Error(err))
 		return echo.ErrInternalServerError
 	}
 
 	imageID, err := s.db.CreateTitleImage()
 	if err != nil {
-		log.Printf("could not create title image: %v", err)
+		s.l.Error("could not create title image", zap.Error(err))
 		return echo.ErrInternalServerError
 	}
 
 	thumbnailImage := imaging.Fit(fullSizeImage, 400, 400, imaging.Lanczos)
 	err = s.saveImage(thumbnailImage, path.Join(s.thumbnailPath, imageID))
 	if err != nil {
-		return err
+		s.l.Error("could not save thumbnail", zap.Error(err))
+		return echo.ErrInternalServerError
 	}
 
 	err = s.saveImage(fullSizeImage, path.Join(s.imagePath, imageID))
 	if err != nil {
-		return err
+		s.l.Error("could not save image", zap.Error(err))
+		return echo.ErrInternalServerError
 	}
 
 	return c.JSON(http.StatusOK, UploadImageResponse{
@@ -96,7 +98,17 @@ func (s *Server) saveImage(img image.Image, path string) error {
 	if err != nil {
 		return fmt.Errorf("could not create file %s: %w", path, err)
 	}
-	defer f.Close()
 
-	return jpeg.Encode(f, img, nil)
+	err = jpeg.Encode(f, img, nil)
+	if err != nil {
+		return fmt.Errorf("could not encode image %s: %w", path, err)
+
+	}
+
+	err = f.Close()
+	if err != nil {
+		return fmt.Errorf("could not close file %s: %w", path, err)
+	}
+
+	return nil
 }

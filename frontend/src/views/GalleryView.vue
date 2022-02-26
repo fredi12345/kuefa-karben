@@ -7,7 +7,7 @@
       </h2>
       <ul class="imageContainer">
         <li v-for="(image, index) in event.images">
-          <router-link :to="/event/ + event.id + '?img=' + index">
+          <router-link :to="`/event/${event.id}?img=${index}`">
             <img :src="image"></router-link>
         </li>
       </ul>

@@ -16,6 +16,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/gorilla/mux"
 )
@@ -31,14 +33,15 @@ func main() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 
-	db, err := storage.NewPostgresBackend()
+	logger := initializeLogger()
+	db, err := storage.NewPostgresBackend(logger)
 	if err != nil {
-		log.Fatalf("could not create postgres backend: %v", err)
+		logger.Fatal("could not create postgres backend", zap.Error(err))
 	}
 
 	err = db.Migrate(context.Background())
 	if err != nil {
-		log.Fatalf("could not execute migration: %v", err)
+		logger.Fatal("could not execute migration", zap.Error(err))
 	}
 
 	user := viper.GetString("default.user")
@@ -46,35 +49,58 @@ func main() {
 	if user != "" && password != "" {
 		err = db.CreateUser(user, password)
 		if err != nil {
-			log.Printf("failed to create default user %s: %v", user, err)
+			logger.Fatal(fmt.Sprintf("failed to create default user %s", user), zap.Error(err))
 		}
 	}
 
 	server, err := web.NewServer(db, "cookies.key")
 	if err != nil {
-		log.Fatalf("could not create server: %v\n", err)
+		logger.Fatal("could not create server", zap.Error(err))
 	}
 
 	handler := createHandler(server)
-	fmt.Printf("legacy: http://localhost:8000\n")
+	logger.Info("serving legacy application on http://localhost:8000")
 	go func() {
 		if err := http.ListenAndServe(":8000", handler); err != nil {
-			log.Fatal(err)
+			logger.Fatal("ListenAndServe failed", zap.Error(err))
 		}
 	}()
 
-	restServer := rest.NewServer(db)
-	fmt.Printf("new:    http://localhost:%d\n", viper.GetInt("web.port"))
-	e := createEchoHandler(restServer)
+	restServer := rest.NewServer(db, logger)
+	logger.Info(fmt.Sprintf("server up and running: http://localhost:%d", viper.GetInt("web.port")))
+	e, err := createEchoHandler(restServer, logger)
+	if err != nil {
+		logger.Fatal("could not create echo handler", zap.Error(err))
+	}
+
 	if err := e.Start(fmt.Sprintf(":%d", viper.GetInt("web.port"))); err != nil {
-		log.Fatal(err)
+		logger.Fatal("ListenAndServe failed", zap.Error(err))
 	}
 }
 
-func createEchoHandler(server *rest.Server) *echo.Echo {
+func initializeLogger() *zap.Logger {
+	var l *zap.Logger
+	var err error
+
+	if viper.GetBool("debug") {
+		cfg := zap.NewDevelopmentConfig()
+		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+		l, err = cfg.Build()
+	} else {
+		l, err = zap.NewProduction()
+	}
+
+	if err != nil {
+		log.Fatalf("could not initialize logger: %v", err)
+	}
+
+	return l.Named("kuefa")
+}
+
+func createEchoHandler(server *rest.Server, logger *zap.Logger) (*echo.Echo, error) {
 	authenticationProvider, err := auth.NewProvider()
 	if err != nil {
-		log.Fatalf("could not create authentication provider: %v\n", err)
+		return nil, fmt.Errorf("could not create authentication provider: %w", err)
 	}
 
 	e := echo.New()
@@ -82,7 +108,7 @@ func createEchoHandler(server *rest.Server) *echo.Echo {
 	e.HideBanner = true
 	e.HidePort = true
 
-	e.Use(middleware.Logger())
+	e.Use(extensions.LoggerWithConfig(extensions.LoggerConfig{Logger: logger}))
 	e.Use(middleware.CORS())
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Root:  viper.GetString("web.root"),
@@ -104,7 +130,7 @@ func createEchoHandler(server *rest.Server) *echo.Echo {
 	api := e.Group("api")
 	api.POST("/images", server.UploadImage)
 	api.POST("/events", server.CreateEvent)
-	return e
+	return e, nil
 }
 
 func createHandler(server *web.Server) http.Handler {
