@@ -128,8 +128,8 @@ func createEchoHandler(server *rest.Server, logger *zap.Logger) (*echo.Echo, err
 	authAPI.GET("/logout", authenticationProvider.Logout)
 
 	api := e.Group("api")
-	api.POST("/images", server.UploadImage)
-	api.POST("/events", server.CreateEvent)
+	api.POST("/images", extensions.AutoBind(logger, server.UploadImage))
+	api.POST("/events", extensions.AutoBind(logger, server.CreateEvent))
 	return e, nil
 }
 

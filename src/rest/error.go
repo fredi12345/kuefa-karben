@@ -1,5 +1,10 @@
 package rest
 
+const (
+	RequestValidationFailed = "request.validation.failed"
+	RequestBindFailed       = "request.bind.failed"
+)
+
 type (
 	// ErrorResponse is the generic response for all failed API-calls.
 	ErrorResponse struct {

@@ -20,7 +20,7 @@ type (
 	UploadImageRequest struct {
 		// the image to upload
 		// @Required
-		Image *bytes.Buffer `json:"image" form:"image"`
+		Image *bytes.Buffer `json:"image" form:"image" validate:"required"`
 
 		// will mark the image as title image for an event
 		IsTitle bool `json:"isTitle" form:"isTitle"`
@@ -51,15 +51,8 @@ type (
 // @Failure 400 object ErrorResponse "Error while uploading the image"
 // @Failure 500 object ErrorResponse "Error while uploading the image"
 // @Route /images [post]
-func (s *Server) UploadImage(c echo.Context) error {
+func (s *Server) UploadImage(c echo.Context, request UploadImageRequest) error {
 	// TODO return proper error structs
-
-	var request UploadImageRequest
-	err := c.Bind(&request)
-	if err != nil {
-		s.l.Error("could not bind request", zap.Error(err))
-		return echo.ErrBadRequest
-	}
 
 	fullSizeImage, err := imaging.Decode(request.Image, imaging.AutoOrientation(true))
 	if err != nil {

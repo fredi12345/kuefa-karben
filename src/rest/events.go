@@ -14,35 +14,35 @@ type (
 	CreateEventRequest struct {
 		// the topic of the event
 		// @Required
-		Theme string `json:"theme"`
+		Theme string `json:"theme" validate:"required,lte=256"`
 
 		// the topic of the event
 		// @Required
-		ImageID string `json:"imageID"`
+		ImageID string `json:"imageID" validate:"required,uuid4"`
 
 		// the date when the event begins
 		// @Required
-		StartingDate time.Time `json:"startingDate"`
+		StartingDate time.Time `json:"startingDate" validate:"required"`
 
 		// the closing date for signing up to the event
 		// @Required
-		ClosingDate time.Time `json:"closingDate"`
+		ClosingDate time.Time `json:"closingDate" validate:"required"`
 
 		// the starter of the event
 		// @Required
-		Starter string `json:"starter"`
+		Starter string `json:"starter" validate:"required,lte=512"`
 
 		// the main dish of the event
 		// @Required
-		MainDish string `json:"mainDish"`
+		MainDish string `json:"mainDish" validate:"required,lte=512"`
 
 		// the dessert of the event
 		// @Required
-		Dessert string `json:"dessert"`
+		Dessert string `json:"dessert" validate:"required,lte=512"`
 
 		// the description of the event
 		// @Required
-		Description string `json:"description"`
+		Description string `json:"description" validate:"required,lte=2028"`
 	}
 
 	// CreateEventResponse is the response after an event was created successfully
@@ -62,14 +62,7 @@ type (
 // @Failure 400 object ErrorResponse "Error while creating the event"
 // @Failure 500 object ErrorResponse "Error while creating the event"
 // @Route /events [post]
-func (s *Server) CreateEvent(c echo.Context) error {
-	var request CreateEventRequest
-	err := c.Bind(&request)
-	if err != nil {
-		s.l.Error("could not bind request", zap.Error(err))
-		return echo.ErrBadRequest
-	}
-
+func (s *Server) CreateEvent(c echo.Context, request CreateEventRequest) error {
 	eventID, err := s.db.CreateEvent(storage.Event{
 		Theme:       request.Theme,
 		EventDate:   request.StartingDate,
