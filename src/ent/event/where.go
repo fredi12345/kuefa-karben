@@ -1106,7 +1106,7 @@ func HasTitleImage() predicate.Event {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TitleImageTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, TitleImageTable, TitleImageColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TitleImageTable, TitleImageColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1118,7 +1118,7 @@ func HasTitleImageWith(preds ...predicate.TitleImage) predicate.Event {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TitleImageInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, TitleImageTable, TitleImageColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TitleImageTable, TitleImageColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

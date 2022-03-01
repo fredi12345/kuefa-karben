@@ -10,10 +10,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/predicate"
 	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
-	"github.com/google/uuid"
 )
 
 // TitleImageUpdate is the builder for updating TitleImage entities.
@@ -29,34 +27,9 @@ func (tiu *TitleImageUpdate) Where(ps ...predicate.TitleImage) *TitleImageUpdate
 	return tiu
 }
 
-// SetEventID sets the "event" edge to the Event entity by ID.
-func (tiu *TitleImageUpdate) SetEventID(id uuid.UUID) *TitleImageUpdate {
-	tiu.mutation.SetEventID(id)
-	return tiu
-}
-
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (tiu *TitleImageUpdate) SetNillableEventID(id *uuid.UUID) *TitleImageUpdate {
-	if id != nil {
-		tiu = tiu.SetEventID(*id)
-	}
-	return tiu
-}
-
-// SetEvent sets the "event" edge to the Event entity.
-func (tiu *TitleImageUpdate) SetEvent(e *Event) *TitleImageUpdate {
-	return tiu.SetEventID(e.ID)
-}
-
 // Mutation returns the TitleImageMutation object of the builder.
 func (tiu *TitleImageUpdate) Mutation() *TitleImageMutation {
 	return tiu.mutation
-}
-
-// ClearEvent clears the "event" edge to the Event entity.
-func (tiu *TitleImageUpdate) ClearEvent() *TitleImageUpdate {
-	tiu.mutation.ClearEvent()
-	return tiu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -131,41 +104,6 @@ func (tiu *TitleImageUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if tiu.mutation.EventCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   titleimage.EventTable,
-			Columns: []string{titleimage.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: event.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tiu.mutation.EventIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   titleimage.EventTable,
-			Columns: []string{titleimage.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: event.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tiu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{titleimage.Label}
@@ -185,34 +123,9 @@ type TitleImageUpdateOne struct {
 	mutation *TitleImageMutation
 }
 
-// SetEventID sets the "event" edge to the Event entity by ID.
-func (tiuo *TitleImageUpdateOne) SetEventID(id uuid.UUID) *TitleImageUpdateOne {
-	tiuo.mutation.SetEventID(id)
-	return tiuo
-}
-
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (tiuo *TitleImageUpdateOne) SetNillableEventID(id *uuid.UUID) *TitleImageUpdateOne {
-	if id != nil {
-		tiuo = tiuo.SetEventID(*id)
-	}
-	return tiuo
-}
-
-// SetEvent sets the "event" edge to the Event entity.
-func (tiuo *TitleImageUpdateOne) SetEvent(e *Event) *TitleImageUpdateOne {
-	return tiuo.SetEventID(e.ID)
-}
-
 // Mutation returns the TitleImageMutation object of the builder.
 func (tiuo *TitleImageUpdateOne) Mutation() *TitleImageMutation {
 	return tiuo.mutation
-}
-
-// ClearEvent clears the "event" edge to the Event entity.
-func (tiuo *TitleImageUpdateOne) ClearEvent() *TitleImageUpdateOne {
-	tiuo.mutation.ClearEvent()
-	return tiuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -310,41 +223,6 @@ func (tiuo *TitleImageUpdateOne) sqlSave(ctx context.Context) (_node *TitleImage
 				ps[i](selector)
 			}
 		}
-	}
-	if tiuo.mutation.EventCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   titleimage.EventTable,
-			Columns: []string{titleimage.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: event.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tiuo.mutation.EventIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   titleimage.EventTable,
-			Columns: []string{titleimage.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: event.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TitleImage{config: tiuo.config}
 	_spec.Assign = _node.assignValues

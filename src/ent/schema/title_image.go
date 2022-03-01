@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/google/uuid"
 )
@@ -25,9 +23,5 @@ func (TitleImage) Fields() []ent.Field {
 
 // Edges of the TitleImage.
 func (TitleImage) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.From("event", Event.Type).Ref("title_image").
-			Annotations(entsql.Annotation{OnDelete: entsql.Cascade}).
-			Unique(),
-	}
+	return []ent.Edge{}
 }

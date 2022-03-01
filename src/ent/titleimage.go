@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
 )
@@ -20,33 +19,6 @@ type TitleImage struct {
 	ID uuid.UUID `json:"id,omitempty"`
 	// Created holds the value of the "created" field.
 	Created time.Time `json:"created,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TitleImageQuery when eager-loading is set.
-	Edges             TitleImageEdges `json:"edges"`
-	event_title_image *uuid.UUID
-}
-
-// TitleImageEdges holds the relations/edges for other nodes in the graph.
-type TitleImageEdges struct {
-	// Event holds the value of the event edge.
-	Event *Event `json:"event,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
-}
-
-// EventOrErr returns the Event value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TitleImageEdges) EventOrErr() (*Event, error) {
-	if e.loadedTypes[0] {
-		if e.Event == nil {
-			// The edge event was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: event.Label}
-		}
-		return e.Event, nil
-	}
-	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -58,8 +30,6 @@ func (*TitleImage) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullTime)
 		case titleimage.FieldID:
 			values[i] = new(uuid.UUID)
-		case titleimage.ForeignKeys[0]: // event_title_image
-			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TitleImage", columns[i])
 		}
@@ -87,21 +57,9 @@ func (ti *TitleImage) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				ti.Created = value.Time
 			}
-		case titleimage.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field event_title_image", values[i])
-			} else if value.Valid {
-				ti.event_title_image = new(uuid.UUID)
-				*ti.event_title_image = *value.S.(*uuid.UUID)
-			}
 		}
 	}
 	return nil
-}
-
-// QueryEvent queries the "event" edge of the TitleImage entity.
-func (ti *TitleImage) QueryEvent() *EventQuery {
-	return (&TitleImageClient{config: ti.config}).QueryEvent(ti)
 }
 
 // Update returns a builder for updating this TitleImage.

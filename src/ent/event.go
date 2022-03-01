@@ -38,7 +38,8 @@ type Event struct {
 	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
-	Edges EventEdges `json:"edges"`
+	Edges             EventEdges `json:"edges"`
+	event_title_image *uuid.UUID
 }
 
 // EventEdges holds the relations/edges for other nodes in the graph.
@@ -108,6 +109,8 @@ func (*Event) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullTime)
 		case event.FieldID:
 			values[i] = new(uuid.UUID)
+		case event.ForeignKeys[0]: // event_title_image
+			values[i] = &sql.NullScanner{S: new(uuid.UUID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Event", columns[i])
 		}
@@ -182,6 +185,13 @@ func (e *Event) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
 				e.Description = value.String
+			}
+		case event.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field event_title_image", values[i])
+			} else if value.Valid {
+				e.event_title_image = new(uuid.UUID)
+				*e.event_title_image = *value.S.(*uuid.UUID)
 			}
 		}
 	}

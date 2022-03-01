@@ -42,12 +42,21 @@ var (
 		{Name: "main_dish", Type: field.TypeString, Size: 512},
 		{Name: "dessert", Type: field.TypeString, Size: 512},
 		{Name: "description", Type: field.TypeString, Size: 2048},
+		{Name: "event_title_image", Type: field.TypeUUID, Nullable: true},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
 		Name:       "events",
 		Columns:    EventsColumns,
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "events_title_images_title_image",
+				Columns:    []*schema.Column{EventsColumns[10]},
+				RefColumns: []*schema.Column{TitleImagesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
 	}
 	// ImagesColumns holds the columns for the "images" table.
 	ImagesColumns = []*schema.Column{
@@ -98,21 +107,12 @@ var (
 	TitleImagesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID},
 		{Name: "created", Type: field.TypeTime},
-		{Name: "event_title_image", Type: field.TypeUUID, Unique: true, Nullable: true},
 	}
 	// TitleImagesTable holds the schema information for the "title_images" table.
 	TitleImagesTable = &schema.Table{
 		Name:       "title_images",
 		Columns:    TitleImagesColumns,
 		PrimaryKey: []*schema.Column{TitleImagesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "title_images_events_title_image",
-				Columns:    []*schema.Column{TitleImagesColumns[2]},
-				RefColumns: []*schema.Column{EventsColumns[0]},
-				OnDelete:   schema.Cascade,
-			},
-		},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -140,7 +140,7 @@ var (
 
 func init() {
 	CommentsTable.ForeignKeys[0].RefTable = EventsTable
+	EventsTable.ForeignKeys[0].RefTable = TitleImagesTable
 	ImagesTable.ForeignKeys[0].RefTable = EventsTable
 	ParticipantsTable.ForeignKeys[0].RefTable = EventsTable
-	TitleImagesTable.ForeignKeys[0].RefTable = EventsTable
 }

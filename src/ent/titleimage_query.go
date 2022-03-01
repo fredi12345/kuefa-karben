@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/predicate"
 	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
@@ -26,9 +25,6 @@ type TitleImageQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.TitleImage
-	// eager-loading edges.
-	withEvent *EventQuery
-	withFKs   bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,28 +59,6 @@ func (tiq *TitleImageQuery) Unique(unique bool) *TitleImageQuery {
 func (tiq *TitleImageQuery) Order(o ...OrderFunc) *TitleImageQuery {
 	tiq.order = append(tiq.order, o...)
 	return tiq
-}
-
-// QueryEvent chains the current query on the "event" edge.
-func (tiq *TitleImageQuery) QueryEvent() *EventQuery {
-	query := &EventQuery{config: tiq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := tiq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := tiq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(titleimage.Table, titleimage.FieldID, selector),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, titleimage.EventTable, titleimage.EventColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(tiq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first TitleImage entity from the query.
@@ -268,22 +242,10 @@ func (tiq *TitleImageQuery) Clone() *TitleImageQuery {
 		offset:     tiq.offset,
 		order:      append([]OrderFunc{}, tiq.order...),
 		predicates: append([]predicate.TitleImage{}, tiq.predicates...),
-		withEvent:  tiq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:  tiq.sql.Clone(),
 		path: tiq.path,
 	}
-}
-
-// WithEvent tells the query-builder to eager-load the nodes that are connected to
-// the "event" edge. The optional arguments are used to configure the query builder of the edge.
-func (tiq *TitleImageQuery) WithEvent(opts ...func(*EventQuery)) *TitleImageQuery {
-	query := &EventQuery{config: tiq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	tiq.withEvent = query
-	return tiq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -349,19 +311,9 @@ func (tiq *TitleImageQuery) prepareQuery(ctx context.Context) error {
 
 func (tiq *TitleImageQuery) sqlAll(ctx context.Context) ([]*TitleImage, error) {
 	var (
-		nodes       = []*TitleImage{}
-		withFKs     = tiq.withFKs
-		_spec       = tiq.querySpec()
-		loadedTypes = [1]bool{
-			tiq.withEvent != nil,
-		}
+		nodes = []*TitleImage{}
+		_spec = tiq.querySpec()
 	)
-	if tiq.withEvent != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, titleimage.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &TitleImage{config: tiq.config}
 		nodes = append(nodes, node)
@@ -372,7 +324,6 @@ func (tiq *TitleImageQuery) sqlAll(ctx context.Context) ([]*TitleImage, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, tiq.driver, _spec); err != nil {
@@ -381,36 +332,6 @@ func (tiq *TitleImageQuery) sqlAll(ctx context.Context) ([]*TitleImage, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-
-	if query := tiq.withEvent; query != nil {
-		ids := make([]uuid.UUID, 0, len(nodes))
-		nodeids := make(map[uuid.UUID][]*TitleImage)
-		for i := range nodes {
-			if nodes[i].event_title_image == nil {
-				continue
-			}
-			fk := *nodes[i].event_title_image
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(event.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "event_title_image" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Event = n
-			}
-		}
-	}
-
 	return nodes, nil
 }
 

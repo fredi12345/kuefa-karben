@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/fredi12345/kuefa-karben/src/ent/event"
 	"github.com/fredi12345/kuefa-karben/src/ent/titleimage"
 	"github.com/google/uuid"
 )
@@ -48,25 +47,6 @@ func (tic *TitleImageCreate) SetNillableID(u *uuid.UUID) *TitleImageCreate {
 		tic.SetID(*u)
 	}
 	return tic
-}
-
-// SetEventID sets the "event" edge to the Event entity by ID.
-func (tic *TitleImageCreate) SetEventID(id uuid.UUID) *TitleImageCreate {
-	tic.mutation.SetEventID(id)
-	return tic
-}
-
-// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
-func (tic *TitleImageCreate) SetNillableEventID(id *uuid.UUID) *TitleImageCreate {
-	if id != nil {
-		tic = tic.SetEventID(*id)
-	}
-	return tic
-}
-
-// SetEvent sets the "event" edge to the Event entity.
-func (tic *TitleImageCreate) SetEvent(e *Event) *TitleImageCreate {
-	return tic.SetEventID(e.ID)
 }
 
 // Mutation returns the TitleImageMutation object of the builder.
@@ -198,26 +178,6 @@ func (tic *TitleImageCreate) createSpec() (*TitleImage, *sqlgraph.CreateSpec) {
 			Column: titleimage.FieldCreated,
 		})
 		_node.Created = value
-	}
-	if nodes := tic.mutation.EventIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
-			Table:   titleimage.EventTable,
-			Columns: []string{titleimage.EventColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUUID,
-					Column: event.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.event_title_image = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

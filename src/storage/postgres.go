@@ -266,6 +266,7 @@ func (p *PostgresBackend) GetParticipants(eventID string) ([]*Participant, error
 func (p *PostgresBackend) GetEventList(page int, eventsPerPage int) ([]*Event, error) {
 	offset := (page - 1) * eventsPerPage
 	dbEvents, err := p.client.Event.Query().
+		WithTitleImage().
 		Order(ent.Desc(event.FieldStartingTime)).
 		Offset(page).
 		Limit(offset).

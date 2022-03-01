@@ -63,7 +63,7 @@ const (
 	// ImagesColumn is the table column denoting the images relation/edge.
 	ImagesColumn = "event_images"
 	// TitleImageTable is the table that holds the title_image relation/edge.
-	TitleImageTable = "title_images"
+	TitleImageTable = "events"
 	// TitleImageInverseTable is the table name for the TitleImage entity.
 	// It exists in this package in order to avoid circular dependency with the "titleimage" package.
 	TitleImageInverseTable = "title_images"
@@ -85,10 +85,21 @@ var Columns = []string{
 	FieldDescription,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "events"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"event_title_image",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

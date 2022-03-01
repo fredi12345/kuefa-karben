@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/fredi12345/kuefa-karben/src/ent/predicate"
 	"github.com/google/uuid"
 )
@@ -174,34 +173,6 @@ func CreatedLT(v time.Time) predicate.TitleImage {
 func CreatedLTE(v time.Time) predicate.TitleImage {
 	return predicate.TitleImage(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCreated), v))
-	})
-}
-
-// HasEvent applies the HasEdge predicate on the "event" edge.
-func HasEvent() predicate.TitleImage {
-	return predicate.TitleImage(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EventTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, EventTable, EventColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasEventWith applies the HasEdge predicate on the "event" edge with a given conditions (other predicates).
-func HasEventWith(preds ...predicate.Event) predicate.TitleImage {
-	return predicate.TitleImage(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(EventInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, EventTable, EventColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

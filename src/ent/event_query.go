@@ -35,6 +35,7 @@ type EventQuery struct {
 	withComments     *CommentQuery
 	withImages       *ImageQuery
 	withTitleImage   *TitleImageQuery
+	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -151,7 +152,7 @@ func (eq *EventQuery) QueryTitleImage() *TitleImageQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(titleimage.Table, titleimage.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, event.TitleImageTable, event.TitleImageColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, event.TitleImageTable, event.TitleImageColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -458,6 +459,7 @@ func (eq *EventQuery) prepareQuery(ctx context.Context) error {
 func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 	var (
 		nodes       = []*Event{}
+		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
 		loadedTypes = [4]bool{
 			eq.withParticipants != nil,
@@ -466,6 +468,12 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 			eq.withTitleImage != nil,
 		}
 	)
+	if eq.withTitleImage != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, event.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Event{config: eq.config}
 		nodes = append(nodes, node)
@@ -574,30 +582,31 @@ func (eq *EventQuery) sqlAll(ctx context.Context) ([]*Event, error) {
 	}
 
 	if query := eq.withTitleImage; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uuid.UUID]*Event)
+		ids := make([]uuid.UUID, 0, len(nodes))
+		nodeids := make(map[uuid.UUID][]*Event)
 		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
+			if nodes[i].event_title_image == nil {
+				continue
+			}
+			fk := *nodes[i].event_title_image
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.withFKs = true
-		query.Where(predicate.TitleImage(func(s *sql.Selector) {
-			s.Where(sql.InValues(event.TitleImageColumn, fks...))
-		}))
+		query.Where(titleimage.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.event_title_image
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "event_title_image" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
+			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "event_title_image" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "event_title_image" returned %v`, n.ID)
 			}
-			node.Edges.TitleImage = n
+			for i := range nodes {
+				nodes[i].Edges.TitleImage = n
+			}
 		}
 	}
 

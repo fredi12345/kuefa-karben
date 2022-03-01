@@ -2751,8 +2751,6 @@ type TitleImageMutation struct {
 	id            *uuid.UUID
 	created       *time.Time
 	clearedFields map[string]struct{}
-	event         *uuid.UUID
-	clearedevent  bool
 	done          bool
 	oldValue      func(context.Context) (*TitleImage, error)
 	predicates    []predicate.TitleImage
@@ -2898,45 +2896,6 @@ func (m *TitleImageMutation) ResetCreated() {
 	m.created = nil
 }
 
-// SetEventID sets the "event" edge to the Event entity by id.
-func (m *TitleImageMutation) SetEventID(id uuid.UUID) {
-	m.event = &id
-}
-
-// ClearEvent clears the "event" edge to the Event entity.
-func (m *TitleImageMutation) ClearEvent() {
-	m.clearedevent = true
-}
-
-// EventCleared reports if the "event" edge to the Event entity was cleared.
-func (m *TitleImageMutation) EventCleared() bool {
-	return m.clearedevent
-}
-
-// EventID returns the "event" edge ID in the mutation.
-func (m *TitleImageMutation) EventID() (id uuid.UUID, exists bool) {
-	if m.event != nil {
-		return *m.event, true
-	}
-	return
-}
-
-// EventIDs returns the "event" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// EventID instead. It exists only for internal usage by the builders.
-func (m *TitleImageMutation) EventIDs() (ids []uuid.UUID) {
-	if id := m.event; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetEvent resets all changes to the "event" edge.
-func (m *TitleImageMutation) ResetEvent() {
-	m.event = nil
-	m.clearedevent = false
-}
-
 // Where appends a list predicates to the TitleImageMutation builder.
 func (m *TitleImageMutation) Where(ps ...predicate.TitleImage) {
 	m.predicates = append(m.predicates, ps...)
@@ -3055,77 +3014,49 @@ func (m *TitleImageMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TitleImageMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.event != nil {
-		edges = append(edges, titleimage.EdgeEvent)
-	}
+	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *TitleImageMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case titleimage.EdgeEvent:
-		if id := m.event; id != nil {
-			return []ent.Value{*id}
-		}
-	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TitleImageMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *TitleImageMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TitleImageMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedevent {
-		edges = append(edges, titleimage.EdgeEvent)
-	}
+	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *TitleImageMutation) EdgeCleared(name string) bool {
-	switch name {
-	case titleimage.EdgeEvent:
-		return m.clearedevent
-	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *TitleImageMutation) ClearEdge(name string) error {
-	switch name {
-	case titleimage.EdgeEvent:
-		m.ClearEvent()
-		return nil
-	}
 	return fmt.Errorf("unknown TitleImage unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *TitleImageMutation) ResetEdge(name string) error {
-	switch name {
-	case titleimage.EdgeEvent:
-		m.ResetEvent()
-		return nil
-	}
 	return fmt.Errorf("unknown TitleImage edge %s", name)
 }
 

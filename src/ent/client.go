@@ -406,7 +406,7 @@ func (c *EventClient) QueryTitleImage(e *Event) *TitleImageQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(event.Table, event.FieldID, id),
 			sqlgraph.To(titleimage.Table, titleimage.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, event.TitleImageTable, event.TitleImageColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, event.TitleImageTable, event.TitleImageColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -714,22 +714,6 @@ func (c *TitleImageClient) GetX(ctx context.Context, id uuid.UUID) *TitleImage {
 		panic(err)
 	}
 	return obj
-}
-
-// QueryEvent queries the event edge of a TitleImage.
-func (c *TitleImageClient) QueryEvent(ti *TitleImage) *EventQuery {
-	query := &EventQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ti.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(titleimage.Table, titleimage.FieldID, id),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, titleimage.EventTable, titleimage.EventColumn),
-		)
-		fromV = sqlgraph.Neighbors(ti.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // Hooks returns the client hooks.
