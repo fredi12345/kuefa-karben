@@ -13,6 +13,65 @@
   ],
   "paths": {
     "/events": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "List of the events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEventsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error while listing events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error while listing events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "get filtered event list",
+        "description": "GetEvents lists events according to the filter parameters.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "limit the number of events in the list, 0 means unlimited",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "limit the number of events in the list, 0 means unlimited"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "number of events to skip in the list",
+            "schema": {
+              "type": "integer",
+              "format": "int64",
+              "description": "number of events to skip in the list"
+            }
+          }
+        ],
+        "operationId": "GetEvents"
+      },
       "post": {
         "responses": {
           "200": {
@@ -213,6 +272,50 @@
           }
         },
         "description": "ErrorResponse is the generic response for all failed API-calls."
+      },
+      "EventTeaser": {
+        "type": "object",
+        "required": [
+          "id",
+          "thumbnailURL",
+          "theme",
+          "date"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "a UUIDv4 to identify the event"
+          },
+          "thumbnailURL": {
+            "type": "string",
+            "description": "link to the event thumbnail"
+          },
+          "theme": {
+            "type": "string",
+            "description": "the topic of the event"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "the time when the event begins"
+          }
+        }
+      },
+      "GetEventsResponse": {
+        "type": "object",
+        "required": [
+          "events"
+        ],
+        "properties": {
+          "events": {
+            "type": "array",
+            "description": "the list of events",
+            "items": {
+              "$ref": "#/components/schemas/EventTeaser"
+            }
+          }
+        },
+        "description": "GetEventsResponse is the response containing the list of events"
       },
       "UploadImageRequest": {
         "type": "object",

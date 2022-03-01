@@ -53,7 +53,8 @@ type tmplEventList struct {
 }
 
 func (el *tmplEventList) initEventList(page, cap int, service storage.Service) error {
-	events, err := service.GetEventList(page, cap)
+	offset := (page - 1) * cap
+	events, err := service.GetEventList(offset, cap)
 	if err != nil {
 		return errors.WithMessage(err, "cannot get event list")
 	}

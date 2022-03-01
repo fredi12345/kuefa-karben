@@ -263,16 +263,15 @@ func (p *PostgresBackend) GetParticipants(eventID string) ([]*Participant, error
 	return participants, nil
 }
 
-func (p *PostgresBackend) GetEventList(page int, eventsPerPage int) ([]*Event, error) {
-	offset := (page - 1) * eventsPerPage
+func (p *PostgresBackend) GetEventList(offset int, limit int) ([]*Event, error) {
 	dbEvents, err := p.client.Event.Query().
 		WithTitleImage().
 		Order(ent.Desc(event.FieldStartingTime)).
-		Offset(page).
-		Limit(offset).
+		Offset(offset).
+		Limit(limit).
 		All(context.TODO())
 	if err != nil {
-		return nil, fmt.Errorf("could not read event page %d: %w", page, err)
+		return nil, fmt.Errorf("could not read events list: %w", err)
 	}
 
 	events := make([]*Event, 0, len(dbEvents))
@@ -282,6 +281,7 @@ func (p *PostgresBackend) GetEventList(page int, eventsPerPage int) ([]*Event, e
 			Theme:     e.Theme,
 			Created:   e.Created,
 			EventDate: e.StartingTime,
+			ImageID:   e.Edges.TitleImage.ID.String(),
 			ImageName: e.Edges.TitleImage.ID.String(),
 		})
 	}

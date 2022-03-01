@@ -2,35 +2,39 @@
   <section>
     <h2>Aktuelle Veranstaltungen</h2>
     <div id="events">
-      <EventCard v-for="event in events" :event="event"></EventCard>
+      <EventCard
+          v-for="event in events.value"
+          :id="event.id"
+          :title="event.theme"
+          :image-url="event.thumbnailURL"
+          :date="event.date"
+      ></EventCard>
       <router-link to="/events" id="showAll">></router-link>
     </div>
   </section>
 </template>
 <script setup lang="ts">
 import EventCard from "./EventCard.vue";
+import {client} from "../api/client";
+import {onMounted, reactive} from "vue";
+import {EventTeaser} from "../api/generated";
 
-let events = [
-  {
-    title: "Heimische Kräuterküche",
-    id: 1,
-    date: "22.02.2022",
-    img: "https://unsplash.it/640/425",
-    description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?"
-  },
-  {
-    title: "Krimidinner - To Bee or Not To Bee or Not To Bee or Not To Bee!",
-    date: "25.02.2022",
-    id: 2,
-    img: "https://unsplash.it/640/425?random=1",
-    description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?"
-  }
-]
+let events = reactive({value: Array<EventTeaser>()});
+onMounted(async () => {
+  const resp = await client.getEvents(2)
+  // console.log(resp.data);
+  // for (const event of resp.data.events) {
+  //   events.push(event)
+  // }
+  events.value = resp.data.events
+})
+
 </script>
 <style scoped lang="scss">
-section{
+section {
   margin-block: 20px;
 }
+
 #events {
   display: flex;
   flex-direction: row;
@@ -38,7 +42,7 @@ section{
   justify-content: center;
 }
 
-#showAll{
+#showAll {
   font-size: 3rem;
   text-decoration: none;
   border-radius: 50%;

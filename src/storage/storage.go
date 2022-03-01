@@ -20,7 +20,7 @@ type Service interface {
 	GetAllImages(page int, imagesPerSite int) ([]*Image, error)
 	GetImageCount() (int, error)
 	GetParticipants(eventId string) ([]*Participant, error)
-	GetEventList(page int, eventsPerPage int) ([]*Event, error)
+	GetEventList(offset int, limit int) ([]*Event, error)
 	GetEventCount() (int, error)
 	GetNewComments(limit int) ([]*Comment, error)
 	GetNewParticipants(limit int) ([]*Participant, error)

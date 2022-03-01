@@ -115,6 +115,50 @@ export interface ErrorResponse {
     'additionalAttributes'?: { [key: string]: any; };
 }
 /**
+ * 
+ * @export
+ * @interface EventTeaser
+ */
+export interface EventTeaser {
+    /**
+     * a UUIDv4 to identify the event
+     * @type {string}
+     * @memberof EventTeaser
+     */
+    'id': string;
+    /**
+     * link to the event thumbnail
+     * @type {string}
+     * @memberof EventTeaser
+     */
+    'thumbnailURL': string;
+    /**
+     * the topic of the event
+     * @type {string}
+     * @memberof EventTeaser
+     */
+    'theme': string;
+    /**
+     * the time when the event begins
+     * @type {string}
+     * @memberof EventTeaser
+     */
+    'date': string;
+}
+/**
+ * GetEventsResponse is the response containing the list of events
+ * @export
+ * @interface GetEventsResponse
+ */
+export interface GetEventsResponse {
+    /**
+     * the list of events
+     * @type {Array<EventTeaser>}
+     * @memberof GetEventsResponse
+     */
+    'events': Array<EventTeaser>;
+}
+/**
  * UploadImageRequest is the request definition for uploading images. It\'s possible to upload a single image with multipart/form-data encoding.
  * @export
  * @interface UploadImageRequest
@@ -202,6 +246,46 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * GetEvents lists events according to the filter parameters.
+         * @summary get filtered event list
+         * @param {number} [limit] limit the number of events in the list, 0 means unlimited
+         * @param {number} [offset] number of events to skip in the list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents: async (limit?: number, offset?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/events`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+            if (offset !== undefined) {
+                localVarQueryParameter['offset'] = offset;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * UploadImage allows to upload an image.
          * @summary upload an image
          * @param {any} image the image to upload
@@ -269,6 +353,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * GetEvents lists events according to the filter parameters.
+         * @summary get filtered event list
+         * @param {number} [limit] limit the number of events in the list, 0 means unlimited
+         * @param {number} [offset] number of events to skip in the list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getEvents(limit?: number, offset?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetEventsResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEvents(limit, offset, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * UploadImage allows to upload an image.
          * @summary upload an image
          * @param {any} image the image to upload
@@ -301,6 +397,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createEvent(createEventRequest, options).then((request) => request(axios, basePath));
         },
         /**
+         * GetEvents lists events according to the filter parameters.
+         * @summary get filtered event list
+         * @param {number} [limit] limit the number of events in the list, 0 means unlimited
+         * @param {number} [offset] number of events to skip in the list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getEvents(limit?: number, offset?: number, options?: any): AxiosPromise<GetEventsResponse> {
+            return localVarFp.getEvents(limit, offset, options).then((request) => request(axios, basePath));
+        },
+        /**
          * UploadImage allows to upload an image.
          * @summary upload an image
          * @param {any} image the image to upload
@@ -331,6 +438,19 @@ export class DefaultApi extends BaseAPI {
      */
     public createEvent(createEventRequest: CreateEventRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).createEvent(createEventRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * GetEvents lists events according to the filter parameters.
+     * @summary get filtered event list
+     * @param {number} [limit] limit the number of events in the list, 0 means unlimited
+     * @param {number} [offset] number of events to skip in the list
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getEvents(limit?: number, offset?: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getEvents(limit, offset, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

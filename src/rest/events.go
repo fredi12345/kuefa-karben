@@ -51,6 +51,37 @@ type (
 		// @Required
 		ID string `json:"id"`
 	}
+
+	// GetEventsRequest is the request definition for fetching a list of events
+	GetEventsRequest struct {
+		Limit  int `query:"limit" validate:"gte=0"`
+		Offset int `query:"offset" validate:"gte=0"`
+	}
+
+	// GetEventsResponse is the response containing the list of events
+	GetEventsResponse struct {
+		// the list of events
+		// @Required
+		Events []EventTeaser `json:"events"`
+	}
+
+	EventTeaser struct {
+		// a UUIDv4 to identify the event
+		// @Required
+		ID string `json:"id"`
+
+		// link to the event thumbnail
+		// @Required
+		ThumbnailURL string `json:"thumbnailURL"`
+
+		// the topic of the event
+		// @Required
+		Theme string `json:"theme"`
+
+		// the time when the event begins
+		// @Required
+		Date time.Time `json:"date"`
+	}
 )
 
 // CreateEvent allows to create an event.
@@ -81,4 +112,37 @@ func (s *Server) CreateEvent(c echo.Context, request CreateEventRequest) error {
 	return c.JSON(http.StatusOK, CreateEventResponse{
 		ID: eventID,
 	})
+}
+
+// GetEvents lists events according to the filter parameters.
+//
+// @OperationID GetEvents
+// @Title get filtered event list
+// @Param limit query int false "limit the number of events in the list, 0 means unlimited"
+// @Param offset query int false "number of events to skip in the list"
+// @Success 200 object GetEventsResponse "List of the events"
+// @Failure 400 object ErrorResponse "Error while listing events"
+// @Failure 500 object ErrorResponse "Error while listing events"
+// @Route /events [get]
+func (s *Server) GetEvents(c echo.Context, request GetEventsRequest) error {
+	if request.Limit == 0 {
+		request.Limit = 99999
+	}
+
+	dbTeasers, err := s.db.GetEventList(request.Offset, request.Limit)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	responseTeasers := make([]EventTeaser, 0, len(dbTeasers))
+	for _, event := range dbTeasers {
+		responseTeasers = append(responseTeasers, EventTeaser{
+			ID:           event.ID,
+			ThumbnailURL: s.formatThumbnailURL(event.ImageID),
+			Theme:        event.Theme,
+			Date:         event.EventDate,
+		})
+	}
+
+	return c.JSON(http.StatusOK, GetEventsResponse{Events: responseTeasers})
 }

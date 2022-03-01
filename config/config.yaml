@@ -24,3 +24,5 @@ web:
   root: frontend/dist
   port: 3001
   storage: store/public
+  image.url: /public/images/
+  thumbnail.url: /public/thumbnails/

@@ -81,8 +81,8 @@ func (s *Server) UploadImage(c echo.Context, request UploadImageRequest) error {
 
 	return c.JSON(http.StatusOK, UploadImageResponse{
 		ID:           imageID,
-		ImageURL:     fmt.Sprintf("/public/images/%s.jpeg", imageID),
-		ThumbnailURL: fmt.Sprintf("/public/thumbnails/%s.jpeg", imageID),
+		ImageURL:     s.formatImageURL(imageID),
+		ThumbnailURL: s.formatThumbnailURL(imageID),
 	})
 }
 

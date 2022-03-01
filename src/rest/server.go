@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"os"
 	"path"
 
@@ -13,7 +14,9 @@ type Server struct {
 	db            storage.Service
 	l             *zap.Logger
 	imagePath     string
+	imageURL      string
 	thumbnailPath string
+	thumbnailURL  string
 }
 
 func NewServer(db storage.Service, logger *zap.Logger) *Server {
@@ -33,5 +36,15 @@ func NewServer(db storage.Service, logger *zap.Logger) *Server {
 		l:             logger,
 		imagePath:     imagePath,
 		thumbnailPath: thumbnailPath,
+		imageURL:      viper.GetString("web.image.url"),
+		thumbnailURL:  viper.GetString("web.thumbnail.url"),
 	}
+}
+
+func (s *Server) formatImageURL(imageID string) string {
+	return fmt.Sprintf("%s%s.jpeg", s.imageURL, imageID)
+}
+
+func (s *Server) formatThumbnailURL(imageID string) string {
+	return fmt.Sprintf("%s%s.jpeg", s.thumbnailURL, imageID)
 }

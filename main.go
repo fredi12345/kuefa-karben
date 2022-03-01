@@ -130,6 +130,7 @@ func createEchoHandler(server *rest.Server, logger *zap.Logger) (*echo.Echo, err
 	api := e.Group("api")
 	api.POST("/images", extensions.AutoBind(logger, server.UploadImage))
 	api.POST("/events", extensions.AutoBind(logger, server.CreateEvent))
+	api.GET("/events", extensions.AutoBind(logger, server.GetEvents))
 	return e, nil
 }
 
