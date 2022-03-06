@@ -15,12 +15,16 @@
 
     <button class="buttonRight" type="submit" @click.prevent="onFormSubmit">Speichern</button>
   </section>
+  <section>
+    <EventDetails :event="form"></EventDetails>
+  </section>
 </template>
 
 <script setup lang="ts">
 import ImageUpload from "../components/ImageUpload.vue";
 import {reactive} from "vue";
 import {client} from "../api/client";
+import EventDetails from "../components/EventDetails.vue";
 
 const form = reactive({
   theme: '',

@@ -4,10 +4,7 @@
     <div id="events">
       <EventCard
           v-for="event in events.value"
-          :id="event.id"
-          :title="event.theme"
-          :image-url="event.thumbnailURL"
-          :date="event.date"
+          :event="event"
       ></EventCard>
       <router-link to="/events" id="showAll">></router-link>
     </div>

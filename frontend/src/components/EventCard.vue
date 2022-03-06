@@ -1,20 +1,19 @@
 <template>
-  <router-link :to="`/event/${id}`" class="event">
-    <img :src="imageUrl" alt="Veranstaltungsbild">
+  <router-link :to="`/event/${event.id}`" class="event">
+    <img :src="event.thumbnailURL" alt="Veranstaltungsbild">
     <div class="details">
-      <h4>{{ title }}</h4>
-      <time :datetime="date">{{ date }}</time>
+      <h4>{{ event.theme }}</h4>
+      <time :datetime="event.date">{{ event.date }}</time>
     </div>
   </router-link>
 </template>
 
-<script setup>
-defineProps({
-  id: String,
-  title: String,
-  imageUrl: String,
-  date: String,
-})
+<script setup lang="ts">
+import {EventTeaser} from "../api/generated";
+
+defineProps<{
+  event: EventTeaser
+}>()
 </script>
 
 <style scoped lang="scss">

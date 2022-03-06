@@ -1,23 +1,8 @@
 <template>
-  <section class="event">
+  <section id="eventView">
     <main>
-      <h1>{{ event.title }}</h1>
-      <img :src="event.img"/>
+      <EventDetails :event="event"/>
 
-      <div id="menu">
-        <p class="menuItem menu__1">{{ event.vorspeise }}</p>
-        <p class="menuItem menu__2">{{ event.hauptgang }}</p>
-        <p class="menuItem menu__3">{{ event.nachtisch }}</p>
-      </div>
-      <p>{{ event.description }}</p>
-      <div id="images">
-        <h2>Bilder</h2>
-        <ul class="imageContainer">
-          <li v-for="(image, index) in event.images">
-            <img :src="image" @click="viewImage(index)">
-          </li>
-        </ul>
-      </div>
     </main>
     <aside>
       <div id="registration">
@@ -25,7 +10,7 @@
         <p class="info closing">Anmeldeschluss: {{ event.closingDate }}</p>
         <form>
           <input class="name" type="text" placeholder="Name" required><br>
-          <textarea rows="3" name="message" id="participationMessage" type="text"
+          <textarea rows="3" name="message" id="participationMessage"
                     placeholder="Bemerkung/Nachricht (Optional)"
                     maxlength="1000"></textarea>
           <label class="menuCount"><input type="number" name="classic_count" value="1" min="0">x Klassisch</label>
@@ -51,30 +36,21 @@
         </form>
       </div>
     </aside>
-    <div id="imageViewer" v-if="viewerVisible" @click="closeViewer">
-      <div class="actions" @click.stop>
-        <button @click="closeViewer">Close</button>
-        <button @click="changeImage(-1)">Previous</button>
-        <button @click="changeImage(1)">Next</button>
-      </div>
-      <img :src="event.images[bigImgIndex]" @click.stop/>
-    </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
-import {useRoute} from "vue-router";
-import {router} from "../plugins/routes";
+import EventDetails from "../components/EventDetails.vue";
+import {CreateEventRequest} from "../api/generated";
 
-const event = {
-  title: "Heimische Kräuterküche",
-  date: "22.02.2022",
+const event: CreateEventRequest = {
+  theme: "Heimische Kräuterküche",
+  startingDate: "22.02.2022",
   img: "https://unsplash.it/640/425",
   description: "Lord Grey bittet zum Gärtnerkongress! Seinem Ruf folgen Botaniker, Lifestyle-Blogger und Imker, um sich über die neusten Erfindungen der Branche auszutauschen. Doch schon bald müssen sich die Gäste einer jahrzehntealten Frage stellen: Ist der Mörder immer der Gärtner?",
-  vorspeise: "Handkäs-Bärlauch-Dip mit geröstetem Brot",
-  hauptgang: "Grüne Soße mit Kartoffeln und Ei",
-  nachtisch: "Zitronen-Basilikum-Sorbet",
+  starter: "Handkäs-Bärlauch-Dip mit geröstetem Brot",
+  mainDish: "Grüne Soße mit Kartoffeln und Ei",
+  dessert: "Zitronen-Basilikum-Sorbet",
   closingDate: "21.02.2022",
   comments: [{
     name: "Fredi",
@@ -97,37 +73,10 @@ const event = {
   ]
 }
 
-const viewerVisible = ref(false);
-const bigImgIndex = ref(0);
-
-const route = useRoute();
-if (route.query.img && route.query.img !== "") {
-  viewImage(Number(route.query.img));
-}
-
-function viewImage(index: number) {
-  bigImgIndex.value = index;
-  viewerVisible.value = true;
-}
-
-function changeImage(to: number) {
-  //previous to=-1
-  //next to=1
-  bigImgIndex.value += to;
-  if (bigImgIndex.value < 0) bigImgIndex.value = event.images.length - 1;
-  if (bigImgIndex.value >= event.images.length) bigImgIndex.value = 0;
-  //TODO darf man so machen?
-  router.replace({path: route.path, query: {img: bigImgIndex.value.toString()}})
-}
-
-function closeViewer() {
-  viewerVisible.value = false;
-  router.replace(route.path);
-}
 </script>
 
 <style scoped lang="scss">
-.event {
+#eventView {
   display: flex;
   flex-direction: row;
   gap: 40px;
@@ -135,22 +84,16 @@ function closeViewer() {
   flex-wrap: wrap;
 }
 
-main, aside{
-  width: 400px;
-}
-main{
+main {
   flex: 4;
   flex-basis: 500px;
 }
-aside{
+
+aside {
   flex: 1;
   flex-basis: 350px;
-}
-main img{
-  max-width: 100%;
-}
-aside {
   --padding: 20px;
+
   div {
     padding-bottom: var(--padding);
     overflow: auto;
@@ -158,39 +101,21 @@ aside {
     text-align: start;
     margin-top: 20px;
   }
+
   input:not(.menuItem), textarea {
     margin-top: 6px;
     box-sizing: border-box;
     width: 100%;
   }
 
-
-  button{
+  button {
     float: right;
-  }
-}
-
-#menu {
-  .menuItem {
-
-    padding-inline: 40px;
-  }
-
-  .menu__1 {
-    text-align: start;
-  }
-
-  .menu__2 {
-    text-align: center;
-  }
-
-  .menu__3 {
-    text-align: end;
   }
 }
 
 #registration {
   padding-inline: var(--padding);
+
   .menuCount {
     display: block;
     padding-inline-start: 20px;
@@ -204,29 +129,33 @@ aside {
 
 #comments {
   padding-inline: var(--padding);
+
   #commentList {
     list-style: none;
     padding: 0;
-  };
+  }
+;
 
-  .comment{
+  .comment {
     overflow: auto;
     margin-inline: calc(-1 * var(--padding));
     padding-inline: calc(var(--padding));
     padding-top: var(--padding);
-    &:nth-child(even){
+
+    &:nth-child(even) {
       background-color: rgba(var(--theme-color-rgb) / 0.2);
     }
 
-    &--author, &--date{
+    &--author, &--date {
       opacity: 0.7;
     }
-    &--date{
+
+    &--date {
       float: right;
     }
   }
 
-  #commentForm{
+  #commentForm {
     textarea {
       box-sizing: border-box;
       width: 100%;
@@ -234,52 +163,4 @@ aside {
   }
 }
 
-.imageContainer {
-  list-style-type: none;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  padding: 0;
-
-  li {
-    display: block;
-    position: relative;
-    width: 150px;
-    aspect-ratio: 1;
-    background-color: white;
-    transition: background-color 0.1s ease;
-
-    &:hover {
-      background-color: rgba(var(--theme-color-rgb) / 0.7);
-    }
-
-    img {
-      display: block;
-      height: 100%;
-      width: 100%;
-      object-fit: cover;
-      mix-blend-mode: multiply;
-    }
-  }
-}
-
-#imageViewer {
-  background-color: rgba(0, 0, 0, 0.9);
-  position: fixed;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-
-  .actions {
-    position: absolute;
-    top: 0;
-  }
-
-  img {
-    max-width: 90%;
-  }
-}
 </style>
