@@ -32,9 +32,6 @@ defineProps<{
   event: CreateEventRequest
 }>()
 const viewer = ref(null)
-function doDas(){
-  console.log(this.$refs)
-}
 </script>
 <style scoped lang="scss">
 

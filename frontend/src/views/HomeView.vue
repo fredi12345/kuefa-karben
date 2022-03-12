@@ -7,6 +7,7 @@
     </div>
   </section>
   <AboutKuefa/>
+  <NewActivities/>
   <UpcomingEvents/>
 </template>
 
@@ -14,6 +15,7 @@
 import AboutKuefa from "../components/AboutKuefa.vue";
 import UpcomingEvents from "../components/UpcomingEvents.vue";
 import {onUnmounted} from "vue";
+import NewActivities from "../components/NewActivities.vue";
 
 
 let count = 1;

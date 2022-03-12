@@ -5,7 +5,7 @@
       <router-link to="/">{{ $t('navigation.home') }}</router-link>
       <router-link to="/events">{{ $t('navigation.events') }}</router-link>
       <router-link to="/gallery">{{ $t('navigation.gallery') }}</router-link>
-      <router-link to="/event/edit">{{ $t('navigation.createEvent') }}</router-link>
+      <router-link to="/event/edit" v-if="auth.loggedIn">{{ $t('navigation.createEvent') }}</router-link>
       <div id="settings">
         <button class="light" @click="$emit('toggleLang')">{{ useEng ? "DE" : "EN" }}</button>
         <button class="light" @click="$emit('toggleTheme')">{{ currentTheme }}</button>
@@ -15,6 +15,10 @@
 </template>
 
 <script setup lang="ts">
+import {useAuth} from "../stores/auth";
+
+const auth = useAuth();
+
 const props = defineProps({
   currentTheme: String,
   useEng: Boolean

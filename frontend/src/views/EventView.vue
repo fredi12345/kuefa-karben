@@ -1,6 +1,11 @@
 <template>
   <section id="eventView">
     <main>
+      <div v-if="auth.loggedIn">
+        <button>Edit</button>
+        <button>Delete</button>
+      </div>
+
       <EventDetails :event="event"/>
 
     </main>
@@ -23,13 +28,7 @@
       </div>
       <div id="comments">
         <h2>Kommentare</h2>
-        <ol id="commentList">
-          <li class="comment" v-for="comment in event.comments">
-            <span class="comment--author">{{ comment.name }} </span>
-            <span class="comment--date"> {{ comment.date }}</span>
-            <p class="comment--text">{{ comment.text }}</p>
-          </li>
-        </ol>
+        <CommentList :comments="event.comments"/>
         <form id="commentForm">
           <textarea rows="3" placeholder="Kommentar"></textarea>
           <button>Senden</button>
@@ -42,7 +41,10 @@
 <script setup lang="ts">
 import EventDetails from "../components/EventDetails.vue";
 import {CreateEventRequest} from "../api/generated";
+import {useAuth} from "../stores/auth";
+import CommentList from "./CommentList.vue";
 
+const auth = useAuth();
 const event: CreateEventRequest = {
   theme: "Heimische Kräuterküche",
   startingDate: "22.02.2022",
@@ -82,24 +84,29 @@ const event: CreateEventRequest = {
   gap: 40px;
   padding-inline: 3%;
   flex-wrap: wrap;
+  padding-top: 20px;
 }
 
 main {
   flex: 4;
   flex-basis: 500px;
+  padding-top: 10px;
 }
 
 aside {
-  flex: 1;
-  flex-basis: 350px;
   --padding: 20px;
+  flex: 1;
 
-  div {
+  flex-basis: 350px;
+
+  > div {
     padding-bottom: var(--padding);
     overflow: auto;
     background-color: var(--card-color);
     text-align: start;
-    margin-top: 20px;
+    &+div{
+      margin-top: var(--padding);
+    }
   }
 
   input:not(.menuItem), textarea {
@@ -129,31 +136,6 @@ aside {
 
 #comments {
   padding-inline: var(--padding);
-
-  #commentList {
-    list-style: none;
-    padding: 0;
-  }
-;
-
-  .comment {
-    overflow: auto;
-    margin-inline: calc(-1 * var(--padding));
-    padding-inline: calc(var(--padding));
-    padding-top: var(--padding);
-
-    &:nth-child(even) {
-      background-color: rgba(var(--theme-color-rgb) / 0.2);
-    }
-
-    &--author, &--date {
-      opacity: 0.7;
-    }
-
-    &--date {
-      float: right;
-    }
-  }
 
   #commentForm {
     textarea {

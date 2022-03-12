@@ -3,6 +3,7 @@
   <footer>
     <a v-if="!auth.loggedIn" href="/auth/login">{{ $t('navigation.login') }}</a>
     <a v-else href="/auth/logout">{{ $t('navigation.logout') }}</a>
+    <div v-if="auth.loggedIn" id="activeUser">Logged in as: <span>{{auth.user}}</span></div>
     <router-link to="/legal">{{ $t('navigation.imprint') }}</router-link>
   </footer>
 </template>
@@ -28,6 +29,9 @@ footer{
   display: flex;
   justify-content: space-between;
 
+  #activeUser{
+    font-weight: initial;
+  }
   a{
     text-decoration: none;
     color: white;

@@ -97,7 +97,6 @@ onMounted(() => {
         xDistance = e.pageX - xStart;
         if (isDragging.value) img.style.transform = `translateX(${xDistance}px)`;
       }
-      console.log("mousemove doc");
     })
     document.documentElement.addEventListener("mouseup", (e) => {
       if (isDragging.value) {
